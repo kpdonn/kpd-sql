@@ -42,7 +42,7 @@ export interface SQLFrom<Tables extends Table = never, Cols = {}> {
   from<T extends Table>(table: T): SQLJoin<Tables | T, Cols>
 }
 
-export interface SQLSelect<Tables extends Table = never, Cols = {}> {
+export interface SQLSelect<Tables extends Table, Cols> {
   select<C extends Col<Tables[typeof tableName]>[] & { "0": any }>(
     cols: C
   ): SQLSelect<Tables, Cols & Grab<C, Exclude<keyof C, ArrayKeys>>>
@@ -50,7 +50,7 @@ export interface SQLSelect<Tables extends Table = never, Cols = {}> {
   execute(): [Cols]
 }
 
-export interface SQLJoin<Tables extends Table = never, Cols = {}> extends SQLSelect<Tables, Cols> {
+export interface SQLJoin<Tables extends Table, Cols> extends SQLSelect<Tables, Cols> {
   join<T extends Table>(
     table: T,
     left: Col<Tables[typeof tableName]>,
@@ -59,3 +59,22 @@ export interface SQLJoin<Tables extends Table = never, Cols = {}> extends SQLSel
 }
 
 export declare function buildSql(): SQLFrom
+
+declare function t1<A extends string[] & { "0": any }>(arr: A): { a: A }
+
+declare const h: "hello"
+declare const w: "world"
+const r1 = t1([h, w])
+
+declare function NoDupArr<
+  A extends {
+    [K in Exclude<keyof A, ArrayKeys>]: A[K] extends A[Exclude<keyof A, ArrayKeys | K>]
+      ? never
+      : any
+  } & { "0": any }
+>(value: A): A
+
+declare const s1: "test"
+declare const s2: "test"
+
+const xD3 = NoDupArr([s1, s2]) // error
