@@ -23,6 +23,6 @@ const Author = table({
 
 const query = buildSql()
   .from(Book)
-  .join(Author, Book.authorId, Author.id)
-  .select([Book.id, Book.title, Author.id.as("authorId")])
+  .leftJoin(Author, Book.authorId, Author.id)
+  .select([Book.id, Book.title, Author.id.as("authorId"), Author.name])
   .execute()
