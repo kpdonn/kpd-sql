@@ -15,9 +15,18 @@ export interface Col<TN extends string = any> {
   [tableName]: TN
 }
 
+export type ColOut<N extends string, C extends Columns> = {
+  [K in keyof C]: {
+    name: K
+    [tableName]: N
+    type: C[K]["type"]
+    as<NN extends string>(newName: NN): { name: NN; [tableName]: N; type: C[K]["type"] }
+  }
+}
+
 export type TOut<N extends string, C extends Columns> = {
   [tableName]: N
-} & { [K in keyof C]: { name: K; [tableName]: N; type: C[K]["type"] } }
+} & ColOut<N, C>
 
 export declare function table<N extends string, C extends Columns>(arg: {
   name: N
