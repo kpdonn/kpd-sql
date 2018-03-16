@@ -70,6 +70,7 @@
     "typescript": "^2.8.0-dev.20180302"
   },
   "dependencies": {
+    "immutable": "4.0.0-rc.9",
     "io-ts": "^1.0.5"
   },
   "peerDependencies": {}
