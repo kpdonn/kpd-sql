@@ -1,6 +1,5 @@
 import * as t from "io-ts"
-
-export declare const tableName: unique symbol
+import { tableName } from "./implementation"
 
 export interface Columns {
   [key: string]: { type: t.Mixed }
@@ -27,11 +26,6 @@ export type ColOut<N extends string, C extends Columns> = {
 export type TOut<N extends string, C extends Columns> = {
   [tableName]: N
 } & ColOut<N, C>
-
-export declare function table<N extends string, C extends Columns>(arg: {
-  name: N
-  columns: C
-}): TOut<N, C>
 
 export type ArrayKeys = keyof any[]
 
@@ -97,6 +91,7 @@ export interface SQLJoin<RT extends Table, OT extends Table, Cols> extends SQLSe
 
 export interface SQLExecute<RT extends Table, OT extends Table, Cols> {
   execute(): [Cols]
+  toSql(): string
 }
 
 export interface SQLWhere<RT extends Table, OT extends Table, Cols>
@@ -106,5 +101,3 @@ export interface SQLWhere<RT extends Table, OT extends Table, Cols>
     val: t.TypeOf<C["type"]> | Col<(RT | OT)[typeof tableName], C["type"]>
   ): SQLWhere<RT, OT, Cols>
 }
-
-export declare function buildSql(): SQLFrom

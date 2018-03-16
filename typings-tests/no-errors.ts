@@ -1,5 +1,6 @@
-import { table, buildSql } from "../src/kpdSql"
 import * as t from "io-ts"
+
+import { table, buildSql } from "../src/implementation"
 
 const Book = table({
   name: "book",
@@ -24,6 +25,7 @@ const Author = table({
 const query = buildSql()
   .from(Book)
   .leftJoin(Author, Book.authorId, Author.id)
-  .select([Book.id, Book.title, Author.id.as("authorId"), Author.name])
-  .where(Book.id, 35)
-  .execute()
+  .select([Book.id, Book.title, Author.name])
+  .toSql()
+
+console.log(query)

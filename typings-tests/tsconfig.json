@@ -2,9 +2,8 @@
   "extends": "../configs/tsconfig",
   "compilerOptions": {
     "noEmit": true,
-    "noUnusedLocals": false
+    "noUnusedLocals": false,
+    "module": "commonjs"
   },
-  "include": [
-    "./**/*"
-  ]
+  "include": ["./**/*"]
 }
