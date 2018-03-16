@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "es6",
+    "module": "es2015",
+    "lib": [
+      "es2015",
+      "es7"
+    ],
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noErrorTruncation": true,
+    "allowSyntheticDefaultImports": true
+  }
+}
+
