@@ -9,9 +9,9 @@ export interface Columns {
 export interface Table {
   [tableName]: string
 }
-export interface Col<TN extends string = any> {
+export interface Col<TN extends string = any, Type extends t.Any = t.Mixed> {
   name: string
-  type: t.Mixed
+  type: Type
   [tableName]: TN
 }
 
@@ -61,41 +61,50 @@ export interface SQLFrom<Tables extends Table = never, OptTables extends Table =
 
 export type GCol<C extends Col> = C
 
-export interface SQLSelect<Tables extends Table, OptTables extends Table, Cols> {
+export interface SQLSelect<RT extends Table, OT extends Table, Cols> {
   select<
     C extends {
       [K in TupleKeys<C>]: C[K] extends GCol<infer U>
         ? (U["name"] extends (C[Exclude<TupleKeys<C>, K>] extends GCol<infer X> ? X["name"] : never)
             ? never
-            : Col<(Tables | OptTables)[typeof tableName]>)
+            : Col<(RT | OT)[typeof tableName]>)
         : never
     } & { "0": any }
   >(
     cols: C
-  ): SQLSelect<
-    Tables,
-    OptTables,
+  ): SQLWhere<
+    RT,
+    OT,
     Cols &
-      Grab<C, TupleKeys<C>, Tables[typeof tableName]> &
-      Partial<Grab<C, TupleKeys<C>, OptTables[typeof tableName]>>
+      Grab<C, TupleKeys<C>, RT[typeof tableName]> &
+      Partial<Grab<C, TupleKeys<C>, OT[typeof tableName]>>
   >
+}
 
+export interface SQLJoin<RT extends Table, OT extends Table, Cols> extends SQLSelect<RT, OT, Cols> {
+  join<T extends Table, LCol extends Col<(RT | OT)[typeof tableName]>>(
+    table: T,
+    left: LCol,
+    right: Col<T[typeof tableName], LCol["type"]>
+  ): SQLJoin<RT | T, OT, Cols>
+
+  leftJoin<T extends Table, LCol extends Col<(RT | OT)[typeof tableName]>>(
+    table: T,
+    left: LCol,
+    right: Col<T[typeof tableName], LCol["type"]>
+  ): SQLJoin<RT, OT | T, Cols>
+}
+
+export interface SQLExecute<RT extends Table, OT extends Table, Cols> {
   execute(): [Cols]
 }
 
-export interface SQLJoin<Tables extends Table, OptTables extends Table, Cols>
-  extends SQLSelect<Tables, OptTables, Cols> {
-  join<T extends Table>(
-    table: T,
-    left: Col<Tables[typeof tableName]>,
-    right: Col<T[typeof tableName]>
-  ): SQLJoin<Tables | T, OptTables, Cols>
-
-  leftJoin<T extends Table>(
-    table: T,
-    left: Col<Tables[typeof tableName]>,
-    right: Col<T[typeof tableName]>
-  ): SQLJoin<Tables, OptTables | T, Cols>
+export interface SQLWhere<RT extends Table, OT extends Table, Cols>
+  extends SQLExecute<RT, OT, Cols> {
+  where<C extends Col<(RT | OT)[typeof tableName]>>(
+    col: C,
+    val: t.TypeOf<C["type"]> | Col<(RT | OT)[typeof tableName], C["type"]>
+  ): SQLWhere<RT, OT, Cols>
 }
 
 export declare function buildSql(): SQLFrom
