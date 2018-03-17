@@ -22,10 +22,22 @@ const Author = table({
   }
 })
 
+const Other = table({
+  name: "other",
+  columns: {
+    id: { type: t.number },
+    otherName: { type: t.string },
+    otherField: { type: t.number }
+  }
+})
+
+const bookIdEqAuthor = Book.id.eq(Author.id)
+
 const query = buildSql()
   .from(Book)
   .leftJoin(Author, Book.authorId, Author.id)
   .select([Book.id, Book.title, Author.name])
+  .where(bookIdEqAuthor)
   .toSql()
 
 console.log(query)

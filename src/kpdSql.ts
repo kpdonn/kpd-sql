@@ -8,8 +8,12 @@ export interface Columns {
 export interface Table {
   [tableName]: string
 }
-export interface Col<TN extends string = any, Type extends t.Any = t.Mixed> {
-  name: string
+export interface Col<
+  TN extends string = any,
+  Type extends t.Any = t.Mixed,
+  N extends string = string
+> {
+  name: N
   type: Type
   [tableName]: TN
 }
@@ -20,6 +24,7 @@ export type ColOut<N extends string, C extends Columns> = {
     [tableName]: N
     type: C[K]["type"]
     as<NN extends string>(newName: NN): { name: NN; [tableName]: N; type: C[K]["type"] }
+    eq<Col2 extends Col>(col2: Col2): Condition<Col<N, C[K]["type"], K>, Col2>
   }
 }
 
@@ -96,8 +101,15 @@ export interface SQLExecute<RT extends Table, OT extends Table, Cols> {
 
 export interface SQLWhere<RT extends Table, OT extends Table, Cols>
   extends SQLExecute<RT, OT, Cols> {
-  where<C extends Col<(RT | OT)[typeof tableName]>>(
-    col: C,
-    val: t.TypeOf<C["type"]> | Col<(RT | OT)[typeof tableName], C["type"]>
+  where<
+    C extends Col<(RT | OT)[typeof tableName]>,
+    C2 extends Col<(RT | OT)[typeof tableName], C["type"]>
+  >(
+    cond: Condition<C, C2>
   ): SQLWhere<RT, OT, Cols>
+}
+
+export interface Condition<Col1 extends Col, Col2 extends Col> {
+  readonly __col1: Col1
+  readonly __col2: Col2
 }
