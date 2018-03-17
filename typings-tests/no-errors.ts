@@ -37,6 +37,7 @@ const query = buildSql()
   .from(Book)
   .leftJoin(Author, Book.authorId, Author.id)
   .select([Book.id, Book.title, Author.name])
+  .select([Author.age])
   .where(bookIdEqAuthor)
   .toSql()
 

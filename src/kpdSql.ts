@@ -60,18 +60,30 @@ export interface SQLFrom<Tables extends Table = never, OptTables extends Table =
 
 export type GCol<C extends Col> = C
 
+export type Literal<T extends string> = string extends T ? never : T
+
+export type DebugInfo<T, U = "unused", V = "unused"> = {
+  debugErr1: T
+  debugErr2: U
+  debugErr3: V
+}
+
 export interface SQLSelect<RT extends Table, OT extends Table, Cols> {
   select<
     C extends {
       [K in TupleKeys<C>]: C[K] extends GCol<infer U>
-        ? (U["name"] extends (C[Exclude<TupleKeys<C>, K>] extends GCol<infer X> ? X["name"] : never)
-            ? never
+        ? (U["name"] extends (
+            | (C[Exclude<TupleKeys<C>, K>] extends GCol<infer X> ? X["name"] : never)
+            | keyof Cols)
+            ? ([Exclude<TupleKeys<C>, K> | keyof Cols] extends [never]
+                ? Col<(RT | OT)[typeof tableName]>
+                : never)
             : Col<(RT | OT)[typeof tableName]>)
         : never
     } & { "0": any }
   >(
     cols: C
-  ): SQLWhere<
+  ): SQLSelectAndWhere<
     RT,
     OT,
     Cols &
@@ -79,6 +91,10 @@ export interface SQLSelect<RT extends Table, OT extends Table, Cols> {
       Partial<Grab<C, TupleKeys<C>, OT[typeof tableName]>>
   >
 }
+
+export interface SQLSelectAndWhere<RT extends Table, OT extends Table, Cols>
+  extends SQLSelect<RT, OT, Cols>,
+    SQLWhere<RT, OT, Cols> {}
 
 export interface SQLJoin<RT extends Table, OT extends Table, Cols> extends SQLSelect<RT, OT, Cols> {
   join<T extends Table, LCol extends Col<(RT | OT)[typeof tableName]>>(
