@@ -1,7 +1,5 @@
 import * as t from "io-ts"
-import { tn, cn, typeSym } from "./implementation"
-
-export type TypeSym = typeof typeSym
+import { ty, tbl, col, tySym } from "./implementation"
 
 export type InCol<CN extends string = string, Type extends t.Any = t.Mixed> = Record<
   CN,
@@ -9,38 +7,48 @@ export type InCol<CN extends string = string, Type extends t.Any = t.Mixed> = Re
 >
 
 export type ColInfo<
+  TN extends string = string,
   Type extends t.Any = t.Mixed,
-  CN extends string = string,
-  TN extends string = string
+  CN extends string = string
 > = {
-  [typeSym]: Type
-  [tn]: TN
-  [cn]: CN
+  [ty]: Type
+  [tbl]: TN
+  [col]: CN
 }
 
 export type OutCol<
+  TN extends string = string,
   Type extends t.Any = t.Mixed,
   CN extends string = string,
-  TN extends string = string,
-  ThisCol extends ColInfo = ColInfo<Type, CN, TN>
+  ThisCol extends ColInfo = ColInfo<TN, Type, CN>
 > = ThisCol & { as: AsCol<Type, TN> } & Comparisons<ThisCol>
 
 export type AsCol<Type extends t.Any, TN extends string> = <NN extends string>(
   newName: NN
-) => OutCol<Type, NN, TN>
+) => OutCol<TN, Type, NN>
 
 export type TransformInCol<TN extends string, C extends InCol> = {
-  [K in keyof C]: OutCol<C[K]["type"], K, TN>
+  [K in keyof C]: OutCol<TN, C[K]["type"], K>
 }
 
-export type TableOut<TN extends string, C extends InCol> = {
-  [tn]: TN
-} & TransformInCol<TN, C>
+export type Table<TN extends string = string> = {
+  [tbl]: TN
+}
 
-declare function table<N extends string, C extends InCol>(arg: {
+export type TableOut<TN extends string, C extends InCol> = Table<TN> & TransformInCol<TN, C>
+
+export function table<N extends string, C extends InCol>(arg: {
   name: N
   columns: C
-}): TableOut<N, C>
+}): TableOut<N, C> {
+  const result: any = { [tbl]: arg.name }
+
+  Object.keys(arg.columns).forEach(colName => {
+    result[colName] = { [tbl]: arg.name, name: colName, ...arg.columns[colName] }
+  })
+
+  return result
+}
 
 export interface Condition<Col1 extends ColInfo, Col2 extends ColInfo> {
   readonly __col1: Col1
@@ -48,7 +56,7 @@ export interface Condition<Col1 extends ColInfo, Col2 extends ColInfo> {
 }
 
 export type Comparisons<Col1 extends ColInfo> = {
-  eq: <Type2 extends Col1[TypeSym], Col2 extends ColInfo<Type2>>(
+  eq: <Type2 extends Col1[tySym], Col2 extends ColInfo<any, Type2>>(
     col2: Col2
   ) => Condition<Col1, Col2>
 }

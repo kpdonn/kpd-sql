@@ -1,6 +1,7 @@
 import * as t from "io-ts"
 
-import { table, buildSql, tuple } from "../src/implementation"
+import { buildSql, tuple } from "../src/implementation"
+import { table } from "../src/table"
 
 const Book = table({
   name: "book",
