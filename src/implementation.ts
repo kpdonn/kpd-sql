@@ -3,6 +3,9 @@ import { SQLFrom, Table, SQLJoin, Col, Columns, TOut } from "./kpdSql"
 import * as Immutable from "immutable"
 
 export const tableName: unique symbol = Symbol("tableName")
+export const tn: unique symbol = Symbol("tableName")
+export const cn: unique symbol = Symbol("columnName")
+export const typeSym: unique symbol = Symbol("typeSymbol")
 
 interface Join {
   type: "inner" | "left"
@@ -105,4 +108,8 @@ export function table<N extends string, C extends Columns>(arg: {
   })
 
   return result
+}
+
+export function tuple<T extends any[] & { "0": any }>(array: T): T {
+  return array
 }
