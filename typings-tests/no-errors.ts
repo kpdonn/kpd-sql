@@ -2,6 +2,7 @@ import * as t from "io-ts"
 
 import { select, tuple } from "../src/implementation"
 import { table } from "../src/table"
+import { sqlReady } from "../src/kpdSql"
 
 const Book = table({
   name: "book",
@@ -32,7 +33,7 @@ const Other = table({
   }
 })
 
-const bookIdEqAuthor = Book.id.eq(23)
+const author23 = Author.id.eq(23)
 
 const selectList = tuple([Book.id, Book.title])
 const AuthorA = Author.as("a")
@@ -40,5 +41,7 @@ const query = select()
   .from(Book)
   .leftJoin(Author, Book.id.eq(Author.id))
   .columns([Book.id, Author.name])
+  .where(author23)
+  .whereSub(sub => Book.id.in(sub.from(Other).columns([Other.id])))
   .toSql()
 console.log(query)

@@ -17,7 +17,7 @@ export type Grab<
   ArrInd extends keyof ColArr,
   TblNames extends string
 > = [TabCols<ColArr, ArrInd, TblNames>] extends [never]
-  ? never
+  ? {}
   : GetVal<ColArr[TabCols<ColArr, ArrInd, TblNames>][colSym], ColArr>
 
 export type GetVal<
@@ -36,7 +36,9 @@ export interface SQLFrom<
   OptTables extends string = never,
   Cols = {}
 > {
-  from<T extends Table>(table: T): SQLJoin<Tables | T[tblAsSym], OptTables, Cols>
+  from<T extends Table & NoDupTable<T, Tables>>(
+    table: T
+  ): SQLJoin<Tables | T[tblAsSym], OptTables, Cols>
 }
 
 export type GCol<C extends ColInfo> = C
@@ -44,7 +46,7 @@ export type GCol<C extends ColInfo> = C
 export interface SQLColumns<
   RT extends string,
   OT extends string,
-  Cols,
+  Cols = {},
   TblNames extends string = Literal<RT> | Literal<OT>
 > {
   columns<
@@ -66,9 +68,13 @@ export interface SQLColumns<
     OT,
     Cols &
       Grab<C, TupleKeys<C>, Literal<RT>> &
-      Partial<Grab<C, TupleKeys<C>, Literal<OT>>>
+      EmptyIfNone<Partial<Grab<C, TupleKeys<C>, Literal<OT>>>>
   >
 }
+
+export type EmptyIfNone<T> = string extends keyof T
+  ? {}
+  : [never] extends [keyof T] ? {} : T
 
 export interface SQLSelectAndWhere<RT extends string, OT extends string, Cols>
   extends SQLColumns<RT, OT, Cols>,
