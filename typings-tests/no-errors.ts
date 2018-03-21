@@ -1,6 +1,6 @@
 import * as t from "io-ts"
 
-import { buildSql, tuple } from "../src/implementation"
+import { select, tuple } from "../src/implementation"
 import { table } from "../src/table"
 
 const Book = table({
@@ -36,9 +36,17 @@ const bookIdEqAuthor = Book.id.eq(23)
 
 const selectList = tuple([Book.id, Book.title])
 
-const query = buildSql()
+const query = select()
   .from(Book)
   .leftJoin(Author, Book.id, Author.id)
-  .select([Book.id, Author.name])
-
+  .columns([Book.id, Author.name])
+  .whereSub(sub =>
+    Book.id.in(
+      sub
+        .from(Author)
+        .columns([Author.id])
+        .where(Author.name.eq(Book.title))
+    )
+  )
+  .execute()
 console.log(query)

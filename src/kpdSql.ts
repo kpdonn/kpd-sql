@@ -41,13 +41,13 @@ export interface SQLFrom<
 
 export type GCol<C extends ColInfo> = C
 
-export interface SQLSelect<
+export interface SQLColumns<
   RT extends string,
   OT extends string,
   Cols,
   TblNames extends string = Literal<RT> | Literal<OT>
 > {
-  select<
+  columns<
     C extends {
       [K in TupleKeys<C>]: C[K] extends GCol<infer U>
         ? (U[colSym] extends (
@@ -71,7 +71,7 @@ export interface SQLSelect<
 }
 
 export interface SQLSelectAndWhere<RT extends string, OT extends string, Cols>
-  extends SQLSelect<RT, OT, Cols>,
+  extends SQLColumns<RT, OT, Cols>,
     SQLWhere<RT, OT, Cols> {}
 
 export interface SQLJoin<
@@ -79,7 +79,7 @@ export interface SQLJoin<
   OT extends string,
   Cols,
   TblNames extends string = Literal<RT> | Literal<OT>
-> extends SQLSelect<RT, OT, Cols> {
+> extends SQLColumns<RT, OT, Cols> {
   join<T extends Table, LCol extends ColInfo<TblNames>>(
     table: T,
     left: LCol,
@@ -93,9 +93,15 @@ export interface SQLJoin<
   ): SQLJoin<RT, OT | T[tblSym], Cols>
 }
 
-export interface SQLExecute<RT extends string, OT extends string, Cols> {
-  execute(): [Cols]
+export interface SQLExecute<RT extends string, OT extends string, Cols>
+  extends SQLReady<Cols> {
+  execute(): Cols[]
   toSql(): string
+}
+
+export declare const sqlReady: unique symbol
+export interface SQLReady<Cols> {
+  [sqlReady]: Cols
 }
 
 export interface SQLWhere<
@@ -105,4 +111,8 @@ export interface SQLWhere<
   TblNames extends string = Literal<RT> | Literal<OT>
 > extends SQLExecute<RT, OT, Cols> {
   where<CTbles extends TblNames>(cond: Condition<CTbles>): SQLWhere<RT, OT, Cols>
+
+  whereSub<CTbles extends TblNames>(
+    cond: (subSelect: SQLFrom<RT, OT, {}>) => Condition<CTbles>
+  ): SQLWhere<RT, OT, Cols>
 }

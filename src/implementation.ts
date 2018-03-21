@@ -104,7 +104,7 @@ class SqlBuilder {
   }
 }
 
-export function buildSql(): SQLFrom {
+export function select(): SQLFrom {
   return new SqlBuilder() as any
 }
 

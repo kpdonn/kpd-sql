@@ -1,5 +1,6 @@
 import * as t from "io-ts"
 import { ty, tbl, col, tySym, tblSym } from "./implementation"
+import { SQLExecute, SQLReady } from "./kpdSql"
 
 export declare const condTbls: unique symbol
 export type condTblsSym = typeof condTbls
@@ -74,9 +75,9 @@ export type Comparisons<Col1 extends ColInfo> = {
 
   isNull(): Condition<Col1[tblSym]>
 
-  in<Col2 extends ColInfo<any, Col1[tySym]>>(
-    col2: t.TypeOf<Col1[tySym]>[]
-  ): Condition<Col1[tblSym] | Literal<Col2[tblSym]>>
+  in(
+    val: t.TypeOf<Col1[tySym]>[] | SQLReady<Record<string, t.TypeOf<Col1[tySym]>>>
+  ): Condition<Col1[tblSym]>
 }
 
 const Book = table({
@@ -90,4 +91,4 @@ const Book = table({
   }
 })
 
-const comp = Book.id.eq(Book.year)
+const comp = Book.id
