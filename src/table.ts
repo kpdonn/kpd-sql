@@ -1,5 +1,7 @@
 import * as t from "io-ts"
-import { ty, tbl, col, tySym } from "./implementation"
+import { ty, tbl, col, tySym, tblSym } from "./implementation"
+
+export declare const condTbls: unique symbol
 
 export type InCol<CN extends string = string, Type extends t.Any = t.Mixed> = Record<
   CN,
@@ -50,15 +52,12 @@ export function table<N extends string, C extends InCol>(arg: {
   return result
 }
 
-export interface Condition<Col1 extends ColInfo, Col2 extends ColInfo> {
-  readonly __col1: Col1
-  readonly __col2: Col2
+export interface Condition<TblNames extends string = never> {
+  [condTbls]: TblNames
 }
 
 export type Comparisons<Col1 extends ColInfo> = {
-  eq: <Type2 extends Col1[tySym], Col2 extends ColInfo<any, Type2>>(
-    col2: Col2
-  ) => Condition<Col1, Col2>
+  eq: <Col2 extends ColInfo<any, Col1[tySym]>>(col2: Col2) => Condition<Col1[tblSym] | Col2[tblSym]>
 }
 
 const Book = table({

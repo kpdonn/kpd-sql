@@ -90,7 +90,5 @@ export interface SQLWhere<
   Cols,
   TblNames extends string = (RT | OT)[tblSym]
 > extends SQLExecute<RT, OT, Cols> {
-  where<C extends ColInfo<TblNames>, C2 extends ColInfo<TblNames, C[tySym]>>(
-    cond: Condition<C, C2>
-  ): SQLWhere<RT, OT, Cols>
+  where<CTbles extends TblNames>(cond: Condition<CTbles>): SQLWhere<RT, OT, Cols>
 }
