@@ -2,6 +2,7 @@ import * as t from "io-ts"
 import { ty, tbl, col, tySym, tblSym } from "./implementation"
 
 export declare const condTbls: unique symbol
+export type condTblsSym = typeof condTbls
 
 export type InCol<CN extends string = string, Type extends t.Any = t.Mixed> = Record<
   CN,
@@ -56,15 +57,18 @@ export function table<N extends string, C extends InCol>(arg: {
 
   return result
 }
-
-export interface Condition<TblNames extends string = never> {
+export type Literal<T extends string> = string extends T ? never : T
+export interface Condition<TblNames extends string> {
   [condTbls]: TblNames
+
+  and<C extends Condition<any>>(cond: C): Condition<TblNames | C[condTblsSym]>
+  or<C extends Condition<any>>(cond: C): Condition<TblNames | C[condTblsSym]>
 }
 
 export type Comparisons<Col1 extends ColInfo> = {
   eq: <Col2 extends ColInfo<any, Col1[tySym]>>(
-    col2: Col2
-  ) => Condition<Col1[tblSym] | Col2[tblSym]>
+    col2: Col2 | t.TypeOf<Col1[tySym]>
+  ) => Condition<Col1[tblSym] | Literal<Col2[tblSym]>>
 }
 
 const Book = table({

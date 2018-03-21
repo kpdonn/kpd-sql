@@ -32,7 +32,7 @@ const Other = table({
   }
 })
 
-const bookIdEqAuthor = Book.id.eq(Author.id)
+const bookIdEqAuthor = Book.id.eq(23)
 
 const selectList = tuple([Book.id, Book.title, Author.name])
 
