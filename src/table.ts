@@ -35,9 +35,9 @@ export type Table<
   AsName extends string = TN
 > = {
   [tbl]: TN
-  [tblAs]: AsName
+  [tblAs]: string extends AsName ? TN : AsName
   as<NN extends string>(asName: NN): Table<TN, C, NN>
-} & TransformInCol<AsName, C>
+} & TransformInCol<string extends AsName ? TN : AsName, C>
 
 export function table<N extends string, C extends InCol, AN extends string>({
   name,
