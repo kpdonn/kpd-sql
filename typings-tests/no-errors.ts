@@ -35,11 +35,11 @@ const Other = table({
 const bookIdEqAuthor = Book.id.eq(23)
 
 const selectList = tuple([Book.id, Book.title])
-
+const AuthorA = Author.as("a")
 const query = select()
   .from(Book)
   .leftJoin(Author, Book.id.eq(Author.id))
-  .leftJoin(Author, Book.id.eq(Author.id))
+  .leftJoin(AuthorA, Book.id.eq(AuthorA.id))
   .columns([Book.id, Author.name])
   .whereSub(sub =>
     Book.id.in(

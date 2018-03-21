@@ -10,29 +10,23 @@ export type InCol<CN extends string = string, Type extends t.Any = t.Mixed> = Re
   { type: Type }
 >
 
-export type ColInfo<
+export interface ColInfo<
   TN extends string = string,
   Type extends t.Any = t.Mixed,
   CN extends string = string
-> = {
+> extends Comparisons<TN, Type> {
   [ty]: Type
   [tbl]: TN
   [col]: CN
+  as: AsCol<TN, Type>
 }
 
-export type OutCol<
-  TN extends string = string,
-  Type extends t.Any = t.Mixed,
-  CN extends string = string,
-  ThisCol extends ColInfo = ColInfo<TN, Type, CN>
-> = ThisCol & { as: AsCol<Type, TN> } & Comparisons<ThisCol>
-
-export type AsCol<Type extends t.Any, TN extends string> = <NN extends string>(
+export type AsCol<TN extends string, Type extends t.Any> = <NN extends string>(
   newName: NN
-) => OutCol<TN, Type, NN>
+) => ColInfo<TN, Type, NN>
 
 export type TransformInCol<TN extends string, C extends InCol> = {
-  [K in keyof C]: OutCol<TN, C[K]["type"], K>
+  [K in keyof C]: ColInfo<TN, C[K]["type"], K>
 }
 
 export type Table<
@@ -69,18 +63,18 @@ export interface Condition<TblNames extends string> {
   or<C extends Condition<any>>(cond: C): Condition<TblNames | C[condTblsSym]>
 }
 
-export type Comparisons<Col1 extends ColInfo> = {
-  not: Comparisons<Col1>
+export type Comparisons<Col1Tbl extends string, Col1Type extends t.Any> = {
+  not: Comparisons<Col1Tbl, Col1Type>
 
-  eq<Col2 extends ColInfo<any, Col1[tySym]>>(
-    col2: Col2 | t.TypeOf<Col1[tySym]>
-  ): Condition<Col1[tblSym] | Literal<Col2[tblSym]>>
+  eq<Col2 extends ColInfo<any, Col1Type>>(
+    col2: Col2 | t.TypeOf<Col1Type>
+  ): Condition<Col1Tbl | Literal<Col2[tblSym]>>
 
-  isNull(): Condition<Col1[tblSym]>
+  isNull(): Condition<Col1Tbl>
 
   in(
-    val: t.TypeOf<Col1[tySym]>[] | SQLReady<Record<string, t.TypeOf<Col1[tySym]>>>
-  ): Condition<Col1[tblSym]>
+    val: t.TypeOf<Col1Type>[] | SQLReady<Record<string, t.TypeOf<Col1Type>>>
+  ): Condition<Col1Tbl>
 }
 
 const Book = table({
