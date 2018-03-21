@@ -74,7 +74,7 @@ export interface SQLColumns<
 
 export type EmptyIfNone<T> = string extends keyof T
   ? {}
-  : [never] extends [keyof T] ? {} : T
+  : [keyof T] extends [never] ? {} : T
 
 export interface SQLSelectAndWhere<RT extends string, OT extends string, Cols>
   extends SQLColumns<RT, OT, Cols>,
