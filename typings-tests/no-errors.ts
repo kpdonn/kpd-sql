@@ -34,13 +34,11 @@ const Other = table({
 
 const bookIdEqAuthor = Book.id.eq(23)
 
-const selectList = tuple([Book.id, Book.title, Author.name])
+const selectList = tuple([Book.id, Book.title])
 
 const query = buildSql()
   .from(Book)
-  .leftJoin(Author, Book.authorId, Author.id)
-  .select(selectList)
-  .where(bookIdEqAuthor)
-  .execute()
+  .leftJoin(Author, Book.id, Author.id)
+  .select([Book.id, Author.name])
 
 console.log(query)

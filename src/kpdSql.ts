@@ -1,47 +1,51 @@
 import * as t from "io-ts"
-import { tblSym, colSym, tySym } from "./implementation"
-import { Table, ColInfo, Condition } from "./table"
+import { tblSym, colSym, tySym, col, ty } from "./implementation"
+import { Table, ColInfo, Condition, Literal } from "./table"
 
 export type ArrayKeys = keyof any[]
 
 export type TupleKeys<T> = Exclude<keyof T, ArrayKeys>
 
 export type TabCols<
-  T extends { [index: string]: ColInfo },
-  K extends keyof T,
-  U extends string
-> = { [P in K]: T[P][tblSym] extends U ? P : never }[K]
+  ColArr extends { [index: string]: ColInfo },
+  ArrInd extends keyof ColArr,
+  TblNames extends string
+> = { [Ind in ArrInd]: ColArr[Ind][tblSym] extends TblNames ? Ind : never }[ArrInd]
+
 export type Grab<
-  T extends { [index: string]: ColInfo },
-  K extends keyof T,
-  U extends string
-> = GetVal<T[TabCols<T, K, U>][colSym], T>
+  ColArr extends { [index: string]: ColInfo },
+  ArrInd extends keyof ColArr,
+  TblNames extends string
+> = [TabCols<ColArr, ArrInd, TblNames>] extends [never]
+  ? never
+  : GetVal<ColArr[TabCols<ColArr, ArrInd, TblNames>][colSym], ColArr>
 
-export type GetVal<N extends string, T extends { [index: string]: ColInfo }> = {
-  [K in N]: FilterVal<K, T[keyof T]>
-}
+export type GetVal<
+  ColNames extends string,
+  ColArr extends { [index: string]: ColInfo }
+> = { [K in ColNames]: FilterVal<K, ColArr[keyof ColArr]> }
 
-export type TypeCol<N extends string, U extends t.Any> = { name: N; type: U }
+export type TypeCol<N extends string, U extends t.Any> = { [col]: N; [ty]: U }
 
 export type FilterVal<N extends string, T extends ColInfo> = T extends TypeCol<N, infer U>
   ? t.TypeOf<U>
   : never
 
 export interface SQLFrom<
-  Tables extends Table = never,
-  OptTables extends Table = never,
+  Tables extends string = never,
+  OptTables extends string = never,
   Cols = {}
 > {
-  from<T extends Table>(table: T): SQLJoin<Tables | T, OptTables, Cols>
+  from<T extends Table>(table: T): SQLJoin<Tables | T[tblSym], OptTables, Cols>
 }
 
 export type GCol<C extends ColInfo> = C
 
 export interface SQLSelect<
-  RT extends Table,
-  OT extends Table,
+  RT extends string,
+  OT extends string,
   Cols,
-  TblNames extends string = (RT | OT)[tblSym]
+  TblNames extends string = Literal<RT> | Literal<OT>
 > {
   select<
     C extends {
@@ -60,43 +64,45 @@ export interface SQLSelect<
   ): SQLSelectAndWhere<
     RT,
     OT,
-    Cols & Grab<C, TupleKeys<C>, RT[tblSym]> & Partial<Grab<C, TupleKeys<C>, OT[tblSym]>>
+    Cols &
+      Grab<C, TupleKeys<C>, Literal<RT>> &
+      Partial<Grab<C, TupleKeys<C>, Literal<OT>>>
   >
 }
 
-export interface SQLSelectAndWhere<RT extends Table, OT extends Table, Cols>
+export interface SQLSelectAndWhere<RT extends string, OT extends string, Cols>
   extends SQLSelect<RT, OT, Cols>,
     SQLWhere<RT, OT, Cols> {}
 
 export interface SQLJoin<
-  RT extends Table,
-  OT extends Table,
+  RT extends string,
+  OT extends string,
   Cols,
-  TblNames extends string = (RT | OT)[tblSym]
+  TblNames extends string = Literal<RT> | Literal<OT>
 > extends SQLSelect<RT, OT, Cols> {
   join<T extends Table, LCol extends ColInfo<TblNames>>(
     table: T,
     left: LCol,
     right: ColInfo<T[tblSym], LCol[tySym]>
-  ): SQLJoin<RT | T, OT, Cols>
+  ): SQLJoin<RT | T[tblSym], OT, Cols>
 
   leftJoin<T extends Table, LCol extends ColInfo<TblNames>>(
     table: T,
     left: LCol,
     right: ColInfo<T[tblSym], LCol[tySym]>
-  ): SQLJoin<RT, OT | T, Cols>
+  ): SQLJoin<RT, OT | T[tblSym], Cols>
 }
 
-export interface SQLExecute<RT extends Table, OT extends Table, Cols> {
+export interface SQLExecute<RT extends string, OT extends string, Cols> {
   execute(): [Cols]
   toSql(): string
 }
 
 export interface SQLWhere<
-  RT extends Table,
-  OT extends Table,
+  RT extends string,
+  OT extends string,
   Cols,
-  TblNames extends string = (RT | OT)[tblSym]
+  TblNames extends string = Literal<RT> | Literal<OT>
 > extends SQLExecute<RT, OT, Cols> {
   where<CTbles extends TblNames>(cond: Condition<CTbles>): SQLWhere<RT, OT, Cols>
 }

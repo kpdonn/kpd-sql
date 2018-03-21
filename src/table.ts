@@ -66,9 +66,17 @@ export interface Condition<TblNames extends string> {
 }
 
 export type Comparisons<Col1 extends ColInfo> = {
-  eq: <Col2 extends ColInfo<any, Col1[tySym]>>(
+  not: Comparisons<Col1>
+
+  eq<Col2 extends ColInfo<any, Col1[tySym]>>(
     col2: Col2 | t.TypeOf<Col1[tySym]>
-  ) => Condition<Col1[tblSym] | Literal<Col2[tblSym]>>
+  ): Condition<Col1[tblSym] | Literal<Col2[tblSym]>>
+
+  isNull(): Condition<Col1[tblSym]>
+
+  in<Col2 extends ColInfo<any, Col1[tySym]>>(
+    col2: t.TypeOf<Col1[tySym]>[]
+  ): Condition<Col1[tblSym] | Literal<Col2[tblSym]>>
 }
 
 const Book = table({
