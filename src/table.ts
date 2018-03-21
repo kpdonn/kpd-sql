@@ -39,21 +39,48 @@ export type Table<
   as<NN extends string>(asName: NN): Table<TN, C, NN>
 } & TransformInCol<AsName, C>
 
-export function table<N extends string, C extends InCol>(arg: {
+export function table<N extends string, C extends InCol, AN extends string>({
+  name,
+  columns,
+  asName = name
+}: {
   name: N
   columns: C
-}): Table<N, C> {
-  const result: any = { [tbl]: arg.name }
-
-  Object.keys(arg.columns).forEach(colName => {
-    result[colName] = {
-      [tbl]: arg.name,
-      name: colName,
-      ...arg.columns[colName]
+  asName?: AN
+}): Table<N, C, AN> {
+  const result: any = {
+    [tbl]: name,
+    [tblAs]: asName,
+    as<NN extends string>(newName: NN): Table<N, C, NN> {
+      return table({
+        name,
+        columns,
+        asName: newName
+      })
     }
+  }
+
+  Object.keys(columns).forEach(colName => {
+    result[colName] = colInfo(columns, colName, asName)
   })
 
   return result
+}
+
+function colInfo(
+  columns: any,
+  colName: string,
+  tblName: string,
+  colAsName: string = colName
+): any {
+  return {
+    [tbl]: tblName,
+    [col]: colAsName,
+    [ty]: columns[colName].type,
+    as<NN extends string>(newName: NN): ColInfo {
+      return colInfo(columns, colName, tblName, newName)
+    }
+  }
 }
 export type Literal<T extends string> = string extends T ? never : T
 export interface Condition<TblNames extends string> {

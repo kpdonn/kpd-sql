@@ -39,14 +39,13 @@ const AuthorA = Author.as("a")
 const query = select()
   .from(Book)
   .leftJoin(Author, Book.id.eq(Author.id))
-  .leftJoin(AuthorA, Book.id.eq(AuthorA.id))
   .columns([Book.id, Author.name])
-  .whereSub(sub =>
+  .whereSub(subSelect =>
     Book.id.in(
-      sub
-        .from(Author)
-        .columns([Author.id])
-        .where(Author.name.eq(Book.title))
+      subSelect
+        .from(AuthorA)
+        .columns([AuthorA.id])
+        .where(AuthorA.name.eq(Book.title))
     )
   )
   .execute()
