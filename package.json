@@ -6,9 +6,7 @@
   "main": "dist/kpd-sql.umd.js",
   "module": "dist/kpd-sql.es5.js",
   "typings": "dist/types/kpd-sql.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "author": "Kevin Donnelly <kdonnelly08@gmail.com>",
   "repository": {
     "type": "git",
@@ -30,6 +28,7 @@
   },
   "lint-staged": {
     "{src,test}/**/*.{ts,tsx}": [
+      "git diff-files --quiet --exit-code",
       "prettier --write --no-semi",
       "git add"
     ]
@@ -39,15 +38,8 @@
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleDirectories": [
-      "src",
-      "node_modules"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ]
+    "moduleDirectories": ["src", "node_modules"],
+    "moduleFileExtensions": ["ts", "tsx", "js"]
   },
   "devDependencies": {
     "@types/jest": "^22.0.0",
