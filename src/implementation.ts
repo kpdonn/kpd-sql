@@ -47,7 +47,12 @@ class SqlBuilder {
     return this.addJoin("left", table, onLeft, onRight)
   }
 
-  addJoin(type: "inner" | "left", table: Table, onLeft: ColInfo, onRight: ColInfo): SqlBuilder {
+  addJoin(
+    type: "inner" | "left",
+    table: Table,
+    onLeft: ColInfo,
+    onRight: ColInfo
+  ): SqlBuilder {
     let newState = this.state.set("tableNum", this.state.tableNum + 1)
 
     const abbr = `t${newState.tableNum}`
@@ -83,7 +88,9 @@ class SqlBuilder {
     state.joins.forEach(join => {
       const joinTableName = join.table[tbl]
       const joinAbbr = state.tableMap.get(joinTableName)
-      const onClause = ` on ${this.colToStr(join.onLeft)} = ${this.colToStr(join.onRight)} `
+      const onClause = ` on ${this.colToStr(join.onLeft)} = ${this.colToStr(
+        join.onRight
+      )} `
       sql += ` ${join.type} join ${joinTableName} ${joinAbbr} ${onClause} `
     })
 

@@ -37,7 +37,8 @@ export type Table<TN extends string = string> = {
   [tbl]: TN
 }
 
-export type TableOut<TN extends string, C extends InCol> = Table<TN> & TransformInCol<TN, C>
+export type TableOut<TN extends string, C extends InCol> = Table<TN> &
+  TransformInCol<TN, C>
 
 export function table<N extends string, C extends InCol>(arg: {
   name: N
@@ -46,7 +47,11 @@ export function table<N extends string, C extends InCol>(arg: {
   const result: any = { [tbl]: arg.name }
 
   Object.keys(arg.columns).forEach(colName => {
-    result[colName] = { [tbl]: arg.name, name: colName, ...arg.columns[colName] }
+    result[colName] = {
+      [tbl]: arg.name,
+      name: colName,
+      ...arg.columns[colName]
+    }
   })
 
   return result
@@ -57,7 +62,9 @@ export interface Condition<TblNames extends string = never> {
 }
 
 export type Comparisons<Col1 extends ColInfo> = {
-  eq: <Col2 extends ColInfo<any, Col1[tySym]>>(col2: Col2) => Condition<Col1[tblSym] | Col2[tblSym]>
+  eq: <Col2 extends ColInfo<any, Col1[tySym]>>(
+    col2: Col2
+  ) => Condition<Col1[tblSym] | Col2[tblSym]>
 }
 
 const Book = table({

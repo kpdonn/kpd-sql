@@ -6,9 +6,11 @@ export type ArrayKeys = keyof any[]
 
 export type TupleKeys<T> = Exclude<keyof T, ArrayKeys>
 
-export type TabCols<T extends { [index: string]: ColInfo }, K extends keyof T, U extends string> = {
-  [P in K]: T[P][tblSym] extends U ? P : never
-}[K]
+export type TabCols<
+  T extends { [index: string]: ColInfo },
+  K extends keyof T,
+  U extends string
+> = { [P in K]: T[P][tblSym] extends U ? P : never }[K]
 export type Grab<
   T extends { [index: string]: ColInfo },
   K extends keyof T,
@@ -25,7 +27,11 @@ export type FilterVal<N extends string, T extends ColInfo> = T extends TypeCol<N
   ? t.TypeOf<U>
   : never
 
-export interface SQLFrom<Tables extends Table = never, OptTables extends Table = never, Cols = {}> {
+export interface SQLFrom<
+  Tables extends Table = never,
+  OptTables extends Table = never,
+  Cols = {}
+> {
   from<T extends Table>(table: T): SQLJoin<Tables | T, OptTables, Cols>
 }
 
@@ -43,7 +49,9 @@ export interface SQLSelect<
         ? (U[colSym] extends (
             | (C[Exclude<TupleKeys<C>, K>] extends GCol<infer X> ? X[colSym] : never)
             | keyof Cols)
-            ? ([Exclude<TupleKeys<C>, K> | keyof Cols] extends [never] ? ColInfo<TblNames> : never)
+            ? ([Exclude<TupleKeys<C>, K> | keyof Cols] extends [never]
+                ? ColInfo<TblNames>
+                : never)
             : ColInfo<TblNames>)
         : never
     } & { "0": any }
