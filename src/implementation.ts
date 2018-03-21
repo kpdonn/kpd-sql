@@ -1,7 +1,7 @@
 import { SQLFrom, SQLJoin } from "./kpdSql"
 
 import * as Immutable from "immutable"
-import { Table, ColInfo } from "./table"
+import { Table, ColInfo, Condition } from "./table"
 
 export const tbl: unique symbol = Symbol("tableName")
 export const tblAs: unique symbol = Symbol("tableAs")
@@ -16,15 +16,13 @@ export type tblAsSym = typeof tblAs
 interface Join {
   type: "inner" | "left"
   table: Table
-  onLeft: ColInfo
-  onRight: ColInfo
+  cond: Condition<any>
 }
+
 const BuilderState = Immutable.Record({
-  fromTable: undefined as undefined | Table,
-  joins: Immutable.List(),
-  tableMap: Immutable.Map(),
-  columns: Immutable.List(),
-  tableNum: 0
+  fromTable: (undefined as any) as Table,
+  joins: Immutable.List<Join>(),
+  columns: Immutable.List()
 })
 class SqlBuilder {
   constructor(private readonly state = BuilderState()) {}
@@ -32,40 +30,28 @@ class SqlBuilder {
   from(table: Table): SqlBuilder {
     let newState = this.state.withMutations(arg => {
       arg.set("fromTable", table)
-      arg.set("tableNum", arg.tableNum + 1)
     })
 
-    const abbr = `t${newState.tableNum}`
-    newState = newState.updateIn(["tableMap"], tm => tm.set(table[tbl], abbr))
+    return new SqlBuilder(newState)
+  }
+
+  join(table: Table, cond: Condition<any>): SqlBuilder {
+    return this.addJoin("inner", table, cond)
+  }
+
+  leftJoin(table: Table, cond: Condition<any>): SqlBuilder {
+    return this.addJoin("left", table, cond)
+  }
+
+  addJoin(type: "inner" | "left", table: Table, cond: Condition<any>): SqlBuilder {
+    const newState = this.state.updateIn(["joins"], joins =>
+      joins.push({ type, table, cond })
+    )
 
     return new SqlBuilder(newState)
   }
 
-  join(table: Table, onLeft: ColInfo, onRight: ColInfo): SqlBuilder {
-    return this.addJoin("inner", table, onLeft, onRight)
-  }
-
-  leftJoin(table: Table, onLeft: ColInfo, onRight: ColInfo): SqlBuilder {
-    return this.addJoin("left", table, onLeft, onRight)
-  }
-
-  addJoin(
-    type: "inner" | "left",
-    table: Table,
-    onLeft: ColInfo,
-    onRight: ColInfo
-  ): SqlBuilder {
-    let newState = this.state.set("tableNum", this.state.tableNum + 1)
-
-    const abbr = `t${newState.tableNum}`
-    newState = newState
-      .updateIn(["tableMap"], tm => tm.set(table[tbl], abbr))
-      .updateIn(["joins"], joins => joins.push({ type, table, onLeft, onRight }))
-
-    return new SqlBuilder(newState)
-  }
-
-  select(cols: ColInfo[]): SqlBuilder {
+  columns(cols: ColInfo[]): SqlBuilder {
     const newState = this.state.updateIn(["columns"], stateCols =>
       stateCols.withMutations((mut: any) => {
         cols.forEach(col => mut.push(col))
@@ -77,32 +63,20 @@ class SqlBuilder {
   toSql(): string {
     let sql = "Select "
     const state = this.state
-    const selectCols = state.columns.map(col => this.colToStr(col)).join(", ")
+    const selectCols = state.columns.map(col => col.toSql()).join(", ")
 
     sql += selectCols + " "
 
-    const fromTableName = state.fromTable![tbl]
-    const fromTableAbr = state.tableMap.get(fromTableName)
-    const fromClause = ` from ${fromTableName} ${fromTableAbr} `
+    const fromClause = ` from ${state.fromTable.toSql()} `
 
     sql += fromClause
 
     state.joins.forEach(join => {
-      const joinTableName = join.table[tbl]
-      const joinAbbr = state.tableMap.get(joinTableName)
-      const onClause = ` on ${this.colToStr(join.onLeft)} = ${this.colToStr(
-        join.onRight
-      )} `
-      sql += ` ${join.type} join ${joinTableName} ${joinAbbr} ${onClause} `
+      const onClause = ` on ${join.cond.toSql()} `
+      sql += ` ${join.type} join ${join.table.toSql()} ${onClause} `
     })
 
     return sql
-  }
-
-  colToStr(colInfo: ColInfo): string {
-    const colTable = this.state.tableMap.get(colInfo[tbl])
-    const colStr = `${colTable}.${colInfo[col]} `
-    return colStr
   }
 }
 

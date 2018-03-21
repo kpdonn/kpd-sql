@@ -40,13 +40,5 @@ const query = select()
   .from(Book)
   .leftJoin(Author, Book.id.eq(Author.id))
   .columns([Book.id, Author.name])
-  .whereSub(subSelect =>
-    Book.id.in(
-      subSelect
-        .from(AuthorA)
-        .columns([AuthorA.id])
-        .where(AuthorA.name.eq(Book.title))
-    )
-  )
-  .execute()
+  .toSql()
 console.log(query)

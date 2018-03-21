@@ -19,6 +19,7 @@ export interface ColInfo<
   [tbl]: TN
   [col]: CN
   as: AsCol<TN, Type>
+  toSql(): string
 }
 
 export type AsCol<TN extends string, Type extends t.Any> = <NN extends string>(
@@ -37,6 +38,7 @@ export type Table<
   [tbl]: TN
   [tblAs]: string extends AsName ? TN : AsName
   as<NN extends string>(asName: NN): Table<TN, C, NN>
+  toSql(): string
 } & TransformInCol<string extends AsName ? TN : AsName, C>
 
 export function table<N extends string, C extends InCol, AN extends string>({
@@ -57,37 +59,81 @@ export function table<N extends string, C extends InCol, AN extends string>({
         columns,
         asName: newName
       })
+    },
+    toSql(): string {
+      return `${name} ${asName}`
     }
   }
 
   Object.keys(columns).forEach(colName => {
-    result[colName] = colInfo(columns, colName, asName)
+    result[colName] = new ColInfoImpl(colName, columns[colName].type, asName)
   })
 
   return result
 }
 
-function colInfo(
-  columns: any,
-  colName: string,
-  tblName: string,
-  colAsName: string = colName
-): any {
-  return {
-    [tbl]: tblName,
-    [col]: colAsName,
-    [ty]: columns[colName].type,
-    as<NN extends string>(newName: NN): ColInfo {
-      return colInfo(columns, colName, tblName, newName)
-    }
+export class ColInfoImpl {
+  [tbl]: string;
+  [col]: string;
+  [ty]: t.Any
+
+  dbColName: string
+
+  constructor(
+    colName: string,
+    type: t.Any,
+    tblName: string,
+    colAsName: string = colName
+  ) {
+    this[tbl] = tblName
+    this[col] = colAsName
+    this[ty] = type
+    this.dbColName = colName
+  }
+
+  toSql(): string {
+    return `${this[tbl]}.${this.dbColName} as ${this[col]}`
+  }
+
+  as<NN extends string>(newName: NN): ColInfoImpl {
+    return new ColInfoImpl(this.dbColName, this[ty], this[tbl], newName)
+  }
+
+  eq(col2: ColInfo | any): any {
+    return new ConditionImpl(this as any, "=", col2)
   }
 }
+
+export class ConditionImpl {
+  left: string
+  op: string
+  right: string
+
+  constructor(col1: ColInfo, op: string, col2: ColInfo | string | number | boolean) {
+    this.left = `${col1[tbl]}.${col1[col]}`
+    this.op = op
+    if (typeof col2 === "string") {
+      this.right = `'${col2}'`
+    } else if (typeof col2 === "number" || typeof col2 === "boolean") {
+      this.right = `${col2}`
+    } else {
+      this.right = `${col2[tbl]}.${col2[col]}`
+    }
+  }
+
+  toSql(): string {
+    return `${this.left} ${this.op} ${this.right}`
+  }
+}
+
 export type Literal<T extends string> = string extends T ? never : T
 export interface Condition<TblNames extends string> {
   [condTbls]: TblNames
 
   and<C extends Condition<any>>(cond: C): Condition<TblNames | C[condTblsSym]>
   or<C extends Condition<any>>(cond: C): Condition<TblNames | C[condTblsSym]>
+
+  toSql(): string
 }
 
 export type Comparisons<Col1Tbl extends string, Col1Type extends t.Any> = {
