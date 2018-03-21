@@ -5,10 +5,7 @@ import { SQLExecute, SQLReady } from "./kpdSql"
 export declare const condTbls: unique symbol
 export type condTblsSym = typeof condTbls
 
-export type InCol<CN extends string = string, Type extends t.Any = t.Mixed> = Record<
-  CN,
-  { type: Type }
->
+export type InCol = { type: t.Any; dbName?: string }
 
 export interface ColInfo<
   TN extends string = string,
@@ -26,13 +23,18 @@ export type AsCol<TN extends string, Type extends t.Any> = <NN extends string>(
   newName: NN
 ) => ColInfo<TN, Type, NN>
 
-export type TransformInCol<TN extends string, C extends InCol> = {
-  [K in keyof C]: ColInfo<TN, C[K]["type"], K>
+export type LiteralOr<
+  T extends undefined | string,
+  D extends string
+> = T extends undefined ? D : string extends T ? D : T
+
+export type TransformInCol<TN extends string, C extends Record<string, InCol>> = {
+  [K in keyof C]: ColInfo<TN, C[K]["type"], LiteralOr<C[K]["dbName"], K>>
 }
 
 export type Table<
   TN extends string = string,
-  C extends InCol = {},
+  C extends Record<string, InCol> = {},
   AsName extends string = TN
 > = {
   [tbl]: TN
@@ -41,7 +43,13 @@ export type Table<
   toSql(): string
 } & TransformInCol<string extends AsName ? TN : AsName, C>
 
-export function table<N extends string, C extends InCol, AN extends string>({
+export function table<
+  N extends string,
+  C extends {
+    [K in keyof C]: { [P in keyof C[K]]: P extends keyof InCol ? C[K][P] : never } & InCol
+  },
+  AN extends string
+>({
   name,
   columns,
   asName = name
@@ -66,7 +74,11 @@ export function table<N extends string, C extends InCol, AN extends string>({
   }
 
   Object.keys(columns).forEach(colName => {
-    result[colName] = new ColInfoImpl(colName, columns[colName].type, asName)
+    result[colName] = new ColInfoImpl(
+      (columns as any)[colName].dbName || colName,
+      (columns as any)[colName].type,
+      asName
+    )
   })
 
   return result
