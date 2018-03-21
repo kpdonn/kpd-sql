@@ -38,7 +38,8 @@ const selectList = tuple([Book.id, Book.title])
 
 const query = select()
   .from(Book)
-  .leftJoin(Author, Book.id, Author.id)
+  .leftJoin(Author, Book.id.eq(Author.id))
+  .leftJoin(Author, Book.id.eq(Author.id))
   .columns([Book.id, Author.name])
   .whereSub(sub =>
     Book.id.in(

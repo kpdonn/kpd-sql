@@ -1,5 +1,5 @@
 import * as t from "io-ts"
-import { tblSym, colSym, tySym, col, ty } from "./implementation"
+import { tblSym, colSym, tySym, col, ty, tblAsSym, tblAs, tbl } from "./implementation"
 import { Table, ColInfo, Condition, Literal } from "./table"
 
 export type ArrayKeys = keyof any[]
@@ -36,7 +36,7 @@ export interface SQLFrom<
   OptTables extends string = never,
   Cols = {}
 > {
-  from<T extends Table>(table: T): SQLJoin<Tables | T[tblSym], OptTables, Cols>
+  from<T extends Table>(table: T): SQLJoin<Tables | T[tblAsSym], OptTables, Cols>
 }
 
 export type GCol<C extends ColInfo> = C
@@ -74,23 +74,24 @@ export interface SQLSelectAndWhere<RT extends string, OT extends string, Cols>
   extends SQLColumns<RT, OT, Cols>,
     SQLWhere<RT, OT, Cols> {}
 
+export type NoDupTable<T extends Table, TableNames extends string> = {
+  [tbl]: T[tblAsSym] extends TableNames ? never : string
+}
 export interface SQLJoin<
   RT extends string,
   OT extends string,
   Cols,
   TblNames extends string = Literal<RT> | Literal<OT>
 > extends SQLColumns<RT, OT, Cols> {
-  join<T extends Table, LCol extends ColInfo<TblNames>>(
+  join<T extends Table & NoDupTable<T, TblNames>, LCol extends ColInfo<TblNames>>(
     table: T,
-    left: LCol,
-    right: ColInfo<T[tblSym], LCol[tySym]>
-  ): SQLJoin<RT | T[tblSym], OT, Cols>
+    cond: Condition<TblNames | T[tblAsSym]>
+  ): SQLJoin<RT | T[tblAsSym], OT, Cols>
 
-  leftJoin<T extends Table, LCol extends ColInfo<TblNames>>(
+  leftJoin<T extends Table & NoDupTable<T, TblNames>, LCol extends ColInfo<TblNames>>(
     table: T,
-    left: LCol,
-    right: ColInfo<T[tblSym], LCol[tySym]>
-  ): SQLJoin<RT, OT | T[tblSym], Cols>
+    cond: Condition<TblNames | T[tblAsSym]>
+  ): SQLJoin<RT, OT | T[tblAsSym], Cols>
 }
 
 export interface SQLExecute<RT extends string, OT extends string, Cols>

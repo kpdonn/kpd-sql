@@ -1,5 +1,5 @@
 import * as t from "io-ts"
-import { ty, tbl, col, tySym, tblSym } from "./implementation"
+import { ty, tbl, col, tySym, tblSym, tblAs } from "./implementation"
 import { SQLExecute, SQLReady } from "./kpdSql"
 
 export declare const condTbls: unique symbol
@@ -35,17 +35,20 @@ export type TransformInCol<TN extends string, C extends InCol> = {
   [K in keyof C]: OutCol<TN, C[K]["type"], K>
 }
 
-export type Table<TN extends string = string> = {
+export type Table<
+  TN extends string = string,
+  C extends InCol = {},
+  AsName extends string = TN
+> = {
   [tbl]: TN
-}
-
-export type TableOut<TN extends string, C extends InCol> = Table<TN> &
-  TransformInCol<TN, C>
+  [tblAs]: AsName
+  as<NN extends string>(asName: NN): Table<TN, C, NN>
+} & TransformInCol<AsName, C>
 
 export function table<N extends string, C extends InCol>(arg: {
   name: N
   columns: C
-}): TableOut<N, C> {
+}): Table<N, C> {
   const result: any = { [tbl]: arg.name }
 
   Object.keys(arg.columns).forEach(colName => {
@@ -90,5 +93,3 @@ const Book = table({
     authorId: { type: t.number }
   }
 })
-
-const comp = Book.id

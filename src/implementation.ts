@@ -4,12 +4,14 @@ import * as Immutable from "immutable"
 import { Table, ColInfo } from "./table"
 
 export const tbl: unique symbol = Symbol("tableName")
+export const tblAs: unique symbol = Symbol("tableAs")
 export const col: unique symbol = Symbol("columnName")
 export const ty: unique symbol = Symbol("typeSymbol")
 
 export type tblSym = typeof tbl
 export type colSym = typeof col
 export type tySym = typeof ty
+export type tblAsSym = typeof tblAs
 
 interface Join {
   type: "inner" | "left"
