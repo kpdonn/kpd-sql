@@ -33,6 +33,8 @@ const Other = table({
   }
 })
 
+type Tuple<T = any> = ArrayLike<T> & { "0"?: T }
+
 const author23 = Author.id.eq(23)
 
 const selectList = tuple([Book.id, Book.title])
