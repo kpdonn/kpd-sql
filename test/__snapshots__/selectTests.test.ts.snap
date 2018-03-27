@@ -2,11 +2,11 @@
 
 exports[`Select query tests select pets seen dr Ortega 1`] = `
 "Select
-  pet.id as id,
-  pet.name as name,
-  pet.birth_date as birth_date,
-  pet.owner_id as owner_id,
-  pet.type_id as type_id
+  pet.id as \\"id\\",
+  pet.name as \\"name\\",
+  pet.birth_date as \\"birthDate\\",
+  pet.owner_id as \\"ownerId\\",
+  pet.type_id as \\"typeId\\"
 from
   pet pet
   inner join visit visit on pet.id = visit.pet_id
@@ -18,18 +18,18 @@ where
 exports[`Select query tests select pets seen dr Ortega 2`] = `
 Array [
   anonymous {
-    "birth_date": 1995-09-04T05:00:00.000Z,
+    "birthDate": 1995-09-04T05:00:00.000Z,
     "id": 8,
     "name": "Max",
-    "owner_id": 6,
-    "type_id": 1,
+    "ownerId": 6,
+    "typeId": 1,
   },
   anonymous {
-    "birth_date": 1995-09-04T05:00:00.000Z,
+    "birthDate": 1995-09-04T05:00:00.000Z,
     "id": 7,
     "name": "Samantha",
-    "owner_id": 6,
-    "type_id": 1,
+    "ownerId": 6,
+    "typeId": 1,
   },
 ]
 `;

@@ -1,5 +1,5 @@
 import * as t from "io-ts"
-import { ty, tbl, col, tySym, tblSym, tblAs } from "./implementation"
+import { ty, tbl, col, tySym, tblSym, tblAs, colAs } from "./implementation"
 import { SQLExecute, SQLReady } from "./kpdSql"
 
 export declare const condTbls: unique symbol
@@ -10,18 +10,22 @@ export type InCol = { type: t.Any; dbName?: string }
 export interface ColInfo<
   TN extends string = string,
   Type extends t.Any = t.Mixed,
-  CN extends string = string
+  CN extends string = string,
+  CAS extends string = string
 > extends Comparisons<TN, Type> {
   [ty]: Type
   [tbl]: TN
   [col]: CN
-  as: AsCol<TN, Type>
+  [colAs]: CAS
+  as: AsCol<TN, Type, CN>
   toSql(): string
 }
 
-export type AsCol<TN extends string, Type extends t.Any> = <NN extends string>(
+export type AsCol<TN extends string, Type extends t.Any, CN extends string> = <
+  NN extends string
+>(
   newName: NN
-) => ColInfo<TN, Type, NN>
+) => ColInfo<TN, Type, CN, NN>
 
 export type LiteralOr<
   T extends undefined | string,
@@ -29,7 +33,7 @@ export type LiteralOr<
 > = T extends undefined ? D : string extends T ? D : T
 
 export type TransformInCol<TN extends string, C extends Record<string, InCol>> = {
-  [K in keyof C]: ColInfo<TN, C[K]["type"], LiteralOr<C[K]["dbName"], K>>
+  [K in keyof C]: ColInfo<TN, C[K]["type"], LiteralOr<C[K]["dbName"], K>, K>
 }
 
 export type Table<
@@ -77,7 +81,8 @@ export function table<
     result[colName] = new ColInfoImpl(
       (columns as any)[colName].dbName || colName,
       (columns as any)[colName].type,
-      asName
+      asName,
+      colName
     )
   })
 
@@ -87,9 +92,9 @@ export function table<
 export class ColInfoImpl {
   [tbl]: string;
   [col]: string;
-  [ty]: t.Any
+  [colAs]: string;
 
-  dbColName: string
+  [ty]: t.Any
 
   constructor(
     colName: string,
@@ -98,17 +103,17 @@ export class ColInfoImpl {
     colAsName: string = colName
   ) {
     this[tbl] = tblName
-    this[col] = colAsName
+    this[col] = colName
     this[ty] = type
-    this.dbColName = colName
+    this[colAs] = colAsName
   }
 
   toSql(): string {
-    return `${this[tbl]}.${this.dbColName} as ${this[col]}`
+    return `${this[tbl]}.${this[col]} as "${this[colAs]}"`
   }
 
   as<NN extends string>(newName: NN): ColInfoImpl {
-    return new ColInfoImpl(this.dbColName, this[ty], this[tbl], newName)
+    return new ColInfoImpl(this[col], this[ty], this[tbl], newName)
   }
 
   eq(col2: ColInfo | any): any {

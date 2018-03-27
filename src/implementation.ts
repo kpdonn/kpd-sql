@@ -7,10 +7,12 @@ import { Pool } from "pg"
 export const tbl: unique symbol = Symbol("tableName")
 export const tblAs: unique symbol = Symbol("tableAs")
 export const col: unique symbol = Symbol("columnName")
+export const colAs: unique symbol = Symbol("columnAs")
 export const ty: unique symbol = Symbol("typeSymbol")
 
 export type tblSym = typeof tbl
 export type colSym = typeof col
+export type colAsSym = typeof colAs
 export type tySym = typeof ty
 export type tblAsSym = typeof tblAs
 

@@ -1,5 +1,16 @@
 import * as t from "io-ts"
-import { tblSym, colSym, tySym, col, ty, tblAsSym, tblAs, tbl } from "./implementation"
+import {
+  tblSym,
+  colSym,
+  tySym,
+  col,
+  ty,
+  tblAsSym,
+  tblAs,
+  tbl,
+  colAsSym,
+  colAs
+} from "./implementation"
 import { Table, ColInfo, Condition, Literal } from "./table"
 
 export type ArrayKeys = keyof any[]
@@ -18,14 +29,14 @@ export type Grab<
   TblNames extends string
 > = [TabCols<ColArr, ArrInd, TblNames>] extends [never]
   ? {}
-  : GetVal<ColArr[TabCols<ColArr, ArrInd, TblNames>][colSym], ColArr>
+  : GetVal<ColArr[TabCols<ColArr, ArrInd, TblNames>][colAsSym], ColArr>
 
 export type GetVal<
   ColNames extends string,
   ColArr extends { [index: string]: ColInfo }
 > = { [K in ColNames]: FilterVal<K, ColArr[keyof ColArr]> }
 
-export type TypeCol<N extends string, U extends t.Any> = { [col]: N; [ty]: U }
+export type TypeCol<N extends string, U extends t.Any> = { [colAs]: N; [ty]: U }
 
 export type FilterVal<N extends string, T extends ColInfo> = T extends TypeCol<N, infer U>
   ? t.TypeOf<U>
@@ -52,8 +63,8 @@ export interface SQLColumns<
   columns<
     C extends {
       [K in TupleKeys<C>]: C[K] extends GCol<infer U>
-        ? (U[colSym] extends (
-            | (C[Exclude<TupleKeys<C>, K>] extends GCol<infer X> ? X[colSym] : never)
+        ? (U[colAsSym] extends (
+            | (C[Exclude<TupleKeys<C>, K>] extends GCol<infer X> ? X[colAsSym] : never)
             | keyof Cols)
             ? ([Exclude<TupleKeys<C>, K> | keyof Cols] extends [never]
                 ? ColInfo<TblNames>
