@@ -45,11 +45,12 @@ export type FilterVal<N extends string, T extends ColInfo> = T extends TypeCol<N
 export interface SQLFrom<
   Tables extends string = never,
   OptTables extends string = never,
-  Cols = {}
+  Cols = {},
+  P = {}
 > {
   from<T extends Table & NoDupTable<T, Tables>>(
     table: T
-  ): SQLJoin<Tables | T[tblAsSym], OptTables, Cols>
+  ): SQLJoin<Tables | T[tblAsSym], OptTables, Cols, P>
 }
 
 export type GCol<C extends ColInfo> = C
@@ -58,6 +59,7 @@ export interface SQLColumns<
   RT extends string,
   OT extends string,
   Cols = {},
+  P = {},
   TblNames extends string = Literal<RT> | Literal<OT>
 > {
   columns<
@@ -79,7 +81,8 @@ export interface SQLColumns<
     OT,
     Cols &
       Grab<C, TupleKeys<C>, Literal<RT>> &
-      EmptyIfNone<Partial<Grab<C, TupleKeys<C>, Literal<OT>>>>
+      EmptyIfNone<Partial<Grab<C, TupleKeys<C>, Literal<OT>>>>,
+    P
   >
 }
 
@@ -87,9 +90,9 @@ export type EmptyIfNone<T> = string extends keyof T
   ? {}
   : [keyof T] extends [never] ? {} : T
 
-export interface SQLSelectAndWhere<RT extends string, OT extends string, Cols>
-  extends SQLColumns<RT, OT, Cols>,
-    SQLWhere<RT, OT, Cols> {}
+export interface SQLSelectAndWhere<RT extends string, OT extends string, Cols, P = {}>
+  extends SQLColumns<RT, OT, Cols, P>,
+    SQLWhere<RT, OT, Cols, P> {}
 
 export type NoDupTable<T extends Table, TableNames extends string> = {
   [tbl]: T[tblAsSym] extends TableNames ? never : string
@@ -98,22 +101,27 @@ export interface SQLJoin<
   RT extends string,
   OT extends string,
   Cols,
+  P = {},
   TblNames extends string = Literal<RT> | Literal<OT>
-> extends SQLColumns<RT, OT, Cols> {
+> extends SQLColumns<RT, OT, Cols, P> {
   join<T extends Table & NoDupTable<T, TblNames>, LCol extends ColInfo<TblNames>>(
     table: T,
     cond: Condition<TblNames | T[tblAsSym]>
-  ): SQLJoin<RT | T[tblAsSym], OT, Cols>
+  ): SQLJoin<RT | T[tblAsSym], OT, Cols, P>
 
   leftJoin<T extends Table & NoDupTable<T, TblNames>, LCol extends ColInfo<TblNames>>(
     table: T,
     cond: Condition<TblNames | T[tblAsSym]>
-  ): SQLJoin<RT, OT | T[tblAsSym], Cols>
+  ): SQLJoin<RT, OT | T[tblAsSym], Cols, P>
 }
 
-export interface SQLExecute<RT extends string, OT extends string, Cols>
+export type ExecuteArgs<P, Cols> = {} extends P
+  ? () => Promise<Cols[]>
+  : (args: P) => Promise<Cols[]>
+
+export interface SQLExecute<RT extends string, OT extends string, Cols, P = {}>
   extends SQLReady<Cols> {
-  execute(): Promise<Cols[]>
+  execute: ExecuteArgs<P, Cols>
   toSql(): string
 }
 
@@ -126,11 +134,14 @@ export interface SQLWhere<
   RT extends string,
   OT extends string,
   Cols,
+  P = {},
   TblNames extends string = Literal<RT> | Literal<OT>
-> extends SQLExecute<RT, OT, Cols> {
-  where<CTbles extends TblNames>(cond: Condition<CTbles>): SQLWhere<RT, OT, Cols>
+> extends SQLExecute<RT, OT, Cols, P> {
+  where<CTbles extends TblNames, SP>(
+    cond: Condition<CTbles, SP>
+  ): SQLWhere<RT, OT, Cols, P & SP>
 
-  whereSub<CTbles extends TblNames>(
-    cond: (subSelect: SQLFrom<RT, OT, {}>) => Condition<CTbles>
-  ): SQLWhere<RT, OT, Cols>
+  whereSub<CTbles extends TblNames, SP>(
+    cond: (subSelect: SQLFrom<RT, OT, {}>) => Condition<CTbles, SP>
+  ): SQLWhere<RT, OT, Cols, P & SP>
 }

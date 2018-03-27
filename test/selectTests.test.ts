@@ -1,6 +1,6 @@
 import { Pool, PoolClient } from "pg"
 import { initializePool, select } from "../src/implementation"
-import { table, column } from "../src/table"
+import { table, column, param } from "../src/table"
 import * as t from "io-ts"
 
 import * as fs from "fs"
@@ -21,12 +21,12 @@ describe("Select query tests", () => {
       .join(Visit, Pet.id.eq(Visit.petId))
       .join(Vet, Vet.id.eq(Visit.vetId))
       .columns([Pet.id, Pet.name, Pet.birthDate, Pet.ownerId, Pet.typeId])
-      .where(Vet.lastName.eq("Ortega"))
+      .where(Vet.lastName.eq(param("vetLastName")))
 
     const sql = sqlFormatter.format(query.toSql())
     expect(sql).toMatchSnapshot()
 
-    const results = await query.execute()
+    const results = await query.execute({ vetLastName: "Ortega" })
 
     expect(results).toHaveLength(2)
 

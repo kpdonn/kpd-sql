@@ -144,21 +144,35 @@ export class ConditionImpl {
 }
 
 export type Literal<T extends string> = string extends T ? never : T
-export interface Condition<TblNames extends string> {
+export interface Condition<TblNames extends string, P = {}> {
   [condTbls]: TblNames
 
-  and<C extends Condition<any>>(cond: C): Condition<TblNames | C[condTblsSym]>
-  or<C extends Condition<any>>(cond: C): Condition<TblNames | C[condTblsSym]>
+  and<SP, C extends Condition<any, SP>>(
+    cond: C
+  ): Condition<TblNames | C[condTblsSym], P & SP>
+  or<SP, C extends Condition<any, SP>>(
+    cond: C
+  ): Condition<TblNames | C[condTblsSym], P & SP>
 
   toSql(): string
+}
+
+export type SqlParamName<N extends string> = {
+  sqlParam: N
+}
+
+export type SqlParam<N extends string, T> = string extends N ? {} : Record<N, T>
+
+export function param<N extends string>(param: N): SqlParamName<N> {
+  return { sqlParam: param }
 }
 
 export type Comparisons<Col1Tbl extends string, Col1Type extends t.Any> = {
   not: Comparisons<Col1Tbl, Col1Type>
 
-  eq<Col2 extends ColInfo<any, Col1Type>>(
-    col2: Col2 | t.TypeOf<Col1Type>
-  ): Condition<Col1Tbl | Literal<Col2[tblSym]>>
+  eq<Col2 extends ColInfo<any, Col1Type>, SPN extends string>(
+    col2: Col2 | t.TypeOf<Col1Type> | SqlParamName<SPN>
+  ): Condition<Col1Tbl | Literal<Col2[tblSym]>, SqlParam<SPN, t.TypeOf<Col1Type>>>
 
   isNull(): Condition<Col1Tbl>
 
