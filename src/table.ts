@@ -172,3 +172,7 @@ const Book = table({
     authorId: { type: t.number }
   }
 })
+
+export function column<T extends t.Any>(type: T, dbName?: string) {
+  return { type, dbName }
+}

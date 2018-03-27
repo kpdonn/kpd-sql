@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Select query tests select pets seen dr Ortega 1`] = `
+"Select
+  pet.id as id,
+  pet.name as name,
+  pet.birth_date as birth_date,
+  pet.owner_id as owner_id,
+  pet.type_id as type_id
+from
+  pet pet
+  inner join visit visit on pet.id = visit.pet_id
+  inner join vet vet on vet.id = visit.vet_id
+where
+  vet.last_name = 'Ortega'"
+`;
+
+exports[`Select query tests select pets seen dr Ortega 2`] = `
+Array [
+  anonymous {
+    "birth_date": 1995-09-04T05:00:00.000Z,
+    "id": 8,
+    "name": "Max",
+    "owner_id": 6,
+    "type_id": 1,
+  },
+  anonymous {
+    "birth_date": 1995-09-04T05:00:00.000Z,
+    "id": 7,
+    "name": "Samantha",
+    "owner_id": 6,
+    "type_id": 1,
+  },
+]
+`;

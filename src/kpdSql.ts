@@ -102,7 +102,7 @@ export interface SQLJoin<
 
 export interface SQLExecute<RT extends string, OT extends string, Cols>
   extends SQLReady<Cols> {
-  execute(): Cols[]
+  execute(): Promise<Cols[]>
   toSql(): string
 }
 
