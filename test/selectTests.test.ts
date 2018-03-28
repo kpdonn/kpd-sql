@@ -11,7 +11,7 @@ import * as sqlFormatter from "sql-formatter"
 const connectionString = "postgresql://localhost:5432/sqltest"
 
 const pool = new Pool({
-  connectionString
+  connectionString,
 })
 
 describe("Select query tests", () => {
@@ -50,32 +50,32 @@ const Vet = table({
   columns: {
     id: column(t.number),
     firstName: column(t.string, "first_name"),
-    lastName: column(t.string, "last_name")
-  }
+    lastName: column(t.string, "last_name"),
+  },
 })
 
 const Specialty = table({
   name: "specialty",
   columns: {
     id: column(t.number),
-    name: column(t.string)
-  }
+    name: column(t.string),
+  },
 })
 
 const VetSpecialty = table({
   name: "vet_specialty",
   columns: {
     vetId: column(t.number, "vet_id"),
-    specialtyId: column(t.number, "specialty_id")
-  }
+    specialtyId: column(t.number, "specialty_id"),
+  },
 })
 
 const Type = table({
   name: "type",
   columns: {
     id: column(t.number),
-    name: column(t.string)
-  }
+    name: column(t.string),
+  },
 })
 
 const Owner = table({
@@ -86,8 +86,8 @@ const Owner = table({
     lastName: column(t.string, "last_name"),
     address: column(t.string),
     city: column(t.string),
-    telephone: column(t.string)
-  }
+    telephone: column(t.string),
+  },
 })
 
 const Pet = table({
@@ -97,8 +97,8 @@ const Pet = table({
     name: column(t.string),
     birthDate: column(t.string, "birth_date"),
     typeId: column(t.number, "type_id"),
-    ownerId: column(t.number, "owner_id")
-  }
+    ownerId: column(t.number, "owner_id"),
+  },
 })
 
 const Visit = table({
@@ -108,6 +108,6 @@ const Visit = table({
     petId: column(t.number, "pet_id"),
     vetId: column(t.number, "vet_id"),
     visitDate: column(t.string, "visit_date"),
-    description: column(t.string)
-  }
+    description: column(t.string),
+  },
 })

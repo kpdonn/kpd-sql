@@ -9,7 +9,7 @@ import {
   tblAs,
   tbl,
   colAsSym,
-  colAs
+  colAs,
 } from "./implementation"
 import { Table, ColInfo, Condition, Literal } from "./table"
 

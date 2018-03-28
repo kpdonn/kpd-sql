@@ -56,7 +56,7 @@ export function table<
 >({
   name,
   columns,
-  asName = name
+  asName = name,
 }: {
   name: N
   columns: C
@@ -69,12 +69,12 @@ export function table<
       return table({
         name,
         columns,
-        asName: newName
+        asName: newName,
       })
     },
     toSql(): string {
       return `${name} ${asName}`
-    }
+    },
   }
 
   Object.keys(columns).forEach(colName => {
@@ -188,8 +188,8 @@ const Book = table({
     title: { type: t.string },
     year: { type: t.number },
     pages: { type: t.number },
-    authorId: { type: t.number }
-  }
+    authorId: { type: t.number },
+  },
 })
 
 export function column<T extends t.Any>(type: T, dbName?: string) {

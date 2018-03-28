@@ -17,13 +17,13 @@ const tscOptions = [
   "false",
   "--skipLibCheck",
   "--allowSyntheticDefaultImports",
-  "--noErrorTruncation"
+  "--noErrorTruncation",
 ]
 
 it("Verify output of no-errors matches expected", () => {
   const { stdout, stderr, status } = spawnSync("node_modules/typescript/bin/tsc", [
     "typings-tests/no-errors.ts",
-    ...tscOptions
+    ...tscOptions,
   ])
 
   expect(stdout.toString()).toMatchSnapshot()

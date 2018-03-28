@@ -6,9 +6,7 @@
   "main": "dist/kpd-sql.umd.js",
   "module": "dist/kpd-sql.es5.js",
   "typings": "dist/types/kpd-sql.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "author": "Kevin Donnelly <kdonnelly08@gmail.com>",
   "repository": {
     "type": "git",
@@ -19,7 +17,7 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts' 'typings-tests/**/*.ts'",
     "prebuild": "rimraf dist",
     "build": "tsc && rollup -c rollup.config.js && rimraf compiled",
     "start": "tsc -w & rollup -c rollup.config.js -w",
@@ -29,9 +27,15 @@
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "{src,test}/**/*.{ts,tsx}": [
+    "{src,test,typings-tests}/**/*.{ts,tsx}": [
       "git diff-files --quiet --exit-code",
-      "prettier --write --no-semi",
+      "prettier --write",
+      "tslint",
+      "git add"
+    ],
+    "**/*.{json,css,js}": [
+      "git diff-files --quiet --exit-code",
+      "prettier --write",
       "git add"
     ]
   },
@@ -40,15 +44,8 @@
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleDirectories": [
-      "src",
-      "node_modules"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ]
+    "moduleDirectories": ["src", "node_modules"],
+    "moduleFileExtensions": ["ts", "tsx", "js"]
   },
   "devDependencies": {
     "@types/jest": "^22.0.0",

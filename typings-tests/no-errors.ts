@@ -11,8 +11,8 @@ const Book = table({
     title: { type: t.string },
     year: { type: t.number },
     pages: { type: t.number },
-    authorId: { type: t.number }
-  }
+    authorId: { type: t.number },
+  },
 })
 
 const Author = table({
@@ -20,8 +20,8 @@ const Author = table({
   columns: {
     id: { type: t.number },
     name: { type: t.string },
-    age: { type: t.number }
-  }
+    age: { type: t.number },
+  },
 })
 
 const Other = table({
@@ -29,8 +29,8 @@ const Other = table({
   columns: {
     id: { type: t.number },
     otherName: { type: t.string },
-    otherField: { type: t.number }
-  }
+    otherField: { type: t.number },
+  },
 })
 
 type Tuple<T = any> = ArrayLike<T> & { "0"?: T }

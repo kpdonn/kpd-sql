@@ -32,7 +32,7 @@ const BuilderState = Immutable.Record({
   fromTable: (undefined as any) as Table,
   joins: Immutable.List<Join>(),
   columns: Immutable.List(),
-  wheres: Immutable.List()
+  wheres: Immutable.List(),
 })
 class SqlBuilder {
   constructor(private readonly state = BuilderState()) {}
