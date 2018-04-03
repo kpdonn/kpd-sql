@@ -70,7 +70,7 @@ export interface SQLColumns<
 > {
   columns<
     C extends {
-      [K in keyof T]: T[K][colSym] extends (
+      [K in keyof T]: T[K][colAsSym] extends (
         | (SafeInd<T[Exclude<keyof T, K>], colAsSym>)
         | keyof Cols)
         ? NoDuplicates<SafeInd<T[K], colAsSym>>
