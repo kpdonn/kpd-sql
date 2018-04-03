@@ -29,7 +29,8 @@ export class Table<
     this[tblAs] = asName
 
     Object.keys(_columns).forEach(colName => {
-      ;(this as any)[colName] = new Column(
+      const anyThis: any = this
+      anyThis[colName] = new Column(
         asName,
         _columns[colName].dbName || colName,
         _columns[colName].type,
@@ -89,6 +90,7 @@ export type cps = typeof cp
 export abstract class Condition<CT extends string = string, P = {}> {
   readonly [condTbls]: CT;
   readonly [cp]: P
+  abstract readonly kind: Literal<ConditionType["kind"]>
 
   and<C extends Condition>(cond: C): Condition<CT | C[cts], P & C[cps]> {
     return new AndCondition(this, cond)
@@ -99,28 +101,33 @@ export abstract class Condition<CT extends string = string, P = {}> {
 }
 
 export class AndCondition<CT extends string = string, P = {}> extends Condition<CT, P> {
-  constructor(private readonly left: Condition, private readonly right: Condition) {
+  readonly kind = "and"
+  constructor(readonly left: Condition, readonly right: Condition) {
     super()
   }
 }
 
 export class OrCondition<CT extends string = string, P = {}> extends Condition<CT, P> {
-  constructor(private readonly left: Condition, private readonly right: Condition) {
+  readonly kind = "or"
+
+  constructor(readonly left: Condition, readonly right: Condition) {
     super()
   }
 }
 
 export class EqCondition<
-  Col1 extends Column,
-  Col2 extends Column<string, Col1[tySym]>,
-  SPN extends string
+  Col1 extends Column = Column,
+  Col2 extends Column<string, Col1[tySym]> = never,
+  SPN extends string = never
 > extends Condition<
   Col1[tblAsSym] | Literal<Col2[tblAsSym]>,
   SqlParam<SPN, ColType<Col1>>
 > {
+  readonly kind = "eq"
+
   constructor(
-    private readonly left: Col1,
-    private readonly right: Col2 | ColType<Col1> | SqlParamName<SPN>
+    readonly left: Col1,
+    readonly right: Col2 | ColType<Col1> | SqlParamName<SPN>
   ) {
     super()
   }
@@ -154,3 +161,6 @@ const Vet = table({
   },
 })
 const testcond = Book.id.eq(Book.authorId).or(Vet.firstName.eq(Book.title))
+
+export type ConditionType = EqCondition | AndCondition | OrCondition
+declare const unknownCond: ConditionType
