@@ -16,6 +16,7 @@ import { Table, ColInfo, Condition, Literal } from "./table"
 export type ArrayKeys = keyof any[]
 
 export type TupleKeys<T> = Exclude<keyof T, ArrayKeys>
+export type TupleObj<T> = { [K in TupleKeys<T>]: T[K] }
 
 export type TabCols<
   ColArr extends { [index: string]: ColInfo },
@@ -64,16 +65,17 @@ export interface SQLColumns<
 > {
   columns<
     C extends {
-      [K in TupleKeys<C>]: C[K] extends GCol<infer U>
-        ? (U[colAsSym] extends (
-            | (C[Exclude<TupleKeys<C>, K>] extends GCol<infer X> ? X[colAsSym] : never)
-            | keyof Cols)
-            ? ([Exclude<TupleKeys<C>, K> | keyof Cols] extends [never]
-                ? ColInfo<TblNames>
+      [K in keyof T]: T[K] extends ColInfo
+        ? (T[K][colAsSym] extends (
+            | (T[Exclude<keyof T, K>] extends ColInfo
+                ? T[Exclude<keyof T, K>][colAsSym & keyof T[Exclude<keyof T, K>]]
                 : never)
+            | keyof Cols)
+            ? never
             : ColInfo<TblNames>)
         : never
-    } & { "0": any }
+    } & { "0": any },
+    T = TupleObj<C>
   >(
     cols: C
   ): SQLSelectAndWhere<

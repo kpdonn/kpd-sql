@@ -21,11 +21,9 @@ export interface ColInfo<
   toSql(): string
 }
 
-export type AsCol<TN extends string, Type extends t.Any, CN extends string> = <
-  NN extends string
->(
-  newName: NN
-) => ColInfo<TN, Type, CN, NN>
+export interface AsCol<TN extends string, Type extends t.Any, CN extends string> {
+  <NN extends string>(newName: NN): ColInfo<TN, Type, CN, NN>
+}
 
 export type LiteralOr<
   T extends undefined | string,
