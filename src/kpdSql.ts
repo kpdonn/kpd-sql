@@ -61,6 +61,8 @@ export type SafeInd<T, K extends keyof Base, Base = T> = [Extract<T, Base>] exte
   ? never
   : Extract<T, Base>[K]
 
+export type NoDuplicates<T extends string> = { "NO DUPLICATE KEYS ALLOWED": T }
+
 export interface SQLColumns<
   RT extends string,
   OT extends string,
@@ -73,7 +75,7 @@ export interface SQLColumns<
       [K in keyof T]: SafeInd<T[K], colAsSym, ColInfo> extends (
         | (SafeInd<T[Exclude<keyof T, K>], colAsSym, ColInfo>)
         | keyof Cols)
-        ? never
+        ? NoDuplicates<SafeInd<T[K], colAsSym, ColInfo>>
         : ColInfo<TblNames>
     } & { "0": any },
     T = TupleObj<C>
