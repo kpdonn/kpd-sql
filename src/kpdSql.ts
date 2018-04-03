@@ -55,6 +55,11 @@ export interface SQLFrom<
 }
 
 export type GCol<C extends ColInfo> = C
+export type SafeInd<T, K extends keyof Base, Base = T> = [Extract<T, Base>] extends [
+  never
+]
+  ? never
+  : Extract<T, Base>[K]
 
 export interface SQLColumns<
   RT extends string,
@@ -65,15 +70,11 @@ export interface SQLColumns<
 > {
   columns<
     C extends {
-      [K in keyof T]: T[K] extends ColInfo
-        ? (T[K][colAsSym] extends (
-            | (T[Exclude<keyof T, K>] extends ColInfo
-                ? T[Exclude<keyof T, K>][colAsSym & keyof T[Exclude<keyof T, K>]]
-                : never)
-            | keyof Cols)
-            ? never
-            : ColInfo<TblNames>)
-        : never
+      [K in keyof T]: SafeInd<T[K], colAsSym, ColInfo> extends (
+        | (SafeInd<T[Exclude<keyof T, K>], colAsSym, ColInfo>)
+        | keyof Cols)
+        ? never
+        : ColInfo<TblNames>
     } & { "0": any },
     T = TupleObj<C>
   >(
