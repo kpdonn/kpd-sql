@@ -21,7 +21,7 @@ export type TabCols<
   ColArr extends { [index: string]: ColInfo },
   ArrInd extends keyof ColArr,
   TblNames extends string
-> = { [Ind in ArrInd]: ColArr[Ind][tblSym] extends TblNames ? Ind : never }[ArrInd]
+> = { [Ind in ArrInd]: ColArr[Ind][tblAsSym] extends TblNames ? Ind : never }[ArrInd]
 
 export type Grab<
   ColArr extends { [index: string]: ColInfo },

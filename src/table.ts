@@ -1,5 +1,5 @@
 import * as t from "io-ts"
-import { ty, tbl, col, tySym, tblSym, tblAs, colAs } from "./implementation"
+import { ty, tbl, col, tySym, tblSym, tblAs, colAs, tblAsSym } from "./implementation"
 import { SQLExecute, SQLReady } from "./kpdSql"
 
 export declare const condTbls: unique symbol
@@ -14,11 +14,10 @@ export interface ColInfo<
   CAS extends string = string
 > extends Comparisons<TN, Type> {
   [ty]: Type
-  [tbl]: TN
+  [tblAs]: TN
   [col]: CN
   [colAs]: CAS
   as: AsCol<TN, Type, CN>
-  toSql(): string
 }
 
 export interface AsCol<TN extends string, Type extends t.Any, CN extends string> {
@@ -43,7 +42,7 @@ export type Table<
   [tblAs]: string extends AsName ? TN : AsName
   as<NN extends string>(asName: NN): Table<TN, C, NN>
   toSql(): string
-} & TransformInCol<string extends AsName ? TN : AsName, C>
+} & TransformInCol<LiteralOr<AsName, TN>, C>
 
 export function table<
   N extends string,
@@ -88,7 +87,7 @@ export function table<
 }
 
 export class ColInfoImpl {
-  [tbl]: string;
+  [tblAs]: string;
   [col]: string;
   [colAs]: string;
 
@@ -100,18 +99,18 @@ export class ColInfoImpl {
     tblName: string,
     colAsName: string = colName
   ) {
-    this[tbl] = tblName
+    this[tblAs] = tblName
     this[col] = colName
     this[ty] = type
     this[colAs] = colAsName
   }
 
   toSql(): string {
-    return `${this[tbl]}.${this[col]} as "${this[colAs]}"`
+    return `${this[tblAs]}.${this[col]} as "${this[colAs]}"`
   }
 
   as<NN extends string>(newName: NN): ColInfoImpl {
-    return new ColInfoImpl(this[col], this[ty], this[tbl], newName)
+    return new ColInfoImpl(this[col], this[ty], this[tblAs], newName)
   }
 
   eq(col2: ColInfo | any): any {
@@ -125,14 +124,14 @@ export class ConditionImpl {
   right: string
 
   constructor(col1: ColInfo, op: string, col2: ColInfo | string | number | boolean) {
-    this.left = `${col1[tbl]}.${col1[col]}`
+    this.left = `${col1[tblAs]}.${col1[col]}`
     this.op = op
     if (typeof col2 === "string") {
       this.right = `'${col2}'`
     } else if (typeof col2 === "number" || typeof col2 === "boolean") {
       this.right = `${col2}`
     } else {
-      this.right = `${col2[tbl]}.${col2[col]}`
+      this.right = `${col2[tblAs]}.${col2[col]}`
     }
   }
 
@@ -170,7 +169,7 @@ export type Comparisons<Col1Tbl extends string, Col1Type extends t.Any> = {
 
   eq<Col2 extends ColInfo<any, Col1Type>, SPN extends string>(
     col2: Col2 | t.TypeOf<Col1Type> | SqlParamName<SPN>
-  ): Condition<Col1Tbl | Literal<Col2[tblSym]>, SqlParam<SPN, t.TypeOf<Col1Type>>>
+  ): Condition<Col1Tbl | Literal<Col2[tblAsSym]>, SqlParam<SPN, t.TypeOf<Col1Type>>>
 
   isNull(): Condition<Col1Tbl>
 
