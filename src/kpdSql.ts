@@ -55,9 +55,7 @@ export interface SQLFrom<
 }
 
 export type GCol<C extends ColInfo> = C
-export type SafeInd<T, K extends keyof Base, Base = T> = [Extract<T, Base>] extends [
-  never
-]
+export type SafeInd<T, K extends keyof Base, Base = T> = Extract<T, Base> extends never
   ? never
   : Extract<T, Base>[K]
 
