@@ -85,12 +85,12 @@ export interface SQLJoin<
   P = {},
   TblNames extends string = Literal<RT> | Literal<OT>
 > extends SQLColumns<RT, OT, Cols, P> {
-  join<T extends Table & NoDupTable<T, TblNames>, LCol extends ColInfo<TblNames>>(
+  join<T extends Table & NoDupTable<T, TblNames>>(
     table: T,
     cond: Condition<TblNames | T[tblAsSym]>
   ): SQLJoin<RT | T[tblAsSym], OT, Cols, P>
 
-  leftJoin<T extends Table & NoDupTable<T, TblNames>, LCol extends ColInfo<TblNames>>(
+  leftJoin<T extends Table & NoDupTable<T, TblNames>>(
     table: T,
     cond: Condition<TblNames | T[tblAsSym]>
   ): SQLJoin<RT, OT | T[tblAsSym], Cols, P>
