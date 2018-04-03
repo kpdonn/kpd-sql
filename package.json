@@ -68,7 +68,7 @@
     "tslint": "^5.4.3",
     "tslint-config-prettier": "^1.1.0",
     "tslint-config-standard": "^7.0.0",
-    "typescript": "^2.9.0-dev.20180402"
+    "typescript": "^2.9.0-dev.20180403"
   },
   "dependencies": {
     "immutable": "4.0.0-rc.9",
