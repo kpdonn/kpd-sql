@@ -1,181 +1,127 @@
 import * as t from "io-ts"
-import { ty, tbl, col, tySym, tblSym, tblAs, colAs, tblAsSym } from "./implementation"
 import { SQLExecute, SQLReady } from "./kpdSql"
+import {
+  SqlParamName,
+  InCol,
+  TableWithColumns,
+  tbl,
+  tblAs,
+  colAs,
+  col,
+  ty,
+  tySym,
+  tblAsSym,
+  Literal,
+  SqlParam,
+} from "./utils"
 
-export declare const condTbls: unique symbol
-export type condTblsSym = typeof condTbls
+export class Table<
+  TN extends string,
+  C extends Record<string, InCol>,
+  AsName extends string
+> {
+  readonly [tbl]: TN;
+  readonly [tblAs]: AsName
 
-export type InCol = { type: t.Any; dbName?: string }
+  constructor(name: TN, private _columns: C, asName: AsName) {
+    this[tbl] = name
+    this[tblAs] = asName
 
-export interface ColInfo<
-  TN extends string = string,
-  Type extends t.Any = t.Mixed,
-  CN extends string = string,
-  CAS extends string = string
-> extends Comparisons<TN, Type> {
-  [ty]: Type
-  [tblAs]: TN
-  [col]: CN
-  [colAs]: CAS
-  as: AsCol<TN, Type, CN>
+    Object.keys(_columns).forEach(colName => {
+      ;(this as any)[colName] = new Column(
+        asName,
+        _columns[colName].dbName || colName,
+        _columns[colName].type,
+        colName
+      )
+    })
+  }
+
+  as<NN extends string>(newAsName: NN): TableWithColumns<TN, C, NN> {
+    return new Table(this[tbl], this._columns, newAsName) as TableWithColumns<TN, C, NN>
+  }
 }
-
-export interface AsCol<TN extends string, Type extends t.Any, CN extends string> {
-  <NN extends string>(newName: NN): ColInfo<TN, Type, CN, NN>
-}
-
-export type LiteralOr<
-  T extends undefined | string,
-  D extends string
-> = T extends undefined ? D : string extends T ? D : T
-
-export type TransformInCol<TN extends string, C extends Record<string, InCol>> = {
-  [K in keyof C]: ColInfo<TN, C[K]["type"], LiteralOr<C[K]["dbName"], K>, K>
-}
-
-export type Table<
-  TN extends string = string,
-  C extends Record<string, InCol> = {},
-  AsName extends string = TN
-> = {
-  [tbl]: TN
-  [tblAs]: string extends AsName ? TN : AsName
-  as<NN extends string>(asName: NN): Table<TN, C, NN>
-  toSql(): string
-} & TransformInCol<LiteralOr<AsName, TN>, C>
 
 export function table<
   N extends string,
-  C extends {
-    [K in keyof C]: { [P in keyof C[K]]: P extends keyof InCol ? C[K][P] : never } & InCol
-  },
-  AN extends string
->({
-  name,
-  columns,
-  asName = name,
-}: {
-  name: N
-  columns: C
-  asName?: AN
-}): Table<N, C, AN> {
-  const result: any = {
-    [tbl]: name,
-    [tblAs]: asName,
-    as<NN extends string>(newName: NN): Table<N, C, NN> {
-      return table({
-        name,
-        columns,
-        asName: newName,
-      })
-    },
-    toSql(): string {
-      return `${name} ${asName}`
-    },
-  }
-
-  Object.keys(columns).forEach(colName => {
-    result[colName] = new ColInfoImpl(
-      (columns as any)[colName].dbName || colName,
-      (columns as any)[colName].type,
-      asName,
-      colName
-    )
-  })
-
-  return result
+  C extends { [K in keyof C]: InCol },
+  AN extends string = N
+>(arg: { name: N; columns: C; asName?: AN }): TableWithColumns<N, C, AN> {
+  return new Table(arg.name, arg.columns, arg.asName || arg.name) as any
 }
 
-export class ColInfoImpl {
-  [tblAs]: string;
-  [col]: string;
-  [colAs]: string;
+export class Column<
+  TN extends string = string,
+  TY extends t.Any = t.Mixed,
+  CN extends string = string,
+  CAS extends string = CN
+> {
+  readonly [tblAs]: TN;
+  readonly [col]: CN;
+  readonly [colAs]: CAS;
 
-  [ty]: t.Any
+  readonly [ty]: TY
 
-  constructor(
-    colName: string,
-    type: t.Any,
-    tblName: string,
-    colAsName: string = colName
-  ) {
+  constructor(tblName: TN, colName: CN, type: TY, colAsName: CAS) {
     this[tblAs] = tblName
     this[col] = colName
     this[ty] = type
     this[colAs] = colAsName
   }
 
-  toSql(): string {
-    return `${this[tblAs]}.${this[col]} as "${this[colAs]}"`
+  as<NN extends string>(newName: NN): Column<TN, TY, CN, NN> {
+    return new Column(this[tblAs], this[col], this[ty], newName)
   }
 
-  as<NN extends string>(newName: NN): ColInfoImpl {
-    return new ColInfoImpl(this[col], this[ty], this[tblAs], newName)
-  }
-
-  eq(col2: ColInfo | any): any {
-    return new ConditionImpl(this as any, "=", col2)
+  eq<Col2 extends Column<any, this[tySym]>>(
+    col2: Col2
+  ): Condition<TN | Literal<Col2[tblAsSym]>> {
+    return new EqCondition(this, col2)
   }
 }
 
-export class ConditionImpl {
-  left: string
-  op: string
-  right: string
+export const condTbls: unique symbol = Symbol("conditionTables")
+export type cts = typeof condTbls
+export const cp: unique symbol = Symbol("conditionParams")
+export type cps = typeof cp
 
-  constructor(col1: ColInfo, op: string, col2: ColInfo | string | number | boolean) {
-    this.left = `${col1[tblAs]}.${col1[col]}`
-    this.op = op
-    if (typeof col2 === "string") {
-      this.right = `'${col2}'`
-    } else if (typeof col2 === "number" || typeof col2 === "boolean") {
-      this.right = `${col2}`
-    } else {
-      this.right = `${col2[tblAs]}.${col2[col]}`
-    }
+export abstract class Condition<CT extends string = string, P = {}> {
+  readonly [condTbls]: CT;
+  readonly [cp]: P
+
+  and<C extends Condition>(cond: C): Condition<CT | C[cts], P & C[cps]> {
+    return new AndCondition(this, cond)
   }
-
-  toSql(): string {
-    return `${this.left} ${this.op} ${this.right}`
+  or<C extends Condition>(cond: C): Condition<CT | C[cts], P & C[cps]> {
+    return new OrCondition(this, cond)
   }
 }
 
-export type Literal<T extends string> = string extends T ? never : T
-export interface Condition<TblNames extends string, P = {}> {
-  [condTbls]: TblNames
-
-  and<SP, C extends Condition<any, SP>>(
-    cond: C
-  ): Condition<TblNames | C[condTblsSym], P & SP>
-  or<SP, C extends Condition<any, SP>>(
-    cond: C
-  ): Condition<TblNames | C[condTblsSym], P & SP>
-
-  toSql(): string
+export class AndCondition<CT extends string = string, P = {}> extends Condition<CT, P> {
+  constructor(private readonly left: Condition, private readonly right: Condition) {
+    super()
+  }
 }
 
-export type SqlParamName<N extends string> = {
-  sqlParam: N
+export class OrCondition<CT extends string = string, P = {}> extends Condition<CT, P> {
+  constructor(private readonly left: Condition, private readonly right: Condition) {
+    super()
+  }
 }
 
-export type SqlParam<N extends string, T> = string extends N ? {} : Record<N, T>
+export class EqCondition<
+  Col1 extends Column,
+  Col2 extends Column<CT, Col1[tySym]>,
+  CT extends string,
+  P
+> extends Condition<CT, P> {
+  constructor(private readonly left: Col1, private readonly right: Col2) {
+    super()
+  }
+}
 
 export function param<N extends string>(param: N): SqlParamName<N> {
   return { sqlParam: param }
-}
-
-export type Comparisons<Col1Tbl extends string, Col1Type extends t.Any> = {
-  not: Comparisons<Col1Tbl, Col1Type>
-
-  eq<Col2 extends ColInfo<any, Col1Type>, SPN extends string>(
-    col2: Col2 | t.TypeOf<Col1Type> | SqlParamName<SPN>
-  ): Condition<Col1Tbl | Literal<Col2[tblAsSym]>, SqlParam<SPN, t.TypeOf<Col1Type>>>
-
-  isNull(): Condition<Col1Tbl>
-
-  in(
-    val: t.TypeOf<Col1Type>[] | SQLReady<Record<string, t.TypeOf<Col1Type>>>
-  ): Condition<Col1Tbl>
 }
 
 const Book = table({

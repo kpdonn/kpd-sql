@@ -1,20 +1,9 @@
 import { SQLFrom, SQLJoin } from "./kpdSql"
 
 import * as Immutable from "immutable"
-import { Table, ColInfo, Condition } from "./table"
 import { Pool } from "pg"
-
-export const tbl: unique symbol = Symbol("tableName")
-export const tblAs: unique symbol = Symbol("tableAs")
-export const col: unique symbol = Symbol("columnName")
-export const colAs: unique symbol = Symbol("columnAs")
-export const ty: unique symbol = Symbol("typeSymbol")
-
-export type tblSym = typeof tbl
-export type colSym = typeof col
-export type colAsSym = typeof colAs
-export type tySym = typeof ty
-export type tblAsSym = typeof tblAs
+import { Condition, TableWithColumns } from "./utils"
+import { Column } from "./table"
 
 let dbPool: Pool
 
@@ -24,12 +13,12 @@ export function initializePool(pool: Pool): void {
 
 interface Join {
   type: "inner" | "left"
-  table: Table
+  table: TableWithColumns
   cond: Condition<any>
 }
 
 const BuilderState = Immutable.Record({
-  fromTable: (undefined as any) as Table,
+  fromTable: (undefined as any) as TableWithColumns,
   joins: Immutable.List<Join>(),
   columns: Immutable.List(),
   wheres: Immutable.List(),
@@ -37,7 +26,7 @@ const BuilderState = Immutable.Record({
 class SqlBuilder {
   constructor(private readonly state = BuilderState()) {}
 
-  from(table: Table): SqlBuilder {
+  from(table: TableWithColumns): SqlBuilder {
     let newState = this.state.withMutations(arg => {
       arg.set("fromTable", table)
     })
@@ -45,15 +34,19 @@ class SqlBuilder {
     return new SqlBuilder(newState)
   }
 
-  join(table: Table, cond: Condition<any>): SqlBuilder {
+  join(table: TableWithColumns, cond: Condition<any>): SqlBuilder {
     return this.addJoin("inner", table, cond)
   }
 
-  leftJoin(table: Table, cond: Condition<any>): SqlBuilder {
+  leftJoin(table: TableWithColumns, cond: Condition<any>): SqlBuilder {
     return this.addJoin("left", table, cond)
   }
 
-  addJoin(type: "inner" | "left", table: Table, cond: Condition<any>): SqlBuilder {
+  addJoin(
+    type: "inner" | "left",
+    table: TableWithColumns,
+    cond: Condition<any>
+  ): SqlBuilder {
     const newState = this.state.updateIn(["joins"], joins =>
       joins.push({ type, table, cond })
     )
@@ -61,7 +54,7 @@ class SqlBuilder {
     return new SqlBuilder(newState)
   }
 
-  columns(cols: ColInfo[]): SqlBuilder {
+  columns(cols: Column[]): SqlBuilder {
     const newState = this.state.updateIn(["columns"], stateCols =>
       stateCols.withMutations((mut: any) => {
         cols.forEach(col => mut.push(col))
@@ -83,14 +76,14 @@ class SqlBuilder {
 
     sql += selectCols + " \n"
 
-    const fromClause = ` from ${state.fromTable.toSql()} `
+    const fromClause = ` from ${state.fromTable} `
 
     sql += fromClause
 
     state.joins.forEach(join => {
       sql += " \n "
       const onClause = ` on ${join.cond.toSql()} `
-      sql += ` ${join.type} join ${join.table.toSql()} ${onClause} `
+      sql += ` ${join.type} join ${join.table} ${onClause} `
     })
 
     sql += "\n where "

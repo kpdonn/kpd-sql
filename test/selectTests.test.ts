@@ -20,7 +20,7 @@ describe("Select query tests", () => {
       .from(Pet)
       .join(Visit, Pet.id.eq(Visit.petId))
       .join(Vet, Vet.id.eq(Visit.vetId))
-      .columns([Pet.id, Pet.name, Pet.birthDate, Pet.ownerId, Pet.typeId])
+      .columns([Pet.id, Vet.firstName, Pet.birthDate, Pet.ownerId, Pet.typeId])
       .where(Vet.lastName.eq(param("vetLastName")))
 
     const sql = sqlFormatter.format(query.toSql())

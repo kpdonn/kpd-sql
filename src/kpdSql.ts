@@ -10,8 +10,11 @@ import {
   tbl,
   colAsSym,
   colAs,
-} from "./implementation"
-import { Table, ColInfo, Condition, Literal } from "./table"
+  TableWithColumns,
+  Condition,
+  Literal,
+} from "./utils"
+import { Column } from "./table"
 
 export type ArrayKeys = keyof any[]
 
@@ -23,7 +26,7 @@ export interface SQLFrom<
   Cols = {},
   P = {}
 > {
-  from<T extends Table & NoDupTable<T, Tables>>(
+  from<T extends TableWithColumns & NoDupTable<T, Tables>>(
     table: T
   ): SQLJoin<Tables | T[tblAsSym], OptTables, Cols, P>
 }
@@ -33,17 +36,17 @@ export type SafeInd<T, K extends keyof Base, Base = T> = Extract<T, Base> extend
   : Extract<T, Base>[K]
 
 export type NoDuplicates<T extends string> = { "NO DUPLICATE KEYS ALLOWED": T }
-export type ColumnsObj<T> = { [K in TupleKeys<T>]: Extract<T[K], ColInfo> }
+export type ColumnsObj<T> = { [K in TupleKeys<T>]: Extract<T[K], Column> }
 
 export type ColumnsWithTableName<
-  T extends Record<string, ColInfo>,
+  T extends Record<string, Column>,
   TblName extends string
 > = { [K in keyof T]: T[K][tblAsSym] extends Literal<TblName> ? T[K] : never }[keyof T]
 
 export type ColsObj<
-  T extends Record<string, ColInfo>,
+  T extends Record<string, Column>,
   TableNames extends string,
-  Cols extends ColInfo = ColumnsWithTableName<T, TableNames>
+  Cols extends Column = ColumnsWithTableName<T, TableNames>
 > = {
   [K in SafeInd<Cols, colAsSym>]: Cols extends { [colAs]: K }
     ? t.TypeOf<Cols[tySym]>
@@ -63,7 +66,7 @@ export interface SQLColumns<
         | (SafeInd<T[Exclude<keyof T, K>], colAsSym>)
         | keyof Cols)
         ? NoDuplicates<SafeInd<T[K], colAsSym>>
-        : ColInfo<TblNames>
+        : Column<TblNames>
     } & { "0": any },
     T extends ColumnsObj<C> = ColumnsObj<C>
   >(
@@ -75,7 +78,7 @@ export interface SQLSelectAndWhere<RT extends string, OT extends string, Cols, P
   extends SQLColumns<RT, OT, Cols, P>,
     SQLWhere<RT, OT, Cols, P> {}
 
-export type NoDupTable<T extends Table, TableNames extends string> = {
+export type NoDupTable<T extends TableWithColumns, TableNames extends string> = {
   [tbl]: T[tblAsSym] extends TableNames ? never : string
 }
 export interface SQLJoin<
@@ -85,12 +88,12 @@ export interface SQLJoin<
   P = {},
   TblNames extends string = Literal<RT> | Literal<OT>
 > extends SQLColumns<RT, OT, Cols, P> {
-  join<T extends Table & NoDupTable<T, TblNames>>(
+  join<T extends TableWithColumns & NoDupTable<T, TblNames>>(
     table: T,
     cond: Condition<TblNames | T[tblAsSym]>
   ): SQLJoin<RT | T[tblAsSym], OT, Cols, P>
 
-  leftJoin<T extends Table & NoDupTable<T, TblNames>>(
+  leftJoin<T extends TableWithColumns & NoDupTable<T, TblNames>>(
     table: T,
     cond: Condition<TblNames | T[tblAsSym]>
   ): SQLJoin<RT, OT | T[tblAsSym], Cols, P>
