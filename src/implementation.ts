@@ -2,8 +2,8 @@ import { SQLFrom, SQLJoin } from "./kpdSql"
 
 import * as Immutable from "immutable"
 import { Pool } from "pg"
-import { Condition, TableWithColumns } from "./utils"
-import { Column } from "./table"
+import { TableWithColumns } from "./utils"
+import { Column, Condition } from "./table"
 
 let dbPool: Pool
 

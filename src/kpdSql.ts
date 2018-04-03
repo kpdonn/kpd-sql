@@ -11,10 +11,9 @@ import {
   colAsSym,
   colAs,
   TableWithColumns,
-  Condition,
   Literal,
 } from "./utils"
-import { Column } from "./table"
+import { Column, Condition } from "./table"
 
 export type ArrayKeys = keyof any[]
 

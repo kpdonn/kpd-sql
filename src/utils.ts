@@ -17,27 +17,29 @@ export type condTblsSym = typeof condTbls
 
 export type Literal<T extends string> = string extends T ? never : T
 
-export type SqlParamName<N extends string> = Record<"sqlParam", N>
+export type SqlParamName<N extends string = string> = Record<"sqlParam", N>
 export type SqlParam<N extends string, T> = string extends N ? {} : Record<N, T>
+
+export type ColType<T extends Column> = t.TypeOf<T[tySym]>
 
 export declare const sqlReady: unique symbol
 export interface SQLReady<Cols> {
   [sqlReady]: Cols
 }
 
-export type Comparisons<Col1Tbl extends string, Col1Type extends t.Any> = {
-  not: Comparisons<Col1Tbl, Col1Type>
+// export type Comparisons<Col1Tbl extends string, Col1Type extends t.Any> = {
+//   not: Comparisons<Col1Tbl, Col1Type>
 
-  eq<Col2 extends Column<any, Col1Type>, SPN extends string>(
-    col2: Col2 | t.TypeOf<Col1Type> | SqlParamName<SPN>
-  ): Condition<Col1Tbl | Literal<Col2[tblAsSym]>, SqlParam<SPN, t.TypeOf<Col1Type>>>
+//   eq<Col2 extends Column<any, Col1Type>, SPN extends string>(
+//     col2: Col2 | t.TypeOf<Col1Type> | SqlParamName<SPN>
+//   ): Condition<Col1Tbl | Literal<Col2[tblAsSym]>, SqlParam<SPN, t.TypeOf<Col1Type>>>
 
-  isNull(): Condition<Col1Tbl>
+//   isNull(): Condition<Col1Tbl>
 
-  in(
-    val: t.TypeOf<Col1Type>[] | SQLReady<Record<string, t.TypeOf<Col1Type>>>
-  ): Condition<Col1Tbl>
-}
+//   in(
+//     val: t.TypeOf<Col1Type>[] | SQLReady<Record<string, t.TypeOf<Col1Type>>>
+//   ): Condition<Col1Tbl>
+// }
 
 export type InCol = { type: t.Any; dbName?: string }
 

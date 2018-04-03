@@ -13,6 +13,7 @@ import {
   tblAsSym,
   Literal,
   SqlParam,
+  ColType,
 } from "./utils"
 
 export class Table<
@@ -73,9 +74,9 @@ export class Column<
     return new Column(this[tblAs], this[col], this[ty], newName)
   }
 
-  eq<Col2 extends Column<any, this[tySym]>>(
-    col2: Col2
-  ): Condition<TN | Literal<Col2[tblAsSym]>> {
+  eq<Col2 extends Column<any, this[tySym]>, SPN extends string>(
+    col2: Col2 | t.TypeOf<TY> | SqlParamName<SPN>
+  ): Condition<TN | Literal<Col2[tblAsSym]>, SqlParam<SPN, t.TypeOf<TY>>> {
     return new EqCondition(this, col2)
   }
 }
@@ -111,11 +112,16 @@ export class OrCondition<CT extends string = string, P = {}> extends Condition<C
 
 export class EqCondition<
   Col1 extends Column,
-  Col2 extends Column<CT, Col1[tySym]>,
-  CT extends string,
-  P
-> extends Condition<CT, P> {
-  constructor(private readonly left: Col1, private readonly right: Col2) {
+  Col2 extends Column<string, Col1[tySym]>,
+  SPN extends string
+> extends Condition<
+  Col1[tblAsSym] | Literal<Col2[tblAsSym]>,
+  SqlParam<SPN, ColType<Col1>>
+> {
+  constructor(
+    private readonly left: Col1,
+    private readonly right: Col2 | ColType<Col1> | SqlParamName<SPN>
+  ) {
     super()
   }
 }
@@ -138,3 +144,13 @@ const Book = table({
 export function column<T extends t.Any>(type: T, dbName?: string) {
   return { type, dbName }
 }
+
+const Vet = table({
+  name: "vet",
+  columns: {
+    id: column(t.number),
+    firstName: column(t.string, "first_name"),
+    lastName: column(t.string, "last_name"),
+  },
+})
+const testcond = Book.id.eq(Book.authorId).or(Vet.firstName.eq(Book.title))
