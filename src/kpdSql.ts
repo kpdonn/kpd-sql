@@ -16,7 +16,6 @@ import { Table, ColInfo, Condition, Literal } from "./table"
 export type ArrayKeys = keyof any[]
 
 export type TupleKeys<T> = Exclude<keyof T, ArrayKeys>
-export type TupleObj<T> = { [K in TupleKeys<T>]: T[K] }
 
 export type TabCols<
   ColArr extends { [index: string]: ColInfo },
@@ -60,6 +59,7 @@ export type SafeInd<T, K extends keyof Base, Base = T> = Extract<T, Base> extend
   : Extract<T, Base>[K]
 
 export type NoDuplicates<T extends string> = { "NO DUPLICATE KEYS ALLOWED": T }
+export type ColumnsObj<T> = { [K in TupleKeys<T>]: Extract<T[K], ColInfo> }
 
 export interface SQLColumns<
   RT extends string,
@@ -70,13 +70,13 @@ export interface SQLColumns<
 > {
   columns<
     C extends {
-      [K in keyof T]: SafeInd<T[K], colAsSym, ColInfo> extends (
-        | (SafeInd<T[Exclude<keyof T, K>], colAsSym, ColInfo>)
+      [K in keyof T]: T[K][colSym] extends (
+        | (SafeInd<T[Exclude<keyof T, K>], colAsSym>)
         | keyof Cols)
-        ? NoDuplicates<SafeInd<T[K], colAsSym, ColInfo>>
+        ? NoDuplicates<SafeInd<T[K], colAsSym>>
         : ColInfo<TblNames>
     } & { "0": any },
-    T = TupleObj<C>
+    T extends ColumnsObj<C> = ColumnsObj<C>
   >(
     cols: C
   ): SQLSelectAndWhere<
