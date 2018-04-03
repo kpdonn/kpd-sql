@@ -17,31 +17,6 @@ export type ArrayKeys = keyof any[]
 
 export type TupleKeys<T> = Exclude<keyof T, ArrayKeys>
 
-export type TabCols<
-  ColArr extends { [index: string]: ColInfo },
-  ArrInd extends keyof ColArr,
-  TblNames extends string
-> = { [Ind in ArrInd]: ColArr[Ind][tblAsSym] extends TblNames ? Ind : never }[ArrInd]
-
-export type Grab<
-  ColArr extends { [index: string]: ColInfo },
-  ArrInd extends keyof ColArr,
-  TblNames extends string
-> = [TabCols<ColArr, ArrInd, TblNames>] extends [never]
-  ? {}
-  : GetVal<ColArr[TabCols<ColArr, ArrInd, TblNames>][colAsSym], ColArr>
-
-export type GetVal<
-  ColNames extends string,
-  ColArr extends { [index: string]: ColInfo }
-> = { [K in ColNames]: FilterVal<K, ColArr[keyof ColArr]> }
-
-export type TypeCol<N extends string, U extends t.Any> = { [colAs]: N; [ty]: U }
-
-export type FilterVal<N extends string, T extends ColInfo> = T extends TypeCol<N, infer U>
-  ? t.TypeOf<U>
-  : never
-
 export interface SQLFrom<
   Tables extends string = never,
   OptTables extends string = never,
@@ -53,13 +28,27 @@ export interface SQLFrom<
   ): SQLJoin<Tables | T[tblAsSym], OptTables, Cols, P>
 }
 
-export type GCol<C extends ColInfo> = C
 export type SafeInd<T, K extends keyof Base, Base = T> = Extract<T, Base> extends never
   ? never
   : Extract<T, Base>[K]
 
 export type NoDuplicates<T extends string> = { "NO DUPLICATE KEYS ALLOWED": T }
 export type ColumnsObj<T> = { [K in TupleKeys<T>]: Extract<T[K], ColInfo> }
+
+export type ColumnsWithTableName<
+  T extends Record<string, ColInfo>,
+  TblName extends string
+> = { [K in keyof T]: T[K][tblAsSym] extends Literal<TblName> ? T[K] : never }[keyof T]
+
+export type ColsObj<
+  T extends Record<string, ColInfo>,
+  TableNames extends string,
+  Cols extends ColInfo = ColumnsWithTableName<T, TableNames>
+> = {
+  [K in SafeInd<Cols, colAsSym>]: Cols extends { [colAs]: K }
+    ? t.TypeOf<Cols[tySym]>
+    : never
+}
 
 export interface SQLColumns<
   RT extends string,
@@ -79,19 +68,8 @@ export interface SQLColumns<
     T extends ColumnsObj<C> = ColumnsObj<C>
   >(
     cols: C
-  ): SQLSelectAndWhere<
-    RT,
-    OT,
-    Cols &
-      Grab<C, TupleKeys<C>, Literal<RT>> &
-      EmptyIfNone<Partial<Grab<C, TupleKeys<C>, Literal<OT>>>>,
-    P
-  >
+  ): SQLSelectAndWhere<RT, OT, Cols & ColsObj<T, RT> & Partial<ColsObj<T, OT>>, P>
 }
-
-export type EmptyIfNone<T> = string extends keyof T
-  ? {}
-  : [keyof T] extends [never] ? {} : T
 
 export interface SQLSelectAndWhere<RT extends string, OT extends string, Cols, P = {}>
   extends SQLColumns<RT, OT, Cols, P>,
