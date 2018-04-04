@@ -1,9 +1,9 @@
-import { SQLFrom, SQLJoin } from "./kpdSql"
-
 import * as Immutable from "immutable"
 import { Pool } from "pg"
 import { TableWithColumns } from "./utils"
-import { Column, Condition } from "./table"
+import { Column } from "./table"
+import { Condition } from "./condition"
+import { SqlBuilder } from "./kpdSql"
 
 let dbPool: Pool
 
@@ -23,22 +23,22 @@ const BuilderState = Immutable.Record({
   columns: Immutable.List(),
   wheres: Immutable.List(),
 })
-class SqlBuilder {
+class SqlBuilderImpl {
   constructor(private readonly state = BuilderState()) {}
 
-  from(table: TableWithColumns): SqlBuilder {
+  from(table: TableWithColumns): SqlBuilderImpl {
     let newState = this.state.withMutations(arg => {
       arg.set("fromTable", table)
     })
 
-    return new SqlBuilder(newState)
+    return new SqlBuilderImpl(newState)
   }
 
-  join(table: TableWithColumns, cond: Condition<any>): SqlBuilder {
+  join(table: TableWithColumns, cond: Condition<any>): SqlBuilderImpl {
     return this.addJoin("inner", table, cond)
   }
 
-  leftJoin(table: TableWithColumns, cond: Condition<any>): SqlBuilder {
+  leftJoin(table: TableWithColumns, cond: Condition<any>): SqlBuilderImpl {
     return this.addJoin("left", table, cond)
   }
 
@@ -46,27 +46,27 @@ class SqlBuilder {
     type: "inner" | "left",
     table: TableWithColumns,
     cond: Condition<any>
-  ): SqlBuilder {
+  ): SqlBuilderImpl {
     const newState = this.state.updateIn(["joins"], joins =>
       joins.push({ type, table, cond })
     )
 
-    return new SqlBuilder(newState)
+    return new SqlBuilderImpl(newState)
   }
 
-  columns(cols: Column[]): SqlBuilder {
+  columns(cols: Column[]): SqlBuilderImpl {
     const newState = this.state.updateIn(["columns"], stateCols =>
       stateCols.withMutations((mut: any) => {
         cols.forEach(col => mut.push(col))
       })
     )
-    return new SqlBuilder(newState)
+    return new SqlBuilderImpl(newState)
   }
 
-  where(cond: Condition<any>): SqlBuilder {
+  where(cond: Condition<any>): SqlBuilderImpl {
     const newState = this.state.updateIn(["wheres"], wheres => wheres.push({ cond }))
 
-    return new SqlBuilder(newState)
+    return new SqlBuilderImpl(newState)
   }
 
   toSql(): string {
@@ -82,7 +82,7 @@ class SqlBuilder {
 
     state.joins.forEach(join => {
       sql += " \n "
-      const onClause = ` on ${join.cond.toSql()} `
+      const onClause = ` on ${join.cond} `
       sql += ` ${join.type} join ${join.table} ${onClause} `
     })
 
@@ -104,8 +104,8 @@ class SqlBuilder {
   }
 }
 
-export function select(): SQLFrom {
-  return new SqlBuilder() as any
+export function select(): SqlBuilder {
+  return new SqlBuilderImpl() as any
 }
 
 export function tuple<T extends any[] & { "0": any }>(array: T): T {

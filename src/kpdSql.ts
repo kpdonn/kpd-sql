@@ -13,22 +13,12 @@ import {
   TableWithColumns,
   Literal,
 } from "./utils"
-import { Column, Condition } from "./table"
+import { Column } from "./table"
+import { Condition } from "./condition"
 
 export type ArrayKeys = keyof any[]
 
 export type TupleKeys<T> = Exclude<keyof T, ArrayKeys>
-
-export interface SQLFrom<
-  Tables extends string = never,
-  OptTables extends string = never,
-  Cols = {},
-  P = {}
-> {
-  from<T extends TableWithColumns & NoDupTable<T, Tables>>(
-    table: T
-  ): SQLJoin<Tables | T[tblAsSym], OptTables, Cols, P>
-}
 
 export type SafeInd<T, K extends keyof Base, Base = T> = Extract<T, Base> extends never
   ? never
@@ -52,50 +42,8 @@ export type ColsObj<
     : never
 }
 
-export interface SQLColumns<
-  RT extends string,
-  OT extends string,
-  Cols = {},
-  P = {},
-  TblNames extends string = Literal<RT> | Literal<OT>
-> {
-  columns<
-    C extends {
-      [K in keyof T]: T[K][colAsSym] extends (
-        | (SafeInd<T[Exclude<keyof T, K>], colAsSym>)
-        | keyof Cols)
-        ? NoDuplicates<SafeInd<T[K], colAsSym>>
-        : Column<TblNames>
-    } & { "0": any },
-    T extends ColumnsObj<C> = ColumnsObj<C>
-  >(
-    cols: C
-  ): SQLSelectAndWhere<RT, OT, Cols & ColsObj<T, RT> & Partial<ColsObj<T, OT>>, P>
-}
-
-export interface SQLSelectAndWhere<RT extends string, OT extends string, Cols, P = {}>
-  extends SQLColumns<RT, OT, Cols, P>,
-    SQLWhere<RT, OT, Cols, P> {}
-
 export type NoDupTable<T extends TableWithColumns, TableNames extends string> = {
   [tbl]: T[tblAsSym] extends TableNames ? never : string
-}
-export interface SQLJoin<
-  RT extends string,
-  OT extends string,
-  Cols,
-  P = {},
-  TblNames extends string = Literal<RT> | Literal<OT>
-> extends SQLColumns<RT, OT, Cols, P> {
-  join<T extends TableWithColumns & NoDupTable<T, TblNames>>(
-    table: T,
-    cond: Condition<TblNames | T[tblAsSym]>
-  ): SQLJoin<RT | T[tblAsSym], OT, Cols, P>
-
-  leftJoin<T extends TableWithColumns & NoDupTable<T, TblNames>>(
-    table: T,
-    cond: Condition<TblNames | T[tblAsSym]>
-  ): SQLJoin<RT, OT | T[tblAsSym], Cols, P>
 }
 
 export type ExecuteArgs<P, Cols> = {} extends P
@@ -113,18 +61,49 @@ export interface SQLReady<Cols> {
   [sqlReady]: Cols
 }
 
-export interface SQLWhere<
-  RT extends string,
-  OT extends string,
-  Cols,
+export interface SqlBuilder<
+  RT extends string = never,
+  OT extends string = never,
+  Cols = {},
   P = {},
   TblNames extends string = Literal<RT> | Literal<OT>
-> extends SQLExecute<RT, OT, Cols, P> {
+> {
+  execute: ExecuteArgs<P, Cols>
+
+  from<T extends TableWithColumns & NoDupTable<T, TblNames>>(
+    table: T
+  ): SqlBuilder<RT | T[tblAsSym], OT, Cols, P>
+
+  columns<
+    C extends {
+      [K in keyof T]: T[K][colAsSym] extends (
+        | (SafeInd<T[Exclude<keyof T, K>], colAsSym>)
+        | keyof Cols)
+        ? NoDuplicates<SafeInd<T[K], colAsSym>>
+        : Column<TblNames>
+    } & { "0": any },
+    T extends ColumnsObj<C> = ColumnsObj<C>
+  >(
+    cols: C
+  ): SqlBuilder<RT, OT, Cols & ColsObj<T, RT> & Partial<ColsObj<T, OT>>, P>
+
+  join<T extends TableWithColumns & NoDupTable<T, TblNames>>(
+    table: T,
+    cond: Condition<TblNames | T[tblAsSym]>
+  ): SqlBuilder<RT | T[tblAsSym], OT, Cols, P>
+
+  leftJoin<T extends TableWithColumns & NoDupTable<T, TblNames>>(
+    table: T,
+    cond: Condition<TblNames | T[tblAsSym]>
+  ): SqlBuilder<RT, OT | T[tblAsSym], Cols, P>
+
   where<CTbles extends TblNames, SP>(
     cond: Condition<CTbles, SP>
-  ): SQLWhere<RT, OT, Cols, P & SP>
+  ): SqlBuilder<RT, OT, Cols, P & SP>
 
   whereSub<CTbles extends TblNames, SP>(
-    cond: (subSelect: SQLFrom<RT, OT, {}>) => Condition<CTbles, SP>
-  ): SQLWhere<RT, OT, Cols, P & SP>
+    cond: (subSelect: SqlBuilder<RT, OT, {}>) => Condition<CTbles, SP>
+  ): SqlBuilder<RT, OT, Cols, P & SP>
+
+  toSql(): string
 }
