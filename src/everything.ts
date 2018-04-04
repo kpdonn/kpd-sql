@@ -55,7 +55,7 @@ export type TableWithColumns<
 export type ConditionType = EqCondition | AndCondition | OrCondition
 export type JoinType = PlainJoin | LeftJoin
 
-export type SqlPart = ConditionType | JoinType | Table | Column
+export type SqlPart = ConditionType | JoinType | Table | Column | PlaceholderParam
 
 export interface SqlKind {
   readonly kind: Literal<SqlPart["kind"]>
@@ -138,8 +138,16 @@ export class Column<
   }
 }
 
-export function param<N extends string>(param: N): SqlParamName<N> {
-  return { sqlParam: param }
+export class PlaceholderParam<PN extends string = never> implements SqlKind {
+  readonly kind = "placeholderParam"
+
+  constructor(readonly sqlParam: PN) {}
+}
+
+export function param<N extends string & (string extends N ? never : string)>(
+  paramName: N
+): PlaceholderParam<N> {
+  return new PlaceholderParam(paramName)
 }
 
 export function column<T extends t.Any>(type: T, dbName?: string) {
@@ -233,7 +241,7 @@ export interface SQLReady<Cols> {
 
 export type DeepReadonly<T> = T extends ReadonlyArray<infer U>
   ? DeepReadonlyArray<U>
-  : T extends object ? DeepReadonlyObject<T> : T
+  : T extends SqlKind ? T : T extends object ? DeepReadonlyObject<T> : T
 
 export interface DeepReadonlyArray<T> extends ReadonlyArray<DeepReadonly<T>> {}
 
@@ -346,4 +354,28 @@ export class SqlBuilder<
 
 export function select(): SqlBuilder {
   return SqlBuilder.select()
+}
+
+export function printSql(builderState: BuilderState) {
+  const columnsSql = builderState.columns
+    .map(c => `${c[tblAs]}.${c[col]} as ${c[colAs]}`)
+    .join(", ")
+
+  const fromTablesSql = builderState.fromTables
+    .map(t => `${t[tbl]} ${t[tblAs]}`)
+    .join(", ")
+}
+
+export function printJoin(join: JoinType): string {
+  switch (join.kind) {
+    case "plainJoin":
+      return `join ${join.joinTable[tbl]} ${join.joinTable[tblAs]} on `
+  }
+}
+
+export function printCondition(cond: ConditionType): string {
+  switch (cond.kind) {
+    case "eq":
+      return `${cond.left[tblAs]}.${cond.left[col]} = ${cond.right}`
+  }
 }
