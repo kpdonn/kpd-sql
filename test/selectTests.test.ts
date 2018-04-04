@@ -1,6 +1,5 @@
 import { Pool, PoolClient } from "pg"
-import { initializePool, select } from "../src/implementation"
-import { table, column, param } from "../src/table"
+import { select, param, table, column, initializePool } from "../src/everything"
 import * as t from "io-ts"
 
 import * as fs from "fs"

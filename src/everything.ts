@@ -1,4 +1,5 @@
 import * as t from "io-ts"
+import { Pool } from "pg"
 
 export const tbl: unique symbol = Symbol("tableName")
 export const tblAs: unique symbol = Symbol("tableAs")
@@ -16,6 +17,12 @@ export type tySym = typeof ty
 export type tblAsSym = typeof tblAs
 export type cts = typeof condTbls
 export type cps = typeof cp
+
+let dbPool: Pool
+
+export function initializePool(pool: Pool): void {
+  dbPool = pool
+}
 
 export type Literal<T extends string> = string extends T ? never : T
 
