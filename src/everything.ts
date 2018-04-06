@@ -1,23 +1,6 @@
 import * as t from "io-ts"
 import { Pool } from "pg"
 
-export const tbl: unique symbol = Symbol("tableName")
-export const tblAs: unique symbol = Symbol("tableAs")
-export const col: unique symbol = Symbol("columnName")
-export const colAs: unique symbol = Symbol("columnAs")
-export const ty: unique symbol = Symbol("typeSymbol")
-export const condTbls: unique symbol = Symbol("conditionTables")
-export const cp: unique symbol = Symbol("conditionParams")
-export const sqlReady: unique symbol = Symbol("sqlReady")
-
-export type tblSym = typeof tbl
-export type colSym = typeof col
-export type colAsSym = typeof colAs
-export type tySym = typeof ty
-export type tblAsSym = typeof tblAs
-export type cts = typeof condTbls
-export type cps = typeof cp
-
 let dbPool: Pool
 
 export function initializePool(pool: Pool): void {
@@ -29,10 +12,10 @@ export type Literal<T extends string> = string extends T ? never : T
 export type SqlParamName<N extends string = string> = Record<"sqlParam", N>
 export type SqlParam<N extends string, T> = string extends N ? {} : Record<N, T>
 
-export type ColType<T extends Column> = t.TypeOf<T[tySym]>
+export type ColType<T extends Column> = t.TypeOf<T["_type"]>
 
 export interface SQLReady<Cols> {
-  [sqlReady]: Cols
+  __sqlReady: Cols
 }
 
 export type InCol = { type: t.Any; dbName?: string }
@@ -58,7 +41,7 @@ export type Condition<CT extends string = never, P = {}> = (
   | EqCondition
   | AndCondition
   | OrCondition) &
-  RemoveKey<BaseCondition<CT, P>, "kind">
+  RemoveKey<BaseCondition<CT, P>, "sqlKind" | "_condTables" | "_condParams">
 export type JoinType = PlainJoin | LeftJoin
 
 export type SqlPart =
@@ -73,25 +56,25 @@ export type SqlPart =
 export type Parameterized = PlaceholderParam | Hardcoded
 
 export interface SqlKind {
-  readonly kind: Literal<SqlPart["kind"]>
+  readonly sqlKind: Literal<SqlPart["sqlKind"]>
 }
 
 function isSqlPart(obj: any): obj is SqlPart {
-  return typeof obj.kind === "string"
+  return typeof obj.sqlKind === "string"
 }
 
 export class ColumnDeclaration implements SqlKind {
-  readonly kind = "columnDeclaration"
+  readonly sqlKind = "columnDeclaration"
 
   constructor(readonly col: Column) {}
 }
 
 export class PlainJoin implements SqlKind {
-  readonly kind = "plainJoin"
+  readonly sqlKind = "plainJoin"
   constructor(readonly joinTable: Table, readonly onCondition: Condition) {}
 }
 export class LeftJoin implements SqlKind {
-  readonly kind = "leftJoin"
+  readonly sqlKind = "leftJoin"
   constructor(readonly joinTable: Table, readonly onCondition: Condition) {}
 }
 
@@ -100,18 +83,17 @@ export class Table<
   C extends Record<string, InCol> = {},
   AsName extends string = string
 > implements SqlKind {
-  readonly kind = "table";
-  readonly [tbl]: TN;
-  readonly [tblAs]: AsName
+  readonly sqlKind = "table"
 
-  constructor(name: TN, private _columns: C, asName: AsName) {
-    this[tbl] = name
-    this[tblAs] = asName
-
+  constructor(
+    readonly _table: TN,
+    private readonly _columns: C,
+    readonly _tableAs: AsName
+  ) {
     Object.keys(_columns).forEach(colName => {
       const anyThis: any = this
       anyThis[colName] = new Column(
-        asName,
+        _tableAs,
         _columns[colName].dbName || colName,
         _columns[colName].type,
         colName
@@ -120,7 +102,7 @@ export class Table<
   }
 
   as<NN extends string>(newAsName: NN): TableWithColumns<TN, C, NN> {
-    return new Table(this[tbl], this._columns, newAsName) as TableWithColumns<TN, C, NN>
+    return new Table(this._table, this._columns, newAsName) as TableWithColumns<TN, C, NN>
   }
 }
 
@@ -138,40 +120,34 @@ export class Column<
   CN extends string = string,
   CAS extends string = CN
 > implements SqlKind {
-  readonly kind = "column";
+  readonly sqlKind = "column"
 
-  readonly [tblAs]: TN;
-  readonly [col]: CN;
-  readonly [colAs]: CAS;
-
-  readonly [ty]: TY
-
-  constructor(tblName: TN, colName: CN, type: TY, colAsName: CAS) {
-    this[tblAs] = tblName
-    this[col] = colName
-    this[ty] = type
-    this[colAs] = colAsName
-  }
+  constructor(
+    readonly _tableAs: TN,
+    readonly _column: CN,
+    readonly _type: TY,
+    readonly _columnAs: CAS
+  ) {}
 
   as<NN extends string>(newName: NN): Column<TN, TY, CN, NN> {
-    return new Column(this[tblAs], this[col], this[ty], newName)
+    return new Column(this._tableAs, this._column, this._type, newName)
   }
 
-  eq<Col2 extends Column<any, this[tySym]>, SPN extends string>(
+  eq<Col2 extends Column<any, this["_type"]>, SPN extends string>(
     col2: Col2 | t.TypeOf<TY> | SqlParamName<SPN>
-  ): Condition<TN | Literal<Col2[tblAsSym]>, SqlParam<SPN, t.TypeOf<TY>>> {
+  ): Condition<TN | Literal<Col2["_tableAs"]>, SqlParam<SPN, t.TypeOf<TY>>> {
     return new EqCondition(this, col2)
   }
 }
 
 export class Hardcoded implements SqlKind {
-  readonly kind = "hardcoded"
+  readonly sqlKind = "hardcoded"
 
   constructor(readonly value: any) {}
 }
 
 export class PlaceholderParam<PN extends string = string> implements SqlKind {
-  readonly kind = "placeholderParam"
+  readonly sqlKind = "placeholderParam"
 
   constructor(readonly sqlParam: PN) {}
 }
@@ -188,15 +164,19 @@ export function column<T extends t.Any>(type: T, dbName?: string) {
 
 export abstract class BaseCondition<CT extends string = never, P = {}>
   implements SqlKind {
-  readonly [condTbls]: CT;
-  readonly [cp]: P
+  readonly _condTables!: CT
+  readonly _condParams!: P
 
-  abstract readonly kind: Literal<Condition["kind"]>
+  abstract readonly sqlKind: Literal<Condition["sqlKind"]>
 
-  and<C extends BaseCondition>(cond: C & Condition): Condition<CT | C[cts], P & C[cps]> {
+  and<C extends BaseCondition>(
+    cond: C & Condition
+  ): Condition<CT | C["_condTables"], P & C["_condParams"]> {
     return new AndCondition(this as any, cond)
   }
-  or<C extends BaseCondition>(cond: C & Condition): Condition<CT | C[cts], P & C[cps]> {
+  or<C extends BaseCondition>(
+    cond: C & Condition
+  ): Condition<CT | C["_condTables"], P & C["_condParams"]> {
     return new OrCondition(this as any, cond)
   }
 }
@@ -205,7 +185,7 @@ export class AndCondition<CT extends string = string, P = {}> extends BaseCondit
   CT,
   P
 > {
-  readonly kind = "and"
+  readonly sqlKind = "and"
   constructor(readonly left: Condition, readonly right: Condition) {
     super()
   }
@@ -215,7 +195,7 @@ export class OrCondition<CT extends string = string, P = {}> extends BaseConditi
   CT,
   P
 > {
-  readonly kind = "or"
+  readonly sqlKind = "or"
 
   constructor(readonly left: Condition, readonly right: Condition) {
     super()
@@ -224,13 +204,13 @@ export class OrCondition<CT extends string = string, P = {}> extends BaseConditi
 
 export class EqCondition<
   Col1 extends Column = Column,
-  Col2 extends Column<string, Col1[tySym]> = any,
+  Col2 extends Column<string, Col1["_type"]> = any,
   SPN extends string = any
 > extends BaseCondition<
-  Col1[tblAsSym] | Literal<Col2[tblAsSym]>,
+  Col1["_tableAs"] | Literal<Col2["_tableAs"]>,
   SqlParam<SPN, ColType<Col1>>
 > {
-  readonly kind = "eq"
+  readonly sqlKind = "eq"
   readonly right: Column | Hardcoded | PlaceholderParam
 
   constructor(
@@ -261,7 +241,7 @@ export type ColumnsObj<T> = { [K in TupleKeys<T>]: Extract<T[K], Column> }
 export type ColumnsWithTableName<
   T extends Record<string, Column>,
   TblName extends string
-> = { [K in keyof T]: T[K][tblAsSym] extends Literal<TblName> ? T[K] : never }[keyof T]
+> = { [K in keyof T]: T[K]["_tableAs"] extends Literal<TblName> ? T[K] : never }[keyof T]
 
 export type OutputColumns<
   T extends Record<string, Column>,
@@ -269,13 +249,13 @@ export type OutputColumns<
   OrType = never,
   Cols extends Column = ColumnsWithTableName<T, TableNames>
 > = {
-  [K in SafeInd<Cols, colAsSym>]: Cols extends { [colAs]: K }
-    ? t.TypeOf<Cols[tySym]> | OrType
+  [K in SafeInd<Cols, "_columnAs">]: Cols extends { ["_columnAs"]: K }
+    ? t.TypeOf<Cols["_type"]> | OrType
     : never
 }
 
 export type NoDupTable<T extends TableWithColumns, TableNames extends string> = {
-  [tbl]: T[tblAsSym] extends TableNames ? never : string
+  ["_table"]: T["_tableAs"] extends TableNames ? never : string
 }
 
 export type ExecuteFunc<P, Cols> = {} extends P
@@ -283,7 +263,7 @@ export type ExecuteFunc<P, Cols> = {} extends P
   : (args: P) => Promise<Cols[]>
 
 export interface SQLReady<Cols> {
-  [sqlReady]: Cols
+  ["_sqlReady"]: Cols
 }
 
 export type DeepReadonly<T> = T extends ReadonlyArray<infer U>
@@ -329,7 +309,7 @@ export class SqlBuilder<
 
   from<T extends TableWithColumns & NoDupTable<T, TblNames>>(
     table: T
-  ): SqlBuilder<RT | T[tblAsSym], OT, Cols, P> {
+  ): SqlBuilder<RT | T["_tableAs"], OT, Cols, P> {
     return new SqlBuilder({
       ...this.state,
       fromTables: [...this.state.fromTables, table],
@@ -339,10 +319,10 @@ export class SqlBuilder<
   columns<
     C extends ReadonlyArray<Column> &
       {
-        [K in keyof T]: T[K][colAsSym] extends (
-          | (SafeInd<T[Exclude<keyof T, K>], colAsSym>)
+        [K in keyof T]: T[K]["_columnAs"] extends (
+          | (SafeInd<T[Exclude<keyof T, K>], "_columnAs">)
           | keyof Cols)
-          ? NoDuplicates<SafeInd<T[K], colAsSym>>
+          ? NoDuplicates<SafeInd<T[K], "_columnAs">>
           : Column<TblNames>
       } & { "0": any },
     T extends ColumnsObj<C> = ColumnsObj<C>
@@ -357,8 +337,8 @@ export class SqlBuilder<
 
   join<T extends TableWithColumns & NoDupTable<T, TblNames>>(
     table: T,
-    cond: Condition<TblNames | T[tblAsSym]>
-  ): SqlBuilder<RT | T[tblAsSym], OT, Cols, P> {
+    cond: Condition<TblNames | T["_tableAs"]>
+  ): SqlBuilder<RT | T["_tableAs"], OT, Cols, P> {
     const join = new PlainJoin(table, cond)
     return new SqlBuilder({
       ...this.state,
@@ -368,8 +348,8 @@ export class SqlBuilder<
 
   leftJoin<T extends TableWithColumns & NoDupTable<T, TblNames>>(
     table: T,
-    cond: Condition<TblNames | T[tblAsSym]>
-  ): SqlBuilder<RT, OT | T[tblAsSym], Cols, P> {
+    cond: Condition<TblNames | T["_tableAs"]>
+  ): SqlBuilder<RT, OT | T["_tableAs"], Cols, P> {
     const join = new LeftJoin(table, cond)
     return new SqlBuilder({
       ...this.state,
@@ -424,13 +404,13 @@ export class SqlBuilder<
 
   private print = (it: SqlPart): string => {
     const pr = this.print
-    switch (it.kind) {
+    switch (it.sqlKind) {
       case "plainJoin":
         return `join ${pr(it.joinTable)} on ${pr(it.onCondition)}`
       case "leftJoin":
         return `left join ${pr(it.joinTable)} on ${pr(it.onCondition)}`
       case "table":
-        return `${it[tbl]} ${it[tblAs]}`
+        return `${it._table} ${it._tableAs}`
       case "hardcoded":
       case "placeholderParam":
         return this.getParamStr(it)
@@ -439,9 +419,9 @@ export class SqlBuilder<
       case "or":
         return `(${pr(it.left)}) OR (${pr(it.right)})`
       case "column":
-        return `${it[tblAs]}.${it[col]}`
+        return `${it._tableAs}.${it._column}`
       case "columnDeclaration":
-        return `${pr(it.col)} as ${it.col[colAs]}`
+        return `${pr(it.col)} as ${it.col._columnAs}`
       case "eq":
         return `${pr(it.left)} = ${pr(it.right)}`
     }
