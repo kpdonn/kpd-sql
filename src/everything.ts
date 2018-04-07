@@ -1,11 +1,4 @@
 import * as t from "io-ts"
-import { Pool } from "pg"
-
-let dbPool: Pool
-
-export function initializePool(pool: Pool): void {
-  dbPool = pool
-}
 
 export type Literal<T extends string> = string extends T ? never : T
 
