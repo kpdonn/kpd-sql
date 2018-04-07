@@ -25,8 +25,8 @@ export type LiteralOr<
   D extends string
 > = T extends undefined ? D : string extends T ? D : T
 
-export type TransformInCol<TN extends string, C extends Record<string, InCol>> = {
-  readonly [K in keyof C]: Column<TN, C[K]["type"], LiteralOr<C[K]["dbName"], K>, K>
+export type TableColumns<TN extends string, C extends Record<string, InCol>> = {
+  readonly [K in keyof C]: Column<TN, C[K]["type"], K>
 }
 
 export type RemoveKey<T, R extends string> = { [K in Exclude<keyof T, R>]: T[K] }
@@ -72,7 +72,7 @@ export class LeftJoin implements SqlKind {
   constructor(readonly joinTable: Table, readonly onCondition: Condition) {}
 }
 
-class PrivateTable<
+export class PrivateTable<
   TN extends string = string,
   C extends Record<string, InCol> = {},
   AsName extends string = string
@@ -84,15 +84,15 @@ class PrivateTable<
     private readonly _columns: C,
     readonly _tableAs: AsName
   ) {
-    Object.keys(_columns).forEach(colName => {
-      const anyThis: any = this
-      anyThis[colName] = new Column(
+    for (const colName in _columns) {
+      const thisColumns = (this as any) as NoRO<TableColumns<AsName, C>>
+      thisColumns[colName] = new Column(
         _tableAs,
         _columns[colName].dbName || colName,
         _columns[colName].type,
         colName
       )
-    })
+    }
   }
 
   as<NN extends string>(newAsName: NN): Table<TN, C, NN> {
@@ -100,11 +100,13 @@ class PrivateTable<
   }
 }
 
+type NoRO<T> = { -readonly [K in keyof T]: T[K] }
+
 export type Table<
   TN extends string = string,
   C extends Record<string, InCol> = {},
   AsName extends string = string
-> = PrivateTable<TN, C, AsName> & TransformInCol<AsName, C>
+> = PrivateTable<TN, C, AsName> & TableColumns<AsName, C>
 
 export interface TableConstructor {
   new <
@@ -130,19 +132,18 @@ export function table<
 export class Column<
   TN extends string = string,
   TY extends t.Any = t.Mixed,
-  CN extends string = string,
-  CAS extends string = CN
+  CAS extends string = string
 > implements SqlKind {
   readonly sqlKind = "column"
 
   constructor(
     readonly _tableAs: TN,
-    readonly _column: CN,
+    readonly _column: string,
     readonly _type: TY,
     readonly _columnAs: CAS
   ) {}
 
-  as<NN extends string>(newName: NN): Column<TN, TY, CN, NN> {
+  as<NN extends string>(newName: NN): Column<TN, TY, NN> {
     return new Column(this._tableAs, this._column, this._type, newName)
   }
 
