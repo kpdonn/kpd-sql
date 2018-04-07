@@ -24,13 +24,9 @@ describe("Select query tests", () => {
       .columns([Pet.id, Pet.name, Pet.birthDate, Pet.ownerId, Pet.typeId])
       .where(Vet.lastName.eq(param("vetLastName")))
 
-    const sql = query.toSql()
-    expect(sql).toMatchSnapshot()
-
+    expect(query.toSql()).toMatchSnapshot()
     const results = await query.execute({ vetLastName: "Ortega" })
-
     expect(results).toHaveLength(2)
-
     expect(results).toMatchSnapshot()
   })
 
@@ -48,13 +44,29 @@ describe("Select query tests", () => {
         )
       })
 
-    const sql = query.toSql()
-    expect(sql).toMatchSnapshot()
-
+    expect(query.toSql()).toMatchSnapshot()
     const results = await query.execute({ ownerCity: "Madison" })
+    expect(results).toHaveLength(4)
+    expect(results).toMatchSnapshot()
+  })
 
-    expect(results).toHaveLength(2)
+  it("select pets hardcoded live in madison or McFarland", async () => {
+    const query = db
+      .select()
+      .from(Pet)
+      .columns([Pet.id, Pet.name, Pet.birthDate, Pet.ownerId, Pet.typeId])
+      .where(sq => {
+        return Pet.ownerId.in(
+          sq
+            .from(Owner)
+            .columns([Owner.id])
+            .where(Owner.city.in(["Madison", "McFarland"]))
+        )
+      })
 
+    expect(query.toSql()).toMatchSnapshot()
+    const results = await query.execute()
+    expect(results).toHaveLength(6)
     expect(results).toMatchSnapshot()
   })
 })

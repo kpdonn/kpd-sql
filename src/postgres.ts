@@ -68,7 +68,7 @@ export class PgPlugin implements SqlPlugin {
       case "eq":
         return `${this.pr(it.left)} = ${this.pr(it.right)}`
       case "inCondition":
-        return `${this.pr(it.left)} in (${this.pr(it.right)})`
+        return `${this.pr(it.left)} = ANY (${this.pr(it.right)})`
 
       case "selectStatement":
         const columnsSql = it.selColumns.map(x => this.pr(x)).join(",\n")

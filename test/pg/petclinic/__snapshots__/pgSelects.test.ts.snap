@@ -1,5 +1,70 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Select query tests select pets hardcoded live in madison or McFarland 1`] = `
+"SELECT
+pet.id as \\"id\\",
+pet.name as \\"name\\",
+pet.birth_date as \\"birthDate\\",
+pet.owner_id as \\"ownerId\\",
+pet.type_id as \\"typeId\\"
+FROM
+pet
+
+WHERE pet.owner_id = ANY (SELECT
+owner.id as \\"id\\"
+FROM
+owner
+
+WHERE owner.city = ANY ($1))"
+`;
+
+exports[`Select query tests select pets hardcoded live in madison or McFarland 2`] = `
+Array [
+  anonymous {
+    "birthDate": 2000-09-07T05:00:00.000Z,
+    "id": 1,
+    "name": "Leo",
+    "ownerId": 1,
+    "typeId": 1,
+  },
+  anonymous {
+    "birthDate": 2001-04-17T05:00:00.000Z,
+    "id": 3,
+    "name": "Rosy",
+    "ownerId": 3,
+    "typeId": 2,
+  },
+  anonymous {
+    "birthDate": 2000-03-07T06:00:00.000Z,
+    "id": 4,
+    "name": "Jewel",
+    "ownerId": 3,
+    "typeId": 2,
+  },
+  anonymous {
+    "birthDate": 2000-01-20T06:00:00.000Z,
+    "id": 6,
+    "name": "George",
+    "ownerId": 5,
+    "typeId": 4,
+  },
+  anonymous {
+    "birthDate": 1997-02-24T06:00:00.000Z,
+    "id": 10,
+    "name": "Mulligan",
+    "ownerId": 8,
+    "typeId": 2,
+  },
+  anonymous {
+    "birthDate": 2000-03-09T06:00:00.000Z,
+    "id": 11,
+    "name": "Freddy",
+    "ownerId": 9,
+    "typeId": 5,
+  },
+]
+`;
+
 exports[`Select query tests select pets seen dr Ortega 1`] = `
 "SELECT
 pet.id as \\"id\\",
@@ -29,6 +94,57 @@ Array [
     "name": "Samantha",
     "ownerId": 6,
     "typeId": 1,
+  },
+]
+`;
+
+exports[`Select query tests select with subquery pets live in madison 1`] = `
+"SELECT
+pet.id as \\"id\\",
+pet.name as \\"name\\",
+pet.birth_date as \\"birthDate\\",
+pet.owner_id as \\"ownerId\\",
+pet.type_id as \\"typeId\\"
+FROM
+pet
+
+WHERE pet.owner_id = ANY (SELECT
+owner.id as \\"id\\"
+FROM
+owner
+
+WHERE owner.city = $1)"
+`;
+
+exports[`Select query tests select with subquery pets live in madison 2`] = `
+Array [
+  anonymous {
+    "birthDate": 2000-09-07T05:00:00.000Z,
+    "id": 1,
+    "name": "Leo",
+    "ownerId": 1,
+    "typeId": 1,
+  },
+  anonymous {
+    "birthDate": 2000-01-20T06:00:00.000Z,
+    "id": 6,
+    "name": "George",
+    "ownerId": 5,
+    "typeId": 4,
+  },
+  anonymous {
+    "birthDate": 1997-02-24T06:00:00.000Z,
+    "id": 10,
+    "name": "Mulligan",
+    "ownerId": 8,
+    "typeId": 2,
+  },
+  anonymous {
+    "birthDate": 2000-03-09T06:00:00.000Z,
+    "id": 11,
+    "name": "Freddy",
+    "ownerId": 9,
+    "typeId": 5,
   },
 ]
 `;
