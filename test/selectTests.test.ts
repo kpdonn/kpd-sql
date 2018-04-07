@@ -1,5 +1,7 @@
 import { Pool, PoolClient } from "pg"
 import { select, param, table, column, initializePool } from "../src/everything"
+import { printSql } from "../src/postgres"
+
 import * as t from "io-ts"
 
 import * as fs from "fs"
@@ -15,7 +17,7 @@ const pool = new Pool({
 
 describe("Select query tests", () => {
   it("select pets seen dr Ortega", async () => {
-    const query = select()
+    const query = select(printSql)
       .from(Pet)
       .join(Visit, Pet.id.eq(Visit.petId))
       .join(Vet, Vet.id.eq(Visit.vetId))

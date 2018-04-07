@@ -39,6 +39,7 @@ export type Condition<CT extends string = never, P = {}> = (
 export type JoinType = PlainJoin | LeftJoin
 
 export type SqlPart =
+  | SelectStatement
   | Condition
   | JoinType
   | Table
@@ -285,8 +286,18 @@ export type BuilderState = DeepReadonly<{
   fromTables: Table[]
   joins: JoinType[]
   columns: ColumnDeclaration[]
-  whereCondition?: Condition
+  where?: Condition
 }>
+
+export class SelectStatement implements BuilderState, SqlKind {
+  readonly sqlKind = "selectStatement"
+  constructor(
+    readonly fromTables: ReadonlyArray<Table>,
+    readonly joins: ReadonlyArray<JoinType>,
+    readonly columns: ReadonlyArray<ColumnDeclaration>,
+    readonly where?: Condition
+  ) {}
+}
 
 export class SqlBuilder<
   RT extends string = never,
@@ -305,19 +316,22 @@ export class SqlBuilder<
     throw new Error("not implemented")
   }) as any) as ExecuteFunc<P, Cols>
 
-  private paramNumber = 1
+  private paramNumber = 0
   private readonly paramMap = new Map<Parameterized, number>()
 
-  constructor(readonly state: BuilderState) {}
+  private constructor(
+    private readonly state: BuilderState,
+    private readonly printFunc: SqlPrinter
+  ) {}
 
-  static select(): SqlBuilder {
-    return new SqlBuilder(SqlBuilder.initialState)
+  static select(printFunc: SqlPrinter): SqlBuilder {
+    return new SqlBuilder(SqlBuilder.initialState, printFunc)
   }
 
   from<T extends Table & NoDupTable<T, TblNames>>(
     table: T
   ): SqlBuilder<RT | T["_tableAs"], OT, Cols, P> {
-    return new SqlBuilder({
+    return this.next({
       ...this.state,
       fromTables: [...this.state.fromTables, table],
     })
@@ -337,7 +351,7 @@ export class SqlBuilder<
     cols: C
   ): SqlBuilder<RT, OT, Cols & OutputColumns<T, RT> & OutputColumns<T, OT, null>, P> {
     const colDecs = cols.map(col => new ColumnDeclaration(col))
-    return new SqlBuilder({
+    return this.next({
       ...this.state,
       columns: [...this.state.columns, ...colDecs],
     })
@@ -348,7 +362,7 @@ export class SqlBuilder<
     cond: Condition<TblNames | T["_tableAs"]>
   ): SqlBuilder<RT | T["_tableAs"], OT, Cols, P> {
     const join = new PlainJoin(table, cond)
-    return new SqlBuilder({
+    return this.next({
       ...this.state,
       joins: [...this.state.joins, join],
     })
@@ -359,7 +373,7 @@ export class SqlBuilder<
     cond: Condition<TblNames | T["_tableAs"]>
   ): SqlBuilder<RT, OT | T["_tableAs"], Cols, P> {
     const join = new LeftJoin(table, cond)
-    return new SqlBuilder({
+    return this.next({
       ...this.state,
       joins: [...this.state.joins, join],
     })
@@ -368,80 +382,50 @@ export class SqlBuilder<
   where<CTbles extends TblNames, SP>(
     cond: Condition<CTbles, SP>
   ): SqlBuilder<RT, OT, Cols, P & SP> {
-    return new SqlBuilder({
+    return this.next({
       ...this.state,
-      whereCondition: cond,
+      where: cond,
     })
   }
 
   whereSub<CTbles extends TblNames, SP>(
     condCallback: (subSelect: SqlBuilder<RT, OT, {}>) => Condition<CTbles, SP>
   ): SqlBuilder<RT, OT, Cols, P & SP> {
-    const subQueryBuilder = new SqlBuilder(SqlBuilder.initialState)
+    const subQueryBuilder = this.next(SqlBuilder.initialState)
     const callbackResult = condCallback(subQueryBuilder)
-    return new SqlBuilder({
+    return this.next({
       ...this.state,
-      whereCondition: callbackResult,
+      where: callbackResult,
     })
   }
 
   toSql(): string {
-    const columnsSql = this.state.columns.map(this.print).join(", ")
-
-    const fromSql = this.state.fromTables.map(this.print).join(", ")
-
-    const joinSql = this.state.joins.map(this.print).join("\n")
-
-    const whereSql = this.state.whereCondition
-      ? `WHERE ${this.print(this.state.whereCondition)}`
-      : ""
-
-    const result = `SELECT ${columnsSql} FROM ${fromSql} ${joinSql} ${whereSql}`
-    return result
+    const { fromTables, columns, joins, where } = this.state
+    const selectStatement = new SelectStatement(fromTables, joins, columns, where)
+    return this.printFunc(selectStatement, this.lookupParamNum)
   }
 
-  private getParamStr(param: Parameterized): string {
+  private next(nextState: BuilderState): any {
+    return new SqlBuilder(nextState, this.printFunc)
+  }
+
+  private lookupParamNum = (param: Parameterized): number => {
     if (!this.paramMap.has(param)) {
       this.paramMap.set(param, this.paramNumber++)
     }
     const paramNumber = this.paramMap.get(param)!
-    return `$${paramNumber}`
-  }
-
-  private print = (it: SqlPart): string => {
-    const pr = this.print
-    switch (it.sqlKind) {
-      case "plainJoin":
-        return `join ${pr(it.joinTable)} on ${pr(it.onCondition)}`
-      case "leftJoin":
-        return `left join ${pr(it.joinTable)} on ${pr(it.onCondition)}`
-      case "table":
-        return `${it._table} ${it._tableAs}`
-      case "hardcoded":
-      case "placeholderParam":
-        return this.getParamStr(it)
-      case "and":
-        return `(${pr(it.left)}) AND (${pr(it.right)})`
-      case "or":
-        return `(${pr(it.left)}) OR (${pr(it.right)})`
-      case "column":
-        return `${it._tableAs}.${it._column}`
-      case "columnDeclaration":
-        return `${pr(it.col)} as ${it.col._columnAs}`
-      case "eq":
-        return `${pr(it.left)} = ${pr(it.right)}`
-    }
+    return paramNumber
   }
 }
 
-export function select(): SqlBuilder {
-  return SqlBuilder.select()
+export function select(printFun: SqlPrinter): SqlBuilder {
+  return SqlBuilder.select(printFun)
 }
 
-interface LookupParamNum {
+export interface LookupParamNum {
   (param: Parameterized): number
 }
 
-interface SqlPrinter {
-  print(part: SqlPart, lpn: LookupParamNum): string
+export interface SqlPrinter {
+  (part: SqlPart, lpn: LookupParamNum): string
 }
