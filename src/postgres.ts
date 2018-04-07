@@ -13,56 +13,73 @@ export class PgPlugin implements SqlPlugin {
     return result[0]
   }
 
-  async execute(part: SqlPart, lpn: LookupParamNum, args: object = {}): Promise<any> {
-    const [sql, vals] = this._buildSql(part, lpn, args)
+  async execute(
+    part: SqlPart,
+    lpn: LookupParamNum,
+    paramArgs: object = {}
+  ): Promise<any> {
+    const [sql, vals] = this._buildSql(part, lpn, paramArgs)
 
     const results = await this.pool.query(sql, vals)
     return results.rows
   }
 
-  private _buildSql(part: SqlPart, lpn: LookupParamNum, args: any = {}): [string, any[]] {
+  private _buildSql(
+    part: SqlPart,
+    lpn: LookupParamNum,
+    paramArgs: any = {}
+  ): [string, any[]] {
     const paramVals: any[] = []
-    const pr = (it: SqlPart): string => {
-      switch (it.sqlKind) {
-        case "plainJoin":
-          return `JOIN ${pr(it.joinTable)} ON ${pr(it.onCondition)}`
-        case "leftJoin":
-          return `LEFT JOIN ${pr(it.joinTable)} ON ${pr(it.onCondition)}`
-        case "table":
-          if (it._table === it._tableAs) {
-            return `${it._table}`
-          } else {
-            return `${it._table} ${it._tableAs}`
-          }
-        case "hardcoded": {
-          const paramIndex = lpn(it)
-          paramVals[paramIndex] = it.value
-          return `$${paramIndex + 1}`
-        }
-        case "placeholderParam": {
-          const paramIndex = lpn(it)
-          paramVals[paramIndex] = args[it.sqlParam]
-          return `$${paramIndex + 1}`
-        }
-        case "and":
-          return `(${pr(it.left)}) AND (${pr(it.right)})`
-        case "or":
-          return `(${pr(it.left)}) OR (${pr(it.right)})`
-        case "column":
-          return `${it._tableAs}.${it._column}`
-        case "columnDeclaration":
-          return `${pr(it.col)} as "${it.col._columnAs}"`
-        case "eq":
-          return `${pr(it.left)} = ${pr(it.right)}`
-        case "selectStatement":
-          const columnsSql = it.columns.map(pr).join(",\n")
-          const fromSql = it.fromTables.map(pr).join(",\n")
-          const joinSql = it.joins.map(pr).join("\n")
-          const whereSql = it.where ? `WHERE ${pr(it.where)}` : ""
-          return ["SELECT", columnsSql, "FROM", fromSql, joinSql, whereSql].join("\n")
-      }
-    }
-    const sqlString = pr(part)
+    const thisVal = { paramVals, lpn, paramArgs, pr: this.print }
+    const sqlString = this.print.call(thisVal, part)
     return [sqlString, paramVals]
   }
+
+  private print: PrintFunc = function(it) {
+    switch (it.sqlKind) {
+      case "plainJoin":
+        return `JOIN ${this.pr(it.joinTable)} ON ${this.pr(it.onCondition)}`
+      case "leftJoin":
+        return `LEFT JOIN ${this.pr(it.joinTable)} ON ${this.pr(it.onCondition)}`
+      case "table":
+        if (it._table === it._tableAs) {
+          return `${it._table}`
+        } else {
+          return `${it._table} ${it._tableAs}`
+        }
+      case "hardcoded": {
+        const paramIndex = this.lpn(it)
+        this.paramVals[paramIndex] = it.value
+        return `$${paramIndex + 1}`
+      }
+      case "placeholderParam": {
+        const paramIndex = this.lpn(it)
+        this.paramVals[paramIndex] = this.paramArgs[it.sqlParam]
+        return `$${paramIndex + 1}`
+      }
+      case "and":
+        return `(${this.pr(it.left)}) AND (${this.pr(it.right)})`
+      case "or":
+        return `(${this.pr(it.left)}) OR (${this.pr(it.right)})`
+      case "column":
+        return `${it._tableAs}.${it._column}`
+      case "columnDeclaration":
+        return `${this.pr(it.col)} as "${it.col._columnAs}"`
+      case "eq":
+        return `${this.pr(it.left)} = ${this.pr(it.right)}`
+      case "selectStatement":
+        const columnsSql = it.columns.map(x => this.pr(x)).join(",\n")
+        const fromSql = it.fromTables.map(x => this.pr(x)).join(",\n")
+        const joinSql = it.joins.map(x => this.pr(x)).join("\n")
+        const whereSql = it.where ? `WHERE ${this.pr(it.where)}` : ""
+        return ["SELECT", columnsSql, "FROM", fromSql, joinSql, whereSql].join("\n")
+    }
+  }
+}
+
+interface PrintFunc {
+  (
+    this: { pr: PrintFunc; lpn: LookupParamNum; paramVals: any[]; paramArgs: any },
+    it: SqlPart
+  ): string
 }
