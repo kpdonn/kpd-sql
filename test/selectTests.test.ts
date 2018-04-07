@@ -1,13 +1,11 @@
-import { Pool, PoolClient } from "pg"
-import { select, param, table, column, initializePool } from "../src/everything"
-import { printSql } from "../src/postgres"
+import { Pool } from "pg"
+import { init, param, table, column, initializePool } from "../src/everything"
+import { PgPlugin } from "../src/postgres"
 
 import * as t from "io-ts"
 
 import * as fs from "fs"
 import * as path from "path"
-
-import * as sqlFormatter from "sql-formatter"
 
 const connectionString = "postgresql://localhost:5432/sqltest"
 
@@ -15,16 +13,19 @@ const pool = new Pool({
   connectionString,
 })
 
+const db = init(PgPlugin.init(pool))
+
 describe("Select query tests", () => {
   it("select pets seen dr Ortega", async () => {
-    const query = select(printSql)
+    const query = db
+      .select()
       .from(Pet)
       .join(Visit, Pet.id.eq(Visit.petId))
       .join(Vet, Vet.id.eq(Visit.vetId))
-      .columns([Pet.id, Vet.firstName, Pet.birthDate, Pet.ownerId, Pet.typeId])
+      .columns([Pet.id, Pet.name, Pet.birthDate, Pet.ownerId, Pet.typeId])
       .where(Vet.lastName.eq(param("vetLastName")))
 
-    const sql = sqlFormatter.format(query.toSql())
+    const sql = query.toSql()
     expect(sql).toMatchSnapshot()
 
     const results = await query.execute({ vetLastName: "Ortega" })

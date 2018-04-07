@@ -313,19 +313,35 @@ export class SqlBuilder<
   }
 
   execute: ExecuteFunc<P, Cols> = (((arg?: P) => {
-    throw new Error("not implemented")
+    return this.plugin.execute(this.selectStatement, this.lookupParamNum, arg)
   }) as any) as ExecuteFunc<P, Cols>
 
+  toSql(): string {
+    return this.plugin.printSql(this.selectStatement, this.lookupParamNum)
+  }
+
+  private get selectStatement(): SelectStatement {
+    const { fromTables, columns, joins, where } = this.state
+    const selectStatement = new SelectStatement(fromTables, joins, columns, where)
+    return selectStatement
+  }
+
   private paramNumber = 0
-  private readonly paramMap = new Map<Parameterized, number>()
+  private _paramMap: Map<Parameterized, number> | undefined
+  private get paramMap(): Map<Parameterized, number> {
+    if (!this._paramMap) {
+      this._paramMap = new Map()
+    }
+    return this._paramMap
+  }
 
   private constructor(
     private readonly state: BuilderState,
-    private readonly printFunc: SqlPrinter
+    private readonly plugin: SqlPlugin
   ) {}
 
-  static select(printFunc: SqlPrinter): SqlBuilder {
-    return new SqlBuilder(SqlBuilder.initialState, printFunc)
+  static select(plugin: SqlPlugin): SqlBuilder {
+    return new SqlBuilder(SqlBuilder.initialState, plugin)
   }
 
   from<T extends Table & NoDupTable<T, TblNames>>(
@@ -399,14 +415,8 @@ export class SqlBuilder<
     })
   }
 
-  toSql(): string {
-    const { fromTables, columns, joins, where } = this.state
-    const selectStatement = new SelectStatement(fromTables, joins, columns, where)
-    return this.printFunc(selectStatement, this.lookupParamNum)
-  }
-
   private next(nextState: BuilderState): any {
-    return new SqlBuilder(nextState, this.printFunc)
+    return new SqlBuilder(nextState, this.plugin)
   }
 
   private lookupParamNum = (param: Parameterized): number => {
@@ -418,14 +428,17 @@ export class SqlBuilder<
   }
 }
 
-export function select(printFun: SqlPrinter): SqlBuilder {
-  return SqlBuilder.select(printFun)
-}
-
 export interface LookupParamNum {
   (param: Parameterized): number
 }
 
-export interface SqlPrinter {
-  (part: SqlPart, lpn: LookupParamNum): string
+export interface SqlPlugin {
+  printSql(part: SqlPart, lpn: LookupParamNum): string
+  execute(part: SqlPart, lpn: LookupParamNum, args?: object): Promise<any>
+}
+
+export function init(plugin: SqlPlugin) {
+  return {
+    select: () => SqlBuilder.select(plugin),
+  }
 }

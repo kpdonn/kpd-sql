@@ -1,18 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Select query tests select pets seen dr Ortega 1`] = `
-"Select
-  pet.id as \\"id\\",
-  pet.name as \\"name\\",
-  pet.birth_date as \\"birthDate\\",
-  pet.owner_id as \\"ownerId\\",
-  pet.type_id as \\"typeId\\"
-from
-  pet pet
-  inner join visit visit on pet.id = visit.pet_id
-  inner join vet vet on vet.id = visit.vet_id
-where
-  vet.last_name = 'Ortega'"
+"SELECT
+pet.id as \\"id\\",
+pet.name as \\"name\\",
+pet.birth_date as \\"birthDate\\",
+pet.owner_id as \\"ownerId\\",
+pet.type_id as \\"typeId\\"
+FROM
+pet
+JOIN visit ON pet.id = visit.pet_id
+JOIN vet ON vet.id = visit.vet_id
+WHERE vet.last_name = $1"
 `;
 
 exports[`Select query tests select pets seen dr Ortega 2`] = `
