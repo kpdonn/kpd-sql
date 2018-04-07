@@ -1,6 +1,7 @@
 {
   "extends": ["tslint-config-standard", "tslint-config-prettier"],
   "rules": {
-    "member-ordering": false
+    "member-ordering": false,
+    "unified-signatures": false
   }
 }

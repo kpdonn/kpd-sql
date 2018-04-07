@@ -67,11 +67,14 @@ export class PgPlugin implements SqlPlugin {
         return `${this.pr(it.col)} as "${it.col._columnAs}"`
       case "eq":
         return `${this.pr(it.left)} = ${this.pr(it.right)}`
+      case "inCondition":
+        return `${this.pr(it.left)} in (${this.pr(it.right)})`
+
       case "selectStatement":
-        const columnsSql = it.columns.map(x => this.pr(x)).join(",\n")
-        const fromSql = it.fromTables.map(x => this.pr(x)).join(",\n")
-        const joinSql = it.joins.map(x => this.pr(x)).join("\n")
-        const whereSql = it.where ? `WHERE ${this.pr(it.where)}` : ""
+        const columnsSql = it.selColumns.map(x => this.pr(x)).join(",\n")
+        const fromSql = it.selFromTables.map(x => this.pr(x)).join(",\n")
+        const joinSql = it.selJoins.map(x => this.pr(x)).join("\n")
+        const whereSql = it.selWhere ? `WHERE ${this.pr(it.selWhere)}` : ""
         return ["SELECT", columnsSql, "FROM", fromSql, joinSql, whereSql].join("\n")
     }
   }

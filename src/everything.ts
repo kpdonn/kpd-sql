@@ -2,14 +2,13 @@ import * as t from "io-ts"
 
 export type Literal<T extends string> = string extends T ? never : T
 
-export type SqlParamName<N extends string = string> = Record<"sqlParam", N>
 export type SqlParam<N extends string, T> = string extends N ? {} : Record<N, T>
 
 export type ColType<T extends Column> = t.TypeOf<T["_type"]>
 
-export interface SQLReady<Cols> {
-  __sqlReady: Cols
-}
+// export interface SQLReady<Cols> extends SelectStatement {
+//   _sqlReady: Cols
+// }
 
 export type InCol = { type: t.Any; dbName?: string }
 
@@ -27,7 +26,8 @@ export type RemoveKey<T, R extends string> = { [K in Exclude<keyof T, R>]: T[K] 
 export type Condition<CT extends string = never, P = {}> = (
   | EqCondition
   | AndCondition
-  | OrCondition) &
+  | OrCondition
+  | InCondition) &
   RemoveKey<BaseCondition<CT, P>, "sqlKind" | "_condTables" | "_condParams">
 export type JoinType = PlainJoin | LeftJoin
 
@@ -135,9 +135,15 @@ export class Column<
   }
 
   eq<Col2 extends Column<any, this["_type"]>, SPN extends string>(
-    col2: Col2 | t.TypeOf<TY> | SqlParamName<SPN>
+    col2: Col2 | t.TypeOf<TY> | PlaceholderParam<SPN>
   ): Condition<TN | Literal<Col2["_tableAs"]>, SqlParam<SPN, t.TypeOf<TY>>> {
     return new EqCondition(this, col2)
+  }
+
+  in<C extends ValsAre<C, t.TypeOf<TY>>, P, SPN extends string>(
+    rightArg: SqlBuilder<any, any, C, P> | t.TypeOf<TY>[] | PlaceholderParam<SPN>
+  ): Condition<TN, P & SqlParam<SPN, t.TypeOf<TY>>> {
+    return new InCondition(this, rightArg)
   }
 }
 
@@ -228,6 +234,27 @@ export class EqCondition<
   }
 }
 
+export class InCondition<CT extends string = string, P = {}> extends BaseCondition<
+  CT,
+  P
+> {
+  readonly sqlKind = "inCondition"
+  readonly right: SelectStatement | Hardcoded | PlaceholderParam
+
+  constructor(
+    readonly left: Column,
+    rightArg: SelectStatement | any[] | PlaceholderParam<any>
+  ) {
+    super()
+
+    if (isSqlPart(rightArg)) {
+      this.right = rightArg
+    } else {
+      this.right = new Hardcoded(rightArg)
+    }
+  }
+}
+
 export type ArrayKeys = keyof any[]
 
 export type TupleKeys<T> = Exclude<keyof T, ArrayKeys>
@@ -245,7 +272,7 @@ export type ColumnsWithTableName<
 > = { [K in keyof T]: T[K]["_tableAs"] extends Literal<TblName> ? T[K] : never }[keyof T]
 
 export type OutputColumns<
-  T extends Record<string, Column>,
+  T extends ValsAre<T, Column>,
   TableNames extends string,
   OrType = never,
   Cols extends Column = ColumnsWithTableName<T, TableNames>
@@ -263,10 +290,6 @@ export type ExecuteFunc<P, Cols> = {} extends P
   ? () => Promise<Cols[]>
   : (args: P) => Promise<Cols[]>
 
-export interface SQLReady<Cols> {
-  ["_sqlReady"]: Cols
-}
-
 export type DeepReadonly<T> = T extends ReadonlyArray<infer U>
   ? DeepReadonlyArray<U>
   : T extends SqlKind ? T : T extends object ? DeepReadonlyObject<T> : T
@@ -276,20 +299,14 @@ export interface DeepReadonlyArray<T> extends ReadonlyArray<DeepReadonly<T>> {}
 export type DeepReadonlyObject<T> = { readonly [P in keyof T]: DeepReadonly<T[P]> }
 
 export type BuilderState = DeepReadonly<{
-  fromTables: Table[]
-  joins: JoinType[]
-  columns: ColumnDeclaration[]
-  where?: Condition
+  selFromTables: Table[]
+  selJoins: JoinType[]
+  selColumns: ColumnDeclaration[]
+  selWhere?: Condition
 }>
 
-export class SelectStatement implements BuilderState, SqlKind {
-  readonly sqlKind = "selectStatement"
-  constructor(
-    readonly fromTables: ReadonlyArray<Table>,
-    readonly joins: ReadonlyArray<JoinType>,
-    readonly columns: ReadonlyArray<ColumnDeclaration>,
-    readonly where?: Condition
-  ) {}
+export interface SelectStatement extends SqlKind, BuilderState {
+  readonly sqlKind: "selectStatement"
 }
 
 export class SqlBuilder<
@@ -298,25 +315,37 @@ export class SqlBuilder<
   Cols = {},
   P = {},
   TblNames extends string = Literal<RT> | Literal<OT>
-> {
+> implements SelectStatement {
+  readonly sqlKind = "selectStatement"
+
   private static readonly initialState: BuilderState = {
-    fromTables: [],
-    joins: [],
-    columns: [],
+    selFromTables: [],
+    selJoins: [],
+    selColumns: [],
+  }
+
+  get selFromTables(): ReadonlyArray<Table> {
+    return this.state.selFromTables
+  }
+
+  get selJoins(): ReadonlyArray<JoinType> {
+    return this.state.selJoins
+  }
+
+  get selColumns(): ReadonlyArray<ColumnDeclaration> {
+    return this.state.selColumns
+  }
+
+  get selWhere(): Condition | undefined {
+    return this.state.selWhere
   }
 
   execute: ExecuteFunc<P, Cols> = (((arg?: P) => {
-    return this.plugin.execute(this.selectStatement, this.lookupParamNum, arg)
+    return this.plugin.execute(this, this.lookupParamNum, arg)
   }) as any) as ExecuteFunc<P, Cols>
 
   toSql(): string {
-    return this.plugin.printSql(this.selectStatement, this.lookupParamNum)
-  }
-
-  private get selectStatement(): SelectStatement {
-    const { fromTables, columns, joins, where } = this.state
-    const selectStatement = new SelectStatement(fromTables, joins, columns, where)
-    return selectStatement
+    return this.plugin.printSql(this, this.lookupParamNum)
   }
 
   private paramNumber = 0
@@ -342,7 +371,7 @@ export class SqlBuilder<
   ): SqlBuilder<RT | T["_tableAs"], OT, Cols, P> {
     return this.next({
       ...this.state,
-      fromTables: [...this.state.fromTables, table],
+      selFromTables: [...this.state.selFromTables, table],
     })
   }
 
@@ -362,7 +391,7 @@ export class SqlBuilder<
     const colDecs = cols.map(col => new ColumnDeclaration(col))
     return this.next({
       ...this.state,
-      columns: [...this.state.columns, ...colDecs],
+      selColumns: [...this.state.selColumns, ...colDecs],
     })
   }
 
@@ -373,7 +402,7 @@ export class SqlBuilder<
     const join = new PlainJoin(table, cond)
     return this.next({
       ...this.state,
-      joins: [...this.state.joins, join],
+      selJoins: [...this.state.selJoins, join],
     })
   }
 
@@ -384,27 +413,22 @@ export class SqlBuilder<
     const join = new LeftJoin(table, cond)
     return this.next({
       ...this.state,
-      joins: [...this.state.joins, join],
+      selJoins: [...this.state.selJoins, join],
     })
   }
 
   where<CTbles extends TblNames, SP>(
-    cond: Condition<CTbles, SP>
-  ): SqlBuilder<RT, OT, Cols, P & SP> {
-    return this.next({
-      ...this.state,
-      where: cond,
-    })
-  }
+    arg: Condition<CTbles, SP>
+  ): SqlBuilder<RT, OT, Cols, P & SP>
+  where<CTbles extends TblNames, SP>(
+    arg: ((subSelect: SqlBuilder<RT, OT, {}>) => Condition<CTbles, SP>)
+  ): SqlBuilder<RT, OT, Cols, P & SP>
+  where(arg: Condition | ((arg: SqlBuilder) => Condition)): SqlBuilder {
+    const cond = isSqlPart(arg) ? arg : arg(this.next(SqlBuilder.initialState))
 
-  whereSub<CTbles extends TblNames, SP>(
-    condCallback: (subSelect: SqlBuilder<RT, OT, {}>) => Condition<CTbles, SP>
-  ): SqlBuilder<RT, OT, Cols, P & SP> {
-    const subQueryBuilder = this.next(SqlBuilder.initialState)
-    const callbackResult = condCallback(subQueryBuilder)
     return this.next({
       ...this.state,
-      where: callbackResult,
+      selWhere: cond,
     })
   }
 
