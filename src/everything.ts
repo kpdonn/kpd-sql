@@ -29,12 +29,6 @@ export type TransformInCol<TN extends string, C extends Record<string, InCol>> =
   readonly [K in keyof C]: Column<TN, C[K]["type"], LiteralOr<C[K]["dbName"], K>, K>
 }
 
-export type TableWithColumns<
-  TN extends string = string,
-  C extends Record<string, InCol> = Record<string, InCol>,
-  AsName extends string = TN
-> = Table<TN, C, AsName> & TransformInCol<AsName, C>
-
 export type RemoveKey<T, R extends string> = { [K in Exclude<keyof T, R>]: T[K] }
 
 export type Condition<CT extends string = never, P = {}> = (
@@ -78,7 +72,7 @@ export class LeftJoin implements SqlKind {
   constructor(readonly joinTable: Table, readonly onCondition: Condition) {}
 }
 
-export class Table<
+class PrivateTable<
   TN extends string = string,
   C extends Record<string, InCol> = {},
   AsName extends string = string
@@ -101,17 +95,36 @@ export class Table<
     })
   }
 
-  as<NN extends string>(newAsName: NN): TableWithColumns<TN, C, NN> {
-    return new Table(this._table, this._columns, newAsName) as TableWithColumns<TN, C, NN>
+  as<NN extends string>(newAsName: NN): Table<TN, C, NN> {
+    return new Table(this._table, this._columns, newAsName)
   }
 }
+
+export type Table<
+  TN extends string = string,
+  C extends Record<string, InCol> = {},
+  AsName extends string = string
+> = PrivateTable<TN, C, AsName> & TransformInCol<AsName, C>
+
+export interface TableConstructor {
+  new <
+    TN extends string = string,
+    C extends Record<string, InCol> = {},
+    AsName extends string = string
+  >(
+    _table: TN,
+    _columns: C,
+    _tableAs: AsName
+  ): Table<TN, C, AsName>
+}
+export const Table: TableConstructor = PrivateTable as TableConstructor
 
 export function table<
   N extends string,
   C extends { [K in keyof C]: InCol },
   AN extends string = N
->(arg: { name: N; columns: C; asName?: AN }): TableWithColumns<N, C, AN> {
-  return new Table(arg.name, arg.columns, arg.asName || arg.name) as any
+>(arg: { name: N; columns: C; asName?: AN }): Table<N, C, AN> {
+  return new Table(arg.name, arg.columns, arg.asName || arg.name) as Table<N, C, AN>
 }
 
 export class Column<
@@ -254,7 +267,7 @@ export type OutputColumns<
     : never
 }
 
-export type NoDupTable<T extends TableWithColumns, TableNames extends string> = {
+export type NoDupTable<T extends Table, TableNames extends string> = {
   ["_table"]: T["_tableAs"] extends TableNames ? never : string
 }
 
@@ -307,7 +320,7 @@ export class SqlBuilder<
     return new SqlBuilder(SqlBuilder.initialState)
   }
 
-  from<T extends TableWithColumns & NoDupTable<T, TblNames>>(
+  from<T extends Table & NoDupTable<T, TblNames>>(
     table: T
   ): SqlBuilder<RT | T["_tableAs"], OT, Cols, P> {
     return new SqlBuilder({
@@ -335,7 +348,7 @@ export class SqlBuilder<
     })
   }
 
-  join<T extends TableWithColumns & NoDupTable<T, TblNames>>(
+  join<T extends Table & NoDupTable<T, TblNames>>(
     table: T,
     cond: Condition<TblNames | T["_tableAs"]>
   ): SqlBuilder<RT | T["_tableAs"], OT, Cols, P> {
@@ -346,7 +359,7 @@ export class SqlBuilder<
     })
   }
 
-  leftJoin<T extends TableWithColumns & NoDupTable<T, TblNames>>(
+  leftJoin<T extends Table & NoDupTable<T, TblNames>>(
     table: T,
     cond: Condition<TblNames | T["_tableAs"]>
   ): SqlBuilder<RT, OT | T["_tableAs"], Cols, P> {
