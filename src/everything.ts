@@ -72,20 +72,17 @@ export class LeftJoin implements SqlKind {
   constructor(readonly joinTable: Table, readonly onCondition: Condition) {}
 }
 
-export class PrivateTable<
-  TN extends string = string,
-  C extends Record<string, InCol> = {},
-  AsName extends string = string
-> implements SqlKind {
+export class PrivateTable<C extends ValsAre<C, InCol>, AN extends string>
+  implements SqlKind {
   readonly sqlKind = "table"
 
   constructor(
-    readonly _table: TN,
+    readonly _table: string,
     private readonly _columns: C,
-    readonly _tableAs: AsName
+    readonly _tableAs: AN
   ) {
     for (const colName in _columns) {
-      const thisColumns = (this as any) as NoRO<TableColumns<AsName, C>>
+      const thisColumns = (this as any) as NoRO<TableColumns<AN, C>>
       thisColumns[colName] = new Column(
         _tableAs,
         _columns[colName].dbName || colName,
@@ -95,38 +92,34 @@ export class PrivateTable<
     }
   }
 
-  as<NN extends string>(newAsName: NN): Table<TN, C, NN> {
+  as<NN extends string>(newAsName: NN): Table<C, NN> {
     return new Table(this._table, this._columns, newAsName)
   }
 }
 
 type NoRO<T> = { -readonly [K in keyof T]: T[K] }
 
+export type ValsAre<T, V> = { [K in keyof T]: V }
+
 export type Table<
-  TN extends string = string,
-  C extends Record<string, InCol> = {},
+  C extends ValsAre<C, InCol> = ValsAre<C, InCol>,
   AsName extends string = string
-> = PrivateTable<TN, C, AsName> & TableColumns<AsName, C>
+> = PrivateTable<C, AsName> & TableColumns<AsName, C>
 
 export interface TableConstructor {
-  new <
-    TN extends string = string,
-    C extends Record<string, InCol> = {},
-    AsName extends string = string
-  >(
-    _table: TN,
+  new <C extends ValsAre<C, InCol>, AsName extends string>(
+    _table: string,
     _columns: C,
     _tableAs: AsName
-  ): Table<TN, C, AsName>
+  ): Table<C, AsName>
 }
 export const Table: TableConstructor = PrivateTable as TableConstructor
 
-export function table<
-  N extends string,
-  C extends { [K in keyof C]: InCol },
-  AN extends string = N
->(arg: { name: N; columns: C; asName?: AN }): Table<N, C, AN> {
-  return new Table(arg.name, arg.columns, arg.asName || arg.name) as Table<N, C, AN>
+export function table<C extends ValsAre<C, InCol>, N extends string>(arg: {
+  name: N
+  columns: C
+}): Table<C, N> {
+  return new Table(arg.name, arg.columns, arg.name)
 }
 
 export class Column<
