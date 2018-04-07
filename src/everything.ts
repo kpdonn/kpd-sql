@@ -284,7 +284,7 @@ export type DeepReadonlyObject<T> = { readonly [P in keyof T]: DeepReadonly<T[P]
 export type BuilderState = DeepReadonly<{
   fromTables: Table[]
   joins: JoinType[]
-  columns: Column[]
+  columns: ColumnDeclaration[]
   whereCondition?: Condition
 }>
 
@@ -336,9 +336,10 @@ export class SqlBuilder<
   >(
     cols: C
   ): SqlBuilder<RT, OT, Cols & OutputColumns<T, RT> & OutputColumns<T, OT, null>, P> {
+    const colDecs = cols.map(col => new ColumnDeclaration(col))
     return new SqlBuilder({
       ...this.state,
-      columns: [...this.state.columns, ...cols],
+      columns: [...this.state.columns, ...colDecs],
     })
   }
 
@@ -385,9 +386,7 @@ export class SqlBuilder<
   }
 
   toSql(): string {
-    const columnsSql = this.state.columns
-      .map(c => this.print(new ColumnDeclaration(c)))
-      .join(", ")
+    const columnsSql = this.state.columns.map(this.print).join(", ")
 
     const fromSql = this.state.fromTables.map(this.print).join(", ")
 
@@ -437,4 +436,12 @@ export class SqlBuilder<
 
 export function select(): SqlBuilder {
   return SqlBuilder.select()
+}
+
+interface LookupParamNum {
+  (param: Parameterized): number
+}
+
+interface SqlPrinter {
+  print(part: SqlPart, lpn: LookupParamNum): string
 }
