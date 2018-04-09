@@ -18,9 +18,7 @@ describe("Select query tests", () => {
   it("select pets seen dr Ortega", async () => {
     const query = db
       .select()
-      .from(Pet)
-      .join(Visit, Pet.id.eq(Visit.petId))
-      .join(Vet, Vet.id.eq(Visit.vetId))
+      .from(Pet.join(Visit, Pet.id.eq(Visit.petId)).join(Vet, Vet.id.eq(Visit.vetId)))
       .columns([Pet.id, Pet.name, Pet.birthDate, Pet.ownerId, Pet.typeId])
       .where(Vet.lastName.eq(param("vetLastName")))
 
@@ -73,9 +71,9 @@ describe("Select query tests", () => {
   it("select non cat pets with optional visit", async () => {
     const query = db
       .select()
-      .from(Pet)
-      .join(Type, Type.id.eq(Pet.typeId))
-      .leftJoin(Visit, Pet.id.eq(Visit.petId))
+      .from(
+        Pet.join(Type, Type.id.eq(Pet.typeId)).leftJoin(Visit, Pet.id.eq(Visit.petId))
+      )
       .columns([
         Pet.id,
         Type.name.as("type"),
@@ -97,9 +95,13 @@ describe("Select query tests", () => {
   it("select vets with no specialty", async () => {
     const query = db
       .select()
-      .from(Vet)
-      .leftJoin(VetSpecialty, VetSpecialty.vetId.eq(Vet.id))
-      .leftJoin(Specialty, Specialty.id.eq(VetSpecialty.specialtyId))
+      .from(
+        Vet.leftJoin(VetSpecialty, VetSpecialty.vetId.eq(Vet.id)).leftJoin(
+          Specialty,
+          Specialty.id.eq(VetSpecialty.specialtyId)
+        )
+      )
+
       .columns([Vet.id, Vet.firstName, Vet.lastName, Specialty.name])
       .where(VetSpecialty.specialtyId.isNull)
 
@@ -112,9 +114,13 @@ describe("Select query tests", () => {
   it("select vets with their specialties", async () => {
     const query = db
       .select()
-      .from(Vet)
-      .leftJoin(VetSpecialty, VetSpecialty.vetId.eq(Vet.id))
-      .leftJoin(Specialty, Specialty.id.eq(VetSpecialty.specialtyId))
+      .from(
+        Vet.leftJoin(VetSpecialty, VetSpecialty.vetId.eq(Vet.id)).leftJoin(
+          Specialty,
+          Specialty.id.eq(VetSpecialty.specialtyId)
+        )
+      )
+
       .columns([Vet.id, Vet.firstName, Vet.lastName, Specialty.name])
       .where(VetSpecialty.specialtyId.isNotNull)
 
@@ -129,16 +135,18 @@ describe("Select query tests", () => {
       .with(
         "myWith",
         db
-          .from(Vet)
-          .leftJoin(VetSpecialty, VetSpecialty.vetId.eq(Vet.id))
-          .leftJoin(Specialty, Specialty.id.eq(VetSpecialty.specialtyId))
+          .from(
+            Vet.leftJoin(VetSpecialty, VetSpecialty.vetId.eq(Vet.id)).leftJoin(
+              Specialty,
+              Specialty.id.eq(VetSpecialty.specialtyId)
+            )
+          )
           .columns([Vet.id, Vet.firstName, Vet.lastName, Specialty.name])
           .where(VetSpecialty.specialtyId.isNotNull)
       )
       .select(sq =>
         sq
-          .from(sq.table.myWith)
-          .join(Visit, Visit.vetId.eq(sq.table.myWith.id))
+          .from(sq.table.myWith.join(Visit, Visit.vetId.eq(sq.table.myWith.id)))
           .columns([sq.table.myWith.id, sq.table.myWith.lastName, Visit.petId])
       )
 

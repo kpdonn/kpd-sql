@@ -21,14 +21,16 @@ export type Condition<CT extends string = string, P = {}> =
   | InCondition<CT, P>
   | NotCondition<CT, P>
 
-export type JoinType = PlainJoin | LeftJoin
+export type FromType<RT extends string = string, OT extends string = string> =
+  | Table<{}, RT, OT>
+  | PlainJoin<RT, OT>
+  | LeftJoin<RT, OT>
 
 export type SqlPart =
   | WithClause
   | SelectStatement
   | Condition
-  | JoinType
-  | Table
+  | FromType
   | Column
   | PlaceholderParam
   | Hardcoded
@@ -50,17 +52,72 @@ export class ColumnDeclaration implements SqlKind {
   constructor(readonly col: Column) {}
 }
 
-export class PlainJoin implements SqlKind {
-  readonly sqlKind = "plainJoin"
-  constructor(readonly joinTable: Table, readonly onCondition: Condition) {}
-}
-export class LeftJoin implements SqlKind {
-  readonly sqlKind = "leftJoin"
-  constructor(readonly joinTable: Table, readonly onCondition: Condition) {}
+export type NoDups<T extends string, TableNames extends string> = T extends TableNames
+  ? never
+  : {}
+
+abstract class FromTable<
+  RT extends string,
+  OT extends string,
+  TblNames extends string = Literal<RT> | Literal<OT>,
+  TblNames2 extends TblNames = TblNames
+> {
+  join<
+    _RT extends string,
+    _OT extends string,
+    _NewTblNames extends string = Literal<_RT> | Literal<_OT>,
+    _NTN2 extends _NewTblNames = _NewTblNames
+  >(
+    table: FromType<_RT, _OT> & NoDups<_NewTblNames, TblNames>,
+    cond: Condition<TblNames2 | _NTN2>
+  ): FromType<RT | Literal<_RT>, OT | Literal<_OT>> {
+    const join = new PlainJoin(this as any, table, cond)
+    return join
+  }
+  leftJoin<
+    _RT extends string,
+    _OT extends string,
+    _NewTblNames extends string = Literal<_RT> | Literal<_OT>,
+    _NTN2 extends _NewTblNames = _NewTblNames
+  >(
+    table: FromType<_RT, _OT> & NoDups<_NewTblNames, TblNames>,
+    cond: Condition<TblNames2 | _NTN2>
+  ): FromType<RT | Literal<_RT>, OT | Literal<_OT>> {
+    const join = new LeftJoin(this as any, table, cond)
+    return join
+  }
 }
 
-export class PrivateTable<C extends ValsAre<C, InputCol>, AN extends string>
+export class PlainJoin<RT extends string = never, OT extends string = never>
+  extends FromTable<RT, OT>
   implements SqlKind {
+  readonly sqlKind = "plainJoin"
+  constructor(
+    readonly left: FromType,
+    readonly right: FromType,
+    readonly onCondition: Condition
+  ) {
+    super()
+  }
+}
+export class LeftJoin<RT extends string = never, OT extends string = never>
+  extends FromTable<RT, OT>
+  implements SqlKind {
+  readonly sqlKind = "leftJoin"
+  constructor(
+    readonly left: FromType,
+    readonly right: FromType,
+    readonly onCondition: Condition
+  ) {
+    super()
+  }
+}
+
+export class PrivateTable<
+  C extends Record<string, InputCol>,
+  AN extends string,
+  OT extends string = never
+> extends FromTable<AN, OT> implements SqlKind {
   readonly sqlKind = "table"
 
   constructor(
@@ -68,6 +125,7 @@ export class PrivateTable<C extends ValsAre<C, InputCol>, AN extends string>
     private readonly _columns: C,
     readonly _tableAs: AN
   ) {
+    super()
     for (const colName in _columns) {
       const thisColumns = (this as any) as NoRO<TableColumns<AN, C>>
       thisColumns[colName] = new Column(
@@ -78,10 +136,6 @@ export class PrivateTable<C extends ValsAre<C, InputCol>, AN extends string>
       )
     }
   }
-
-  as<NN extends string>(newAsName: NN): Table<C, NN> {
-    return new Table(this._table, this._columns, newAsName)
-  }
 }
 
 type NoRO<T> = { -readonly [K in keyof T]: T[K] }
@@ -90,8 +144,9 @@ export type ValsAre<T, V> = { [K in keyof T]: V }
 
 export type Table<
   C extends ValsAre<C, InputCol> = ValsAre<C, InputCol>,
-  AsName extends string = string
-> = PrivateTable<C, AsName> & TableColumns<AsName, C>
+  AsName extends string = string,
+  OT extends string = never
+> = PrivateTable<C, AsName, OT> & TableColumns<AsName, C>
 
 export interface TableConstructor {
   new <C extends ValsAre<C, InputCol>, AsName extends string>(
@@ -374,8 +429,7 @@ export interface DeepReadonlyArray<T> extends ReadonlyArray<DeepReadonly<T>> {}
 export type DeepReadonlyObject<T> = { readonly [P in keyof T]: DeepReadonly<T[P]> }
 
 export type BuilderState = DeepReadonly<{
-  selFromTables: Table[]
-  selJoins: JoinType[]
+  selFrom?: FromType
   selColumns: ColumnDeclaration[]
   selWhere?: Condition
   selWith: WithClause[]
@@ -406,18 +460,15 @@ export class SqlBuilder<
   }
 
   private static readonly initialState: BuilderState = {
-    selFromTables: [],
-    selJoins: [],
     selColumns: [],
     selWith: [],
   }
 
-  get selFromTables(): ReadonlyArray<Table> {
-    return this.state.selFromTables
-  }
-
-  get selJoins(): ReadonlyArray<JoinType> {
-    return this.state.selJoins
+  get selFrom(): FromType {
+    if (!this.state.selFrom) {
+      throw new Error("From tables was undefined")
+    }
+    return this.state.selFrom
   }
 
   get selColumns(): ReadonlyArray<ColumnDeclaration> {
@@ -477,12 +528,12 @@ export class SqlBuilder<
     return cb ? cb(this) : this
   }
 
-  from<T extends Table & NoDupTable<T, TblNames>>(
-    table: T
-  ): SqlBuilder<Cols, P, RT | T["_tableAs"], OT, WT> {
+  from<_RT extends string, _OT extends string>(
+    fromType: FromType<_RT, _OT>
+  ): SqlBuilder<Cols, P, Literal<RT> | Literal<_RT>, Literal<OT> | Literal<_OT>, WT> {
     return this.next({
       ...this.state,
-      selFromTables: [...this.state.selFromTables, table],
+      selFrom: fromType,
     })
   }
 
@@ -501,28 +552,6 @@ export class SqlBuilder<
     return this.next({
       ...this.state,
       selColumns: [...this.state.selColumns, ...colDecs],
-    })
-  }
-
-  join<T extends Table & NoDupTable<T, TblNames>>(
-    table: T,
-    cond: Condition<TblNames | T["_tableAs"]>
-  ): SqlBuilder<Cols, P, RT | T["_tableAs"], OT, WT> {
-    const join = new PlainJoin(table, cond)
-    return this.next({
-      ...this.state,
-      selJoins: [...this.state.selJoins, join],
-    })
-  }
-
-  leftJoin<T extends Table & NoDupTable<T, TblNames>>(
-    table: T,
-    cond: Condition<TblNames | T["_tableAs"]>
-  ): SqlBuilder<Cols, P, RT, OT | T["_tableAs"], WT> {
-    const join = new LeftJoin(table, cond)
-    return this.next({
-      ...this.state,
-      selJoins: [...this.state.selJoins, join],
     })
   }
 

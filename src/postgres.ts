@@ -38,9 +38,25 @@ export class PgPlugin implements SqlPlugin {
   private print: PrintFunc = function(it) {
     switch (it.sqlKind) {
       case "plainJoin":
-        return `JOIN ${this.pr(it.joinTable)} ON ${this.pr(it.onCondition)}`
+        return [
+          "(",
+          `${this.pr(it.left)}`,
+          "JOIN",
+          `${this.pr(it.right)}`,
+          "ON",
+          this.pr(it.onCondition),
+          ")",
+        ].join(" ")
       case "leftJoin":
-        return `LEFT JOIN ${this.pr(it.joinTable)} ON ${this.pr(it.onCondition)}`
+        return [
+          "(",
+          `${this.pr(it.left)}`,
+          "LEFT JOIN",
+          `${this.pr(it.right)}`,
+          "ON",
+          this.pr(it.onCondition),
+          ")",
+        ].join(" ")
       case "table":
         if (it._table === it._tableAs) {
           return `"${it._table}"`
@@ -83,10 +99,9 @@ export class PgPlugin implements SqlPlugin {
             ? `WITH ${it.selWith.map(x => this.pr(x)).join(", ")}`
             : ""
         const columnsSql = it.selColumns.map(x => this.pr(x)).join(",\n")
-        const fromSql = it.selFromTables.map(x => this.pr(x)).join(",\n")
-        const joinSql = it.selJoins.map(x => this.pr(x)).join("\n")
+        const fromSql = this.pr(it.selFrom!)
         const whereSql = it.selWhere ? `WHERE ${this.pr(it.selWhere)}` : ""
-        return [withSql, "SELECT", columnsSql, "FROM", fromSql, joinSql, whereSql]
+        return [withSql, "SELECT", columnsSql, "FROM", fromSql, whereSql]
           .filter(x => !!x.length)
           .join("\n")
     }

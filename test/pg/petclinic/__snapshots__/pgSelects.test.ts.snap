@@ -11,9 +11,7 @@ exports[`Select query tests select non cat pets with optional visit 1`] = `
 \\"visit\\".\\"visit_date\\" as \\"visitDate\\",
 \\"visit\\".\\"vet_id\\" as \\"vetId\\"
 FROM
-\\"pet\\"
-JOIN \\"type\\" ON \\"type\\".\\"id\\" = \\"pet\\".\\"type_id\\"
-LEFT JOIN \\"visit\\" ON \\"pet\\".\\"id\\" = \\"visit\\".\\"pet_id\\"
+( ( \\"pet\\" JOIN \\"type\\" ON \\"type\\".\\"id\\" = \\"pet\\".\\"type_id\\" ) LEFT JOIN \\"visit\\" ON \\"pet\\".\\"id\\" = \\"visit\\".\\"pet_id\\" )
 WHERE NOT (\\"type\\".\\"name\\" = $1)"
 `;
 
@@ -183,9 +181,7 @@ exports[`Select query tests select pets seen dr Ortega 1`] = `
 \\"pet\\".\\"owner_id\\" as \\"ownerId\\",
 \\"pet\\".\\"type_id\\" as \\"typeId\\"
 FROM
-\\"pet\\"
-JOIN \\"visit\\" ON \\"pet\\".\\"id\\" = \\"visit\\".\\"pet_id\\"
-JOIN \\"vet\\" ON \\"vet\\".\\"id\\" = \\"visit\\".\\"vet_id\\"
+( ( \\"pet\\" JOIN \\"visit\\" ON \\"pet\\".\\"id\\" = \\"visit\\".\\"pet_id\\" ) JOIN \\"vet\\" ON \\"vet\\".\\"id\\" = \\"visit\\".\\"vet_id\\" )
 WHERE \\"vet\\".\\"last_name\\" = $1"
 `;
 
@@ -215,9 +211,7 @@ exports[`Select query tests select vets with no specialty 1`] = `
 \\"vet\\".\\"last_name\\" as \\"lastName\\",
 \\"specialty\\".\\"name\\" as \\"name\\"
 FROM
-\\"vet\\"
-LEFT JOIN \\"vet_specialty\\" ON \\"vet_specialty\\".\\"vet_id\\" = \\"vet\\".\\"id\\"
-LEFT JOIN \\"specialty\\" ON \\"specialty\\".\\"id\\" = \\"vet_specialty\\".\\"specialty_id\\"
+( ( \\"vet\\" LEFT JOIN \\"vet_specialty\\" ON \\"vet_specialty\\".\\"vet_id\\" = \\"vet\\".\\"id\\" ) LEFT JOIN \\"specialty\\" ON \\"specialty\\".\\"id\\" = \\"vet_specialty\\".\\"specialty_id\\" )
 WHERE \\"vet_specialty\\".\\"specialty_id\\" IS NULL"
 `;
 
@@ -245,9 +239,7 @@ exports[`Select query tests select vets with their specialties 1`] = `
 \\"vet\\".\\"last_name\\" as \\"lastName\\",
 \\"specialty\\".\\"name\\" as \\"name\\"
 FROM
-\\"vet\\"
-LEFT JOIN \\"vet_specialty\\" ON \\"vet_specialty\\".\\"vet_id\\" = \\"vet\\".\\"id\\"
-LEFT JOIN \\"specialty\\" ON \\"specialty\\".\\"id\\" = \\"vet_specialty\\".\\"specialty_id\\"
+( ( \\"vet\\" LEFT JOIN \\"vet_specialty\\" ON \\"vet_specialty\\".\\"vet_id\\" = \\"vet\\".\\"id\\" ) LEFT JOIN \\"specialty\\" ON \\"specialty\\".\\"id\\" = \\"vet_specialty\\".\\"specialty_id\\" )
 WHERE \\"vet_specialty\\".\\"specialty_id\\" IS NOT NULL"
 `;
 
@@ -342,17 +334,14 @@ exports[`Select query tests with clause query 1`] = `
 \\"vet\\".\\"last_name\\" as \\"lastName\\",
 \\"specialty\\".\\"name\\" as \\"name\\"
 FROM
-\\"vet\\"
-LEFT JOIN \\"vet_specialty\\" ON \\"vet_specialty\\".\\"vet_id\\" = \\"vet\\".\\"id\\"
-LEFT JOIN \\"specialty\\" ON \\"specialty\\".\\"id\\" = \\"vet_specialty\\".\\"specialty_id\\"
+( ( \\"vet\\" LEFT JOIN \\"vet_specialty\\" ON \\"vet_specialty\\".\\"vet_id\\" = \\"vet\\".\\"id\\" ) LEFT JOIN \\"specialty\\" ON \\"specialty\\".\\"id\\" = \\"vet_specialty\\".\\"specialty_id\\" )
 WHERE \\"vet_specialty\\".\\"specialty_id\\" IS NOT NULL)
 SELECT
 \\"myWith\\".\\"id\\" as \\"id\\",
 \\"myWith\\".\\"lastName\\" as \\"lastName\\",
 \\"visit\\".\\"pet_id\\" as \\"petId\\"
 FROM
-\\"myWith\\"
-JOIN \\"visit\\" ON \\"visit\\".\\"vet_id\\" = \\"myWith\\".\\"id\\""
+( \\"myWith\\" JOIN \\"visit\\" ON \\"visit\\".\\"vet_id\\" = \\"myWith\\".\\"id\\" )"
 `;
 
 exports[`Select query tests with clause query 2`] = `
