@@ -4,7 +4,7 @@ import { PgPlugin } from "../../../src/postgres"
 
 import * as fs from "fs"
 import * as path from "path"
-import { Visit, Pet, Vet, Owner } from "./tables"
+import { Visit, Pet, Vet, Owner, Type } from "./tables"
 
 const connectionString = "postgresql://localhost:5432/sqltest"
 
@@ -67,6 +67,30 @@ describe("Select query tests", () => {
     expect(query.toSql()).toMatchSnapshot()
     const results = await query.execute()
     expect(results).toHaveLength(6)
+    expect(results).toMatchSnapshot()
+  })
+
+  it("select non cat pets with optional visit", async () => {
+    const query = db
+      .select()
+      .from(Pet)
+      .join(Type, Type.id.eq(Pet.typeId))
+      .leftJoin(Visit, Pet.id.eq(Visit.petId))
+      .columns([
+        Pet.id,
+        Type.name.as("type"),
+        Pet.name,
+        Pet.birthDate,
+        Pet.ownerId,
+        Pet.typeId,
+        Visit.visitDate,
+        Visit.vetId,
+      ])
+      .where(Type.name.not.eq("cat"))
+
+    expect(query.toSql()).toMatchSnapshot()
+    const results = await query.execute()
+    expect(results).toHaveLength(9)
     expect(results).toMatchSnapshot()
   })
 })

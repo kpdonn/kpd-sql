@@ -1,5 +1,117 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Select query tests select non cat pets with optional visit 1`] = `
+"SELECT
+pet.id as \\"id\\",
+type.name as \\"type\\",
+pet.name as \\"name\\",
+pet.birth_date as \\"birthDate\\",
+pet.owner_id as \\"ownerId\\",
+pet.type_id as \\"typeId\\",
+visit.visit_date as \\"visitDate\\",
+visit.vet_id as \\"vetId\\"
+FROM
+pet
+JOIN type ON type.id = pet.type_id
+LEFT JOIN visit ON pet.id = visit.pet_id
+WHERE NOT (type.name = $1)"
+`;
+
+exports[`Select query tests select non cat pets with optional visit 2`] = `
+Array [
+  anonymous {
+    "birthDate": 1997-02-24T06:00:00.000Z,
+    "id": 10,
+    "name": "Mulligan",
+    "ownerId": 8,
+    "type": "dog",
+    "typeId": 2,
+    "vetId": null,
+    "visitDate": null,
+  },
+  anonymous {
+    "birthDate": 2000-01-20T06:00:00.000Z,
+    "id": 6,
+    "name": "George",
+    "ownerId": 5,
+    "type": "snake",
+    "typeId": 4,
+    "vetId": null,
+    "visitDate": null,
+  },
+  anonymous {
+    "birthDate": 2000-03-09T06:00:00.000Z,
+    "id": 11,
+    "name": "Freddy",
+    "ownerId": 9,
+    "type": "bird",
+    "typeId": 5,
+    "vetId": null,
+    "visitDate": null,
+  },
+  anonymous {
+    "birthDate": 2000-06-24T05:00:00.000Z,
+    "id": 12,
+    "name": "Lucky",
+    "ownerId": 10,
+    "type": "dog",
+    "typeId": 2,
+    "vetId": null,
+    "visitDate": null,
+  },
+  anonymous {
+    "birthDate": 2002-08-06T05:00:00.000Z,
+    "id": 2,
+    "name": "Basil",
+    "ownerId": 2,
+    "type": "hamster",
+    "typeId": 6,
+    "vetId": null,
+    "visitDate": null,
+  },
+  anonymous {
+    "birthDate": 2000-11-30T06:00:00.000Z,
+    "id": 5,
+    "name": "Iggy",
+    "ownerId": 4,
+    "type": "lizard",
+    "typeId": 3,
+    "vetId": null,
+    "visitDate": null,
+  },
+  anonymous {
+    "birthDate": 2000-03-07T06:00:00.000Z,
+    "id": 4,
+    "name": "Jewel",
+    "ownerId": 3,
+    "type": "dog",
+    "typeId": 2,
+    "vetId": null,
+    "visitDate": null,
+  },
+  anonymous {
+    "birthDate": 2001-04-17T05:00:00.000Z,
+    "id": 3,
+    "name": "Rosy",
+    "ownerId": 3,
+    "type": "dog",
+    "typeId": 2,
+    "vetId": null,
+    "visitDate": null,
+  },
+  anonymous {
+    "birthDate": 1999-08-06T05:00:00.000Z,
+    "id": 9,
+    "name": "Lucky",
+    "ownerId": 7,
+    "type": "bird",
+    "typeId": 5,
+    "vetId": null,
+    "visitDate": null,
+  },
+]
+`;
+
 exports[`Select query tests select pets hardcoded live in madison or McFarland 1`] = `
 "SELECT
 pet.id as \\"id\\",

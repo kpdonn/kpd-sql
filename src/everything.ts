@@ -18,7 +18,8 @@ export type Condition<CT extends string = never, P = {}> = (
   | EqCondition
   | AndCondition
   | OrCondition
-  | InCondition) &
+  | InCondition
+  | NotCondition) &
   RemoveKey<BaseCondition<CT, P>, "sqlKind" | "_condTables" | "_condParams">
 export type JoinType = PlainJoin | LeftJoin
 
@@ -118,8 +119,13 @@ export class Column<
     readonly _tableAs: TN,
     readonly _column: string,
     readonly _type: TY,
-    readonly _columnAs: CAS
+    readonly _columnAs: CAS,
+    private readonly _isNot: boolean = false
   ) {}
+
+  get not(): Column<TN, TY, CAS> {
+    return new Column(this._tableAs, this._column, this._type, this._columnAs, true)
+  }
 
   as<NN extends string>(newName: NN): Column<TN, TY, NN> {
     return new Column(this._tableAs, this._column, this._type, newName)
@@ -128,13 +134,13 @@ export class Column<
   eq<Col2 extends Column<any, this["_type"]>, SPN extends string>(
     col2: Col2 | t.TypeOf<TY> | PlaceholderParam<SPN>
   ): Condition<TN | Literal<Col2["_tableAs"]>, SqlParam<SPN, t.TypeOf<TY>>> {
-    return new EqCondition(this, col2)
+    return EqCondition.create(this, col2, this._isNot)
   }
 
   in<C extends ValsAre<C, t.TypeOf<TY>>, P, SPN extends string>(
     rightArg: SqlBuilder<any, any, C, P> | t.TypeOf<TY>[] | PlaceholderParam<SPN>
   ): Condition<TN, P & SqlParam<SPN, t.TypeOf<TY>>> {
-    return new InCondition(this, rightArg)
+    return InCondition.create(this, rightArg, this._isNot)
   }
 }
 
@@ -200,6 +206,17 @@ export class OrCondition<CT extends string = string, P = {}> extends BaseConditi
   }
 }
 
+export class NotCondition<CT extends string = string, P = {}> extends BaseCondition<
+  CT,
+  P
+> {
+  readonly sqlKind = "not"
+
+  constructor(readonly target: Condition) {
+    super()
+  }
+}
+
 export class EqCondition<
   Col1 extends Column = Column,
   Col2 extends Column<string, Col1["_type"]> = any,
@@ -211,7 +228,19 @@ export class EqCondition<
   readonly sqlKind = "eq"
   readonly right: Column | Hardcoded | PlaceholderParam
 
-  constructor(
+  static create<Col1 extends Column = Column>(
+    left: Col1,
+    rightArg: Column<string, Col1["_type"]> | ColType<Col1> | PlaceholderParam,
+    isNot: boolean
+  ): EqCondition | NotCondition {
+    const eqCondition = new EqCondition(left, rightArg)
+    if (isNot) {
+      return new NotCondition(eqCondition)
+    }
+    return eqCondition
+  }
+
+  private constructor(
     readonly left: Col1,
     rightArg: Col2 | ColType<Col1> | PlaceholderParam<SPN>
   ) {
@@ -232,7 +261,19 @@ export class InCondition<CT extends string = string, P = {}> extends BaseConditi
   readonly sqlKind = "inCondition"
   readonly right: SelectStatement | Hardcoded | PlaceholderParam
 
-  constructor(
+  static create(
+    left: Column,
+    rightArg: SelectStatement | any[] | PlaceholderParam,
+    isNot: boolean
+  ): InCondition | NotCondition {
+    const inCondition = new InCondition(left, rightArg)
+    if (isNot) {
+      return new NotCondition(inCondition)
+    }
+    return inCondition
+  }
+
+  private constructor(
     readonly left: Column,
     rightArg: SelectStatement | any[] | PlaceholderParam<any>
   ) {

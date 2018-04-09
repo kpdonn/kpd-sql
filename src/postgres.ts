@@ -57,6 +57,8 @@ export class PgPlugin implements SqlPlugin {
         this.paramVals[paramIndex] = this.paramArgs[it.sqlParam]
         return `$${paramIndex + 1}`
       }
+      case "not":
+        return `NOT (${this.pr(it.target)})`
       case "and":
         return `(${this.pr(it.left)}) AND (${this.pr(it.right)})`
       case "or":
