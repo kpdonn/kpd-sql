@@ -3287,9 +3287,9 @@ preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
-prettier@/Users/kevindonnelly/local_node_dependencies/prettier-v1.11.1.tgz:
+"prettier@file:../../local_node_dependencies/prettier-v1.11.1.tgz":
   version "1.11.1"
-  resolved "/Users/kevindonnelly/local_node_dependencies/prettier-v1.11.1.tgz#8ba32fa58200ddb82ea3fdffa47c8fff42a413ca"
+  resolved "file:../../local_node_dependencies/prettier-v1.11.1.tgz#8ba32fa58200ddb82ea3fdffa47c8fff42a413ca"
   dependencies:
     "@babel/code-frame" "7.0.0-beta.40"
     "@glimmer/syntax" "0.30.3"
@@ -4274,9 +4274,9 @@ typescript@2.8.0-rc:
   version "2.8.0-rc"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.8.0-rc.tgz#a0256b7d1d39fb7493ba0403f55e95d31e8bc374"
 
-typescript@^2.9.0-dev.20180406:
-  version "2.9.0-dev.20180406"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.0-dev.20180406.tgz#9a3cbe5a27a9dfb862c21e5f3f233efad753560b"
+typescript@^2.9.0-dev.20180409:
+  version "2.9.0-dev.20180409"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.0-dev.20180409.tgz#c2a68e9bf45157bdea38c4e68a752350d42440df"
 
 uglify-js@^2.6:
   version "2.8.29"
