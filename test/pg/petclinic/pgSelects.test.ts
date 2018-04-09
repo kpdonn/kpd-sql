@@ -123,6 +123,30 @@ describe("Select query tests", () => {
     expect(results).toHaveLength(5)
     expect(results).toMatchSnapshot()
   })
+
+  it("with clause query", async () => {
+    const query = db
+      .with(
+        "myWith",
+        db
+          .from(Vet)
+          .leftJoin(VetSpecialty, VetSpecialty.vetId.eq(Vet.id))
+          .leftJoin(Specialty, Specialty.id.eq(VetSpecialty.specialtyId))
+          .columns([Vet.id, Vet.firstName, Vet.lastName, Specialty.name])
+          .where(VetSpecialty.specialtyId.isNotNull)
+      )
+      .select(sq =>
+        sq
+          .from(sq.table.myWith)
+          .join(Visit, Visit.vetId.eq(sq.table.myWith.id))
+          .columns([sq.table.myWith.id, sq.table.myWith.lastName, Visit.petId])
+      )
+
+    expect(query.toSql()).toMatchSnapshot()
+    const results = await query.execute()
+    expect(results).toHaveLength(3)
+    expect(results).toMatchSnapshot()
+  })
 })
 
 beforeAll(async () => {

@@ -43,9 +43,9 @@ export class PgPlugin implements SqlPlugin {
         return `LEFT JOIN ${this.pr(it.joinTable)} ON ${this.pr(it.onCondition)}`
       case "table":
         if (it._table === it._tableAs) {
-          return `${it._table}`
+          return `"${it._table}"`
         } else {
-          return `${it._table} ${it._tableAs}`
+          return `"${it._table}" "${it._tableAs}"`
         }
       case "hardcoded": {
         const paramIndex = this.lpn(it)
@@ -64,7 +64,7 @@ export class PgPlugin implements SqlPlugin {
       case "or":
         return `(${this.pr(it.left)}) OR (${this.pr(it.right)})`
       case "column":
-        return `${it._tableAs}.${it._column}`
+        return `"${it._tableAs}"."${it._column}"`
       case "columnDeclaration":
         return `${this.pr(it.col)} as "${it.col._columnAs}"`
       case "eq":
@@ -75,12 +75,20 @@ export class PgPlugin implements SqlPlugin {
         return `${this.pr(it.column)} IS NULL`
       case "isNotNull":
         return `${this.pr(it.column)} IS NOT NULL`
+      case "withClause":
+        return `"${it.alias}" AS (${this.pr(it.withQuery)})`
       case "selectStatement":
+        const withSql =
+          it.selWith.length > 0
+            ? `WITH ${it.selWith.map(x => this.pr(x)).join(", ")}`
+            : ""
         const columnsSql = it.selColumns.map(x => this.pr(x)).join(",\n")
         const fromSql = it.selFromTables.map(x => this.pr(x)).join(",\n")
         const joinSql = it.selJoins.map(x => this.pr(x)).join("\n")
         const whereSql = it.selWhere ? `WHERE ${this.pr(it.selWhere)}` : ""
-        return ["SELECT", columnsSql, "FROM", fromSql, joinSql, whereSql].join("\n")
+        return [withSql, "SELECT", columnsSql, "FROM", fromSql, joinSql, whereSql]
+          .filter(x => !!x.length)
+          .join("\n")
     }
   }
 }

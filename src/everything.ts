@@ -4,7 +4,7 @@ export type Literal<T extends string> = string extends T ? never : T
 
 export type SqlParam<N extends string, T> = string extends N ? {} : Record<N, T>
 
-export type ColType<T extends Column> = t.TypeOf<T["_type"]>
+export type ColType<T extends Column> = t.TypeOf<T["type"]>
 
 export type InputCol = { type: t.Any; dbName?: string }
 
@@ -24,6 +24,7 @@ export type Condition<CT extends string = string, P = {}> =
 export type JoinType = PlainJoin | LeftJoin
 
 export type SqlPart =
+  | WithClause
   | SelectStatement
   | Condition
   | JoinType
@@ -118,17 +119,17 @@ export class Column<
   constructor(
     readonly _tableAs: TN,
     readonly _column: string,
-    readonly _type: TY,
+    readonly type: TY,
     readonly _columnAs: CAS,
     private readonly _isNot: boolean = false
   ) {}
 
   get not(): Column<TN, TY, CAS> {
-    return new Column(this._tableAs, this._column, this._type, this._columnAs, true)
+    return new Column(this._tableAs, this._column, this.type, this._columnAs, true)
   }
 
   as<NN extends string>(newName: NN): Column<TN, TY, NN> {
-    return new Column(this._tableAs, this._column, this._type, newName)
+    return new Column(this._tableAs, this._column, this.type, newName)
   }
 
   eq<Col2 extends Column<string, TY>, SPN extends string>(
@@ -271,7 +272,7 @@ export class EqCondition<CT extends string = string, P = {}> extends BaseConditi
 
   static create<Col1 extends Column = Column>(
     left: Col1,
-    rightArg: Column<string, Col1["_type"]> | ColType<Col1> | PlaceholderParam,
+    rightArg: Column<string, Col1["type"]> | ColType<Col1> | PlaceholderParam,
     isNot: boolean
   ): EqCondition | NotCondition {
     return BaseCondition.wrapNot(new EqCondition(left, rightArg), isNot)
@@ -339,7 +340,7 @@ export type OutputColumns<
   Cols extends Column = ColumnsWithTableName<T, TableNames>
 > = {
   [K in SafeInd<Cols, "_columnAs">]: Cols extends { ["_columnAs"]: K }
-    ? t.TypeOf<Cols["_type"]> | OrType
+    ? t.TypeOf<Cols["type"]> | OrType
     : never
 }
 
@@ -377,6 +378,7 @@ export type BuilderState = DeepReadonly<{
   selJoins: JoinType[]
   selColumns: ColumnDeclaration[]
   selWhere?: Condition
+  selWith: WithClause[]
 }>
 
 export interface SelectStatement<Cols extends Record<string, Column> = {}, P = {}>
@@ -390,10 +392,11 @@ export interface SelectStatement<Cols extends Record<string, Column> = {}, P = {
 }
 
 export class SqlBuilder<
-  Cols extends Record<string, Column> = {},
-  P = {},
-  RT extends string = never,
-  OT extends string = never,
+  Cols extends Record<string, Column>,
+  P,
+  RT extends string,
+  OT extends string,
+  WT extends ValsAre<WT, Table>,
   TblNames extends string = Literal<RT> | Literal<OT>
 > implements SelectStatement<Cols, P> {
   readonly sqlKind = "selectStatement"
@@ -406,6 +409,7 @@ export class SqlBuilder<
     selFromTables: [],
     selJoins: [],
     selColumns: [],
+    selWith: [],
   }
 
   get selFromTables(): ReadonlyArray<Table> {
@@ -420,8 +424,16 @@ export class SqlBuilder<
     return this.state.selColumns
   }
 
+  get selWith(): ReadonlyArray<WithClause> {
+    return this.state.selWith
+  }
+
   get selWhere(): Condition | undefined {
     return this.state.selWhere
+  }
+
+  get table() {
+    return this._withTables
   }
 
   execute: ExecuteFunc<Cols, P, RT, OT> = (((arg?: P) => {
@@ -443,16 +455,31 @@ export class SqlBuilder<
 
   private constructor(
     private readonly state: BuilderState,
-    private readonly plugin: SqlPlugin
+    private readonly plugin: SqlPlugin,
+    private readonly _withTables: WT = {} as WT
   ) {}
 
-  static select(plugin: SqlPlugin): SqlBuilder {
+  static _init(plugin: SqlPlugin): SqlBuilder<{}, {}, never, never, {}> {
     return new SqlBuilder(SqlBuilder.initialState, plugin)
+  }
+
+  select<
+    _Cols extends Record<string, Column>,
+    _P,
+    _RT extends string,
+    _OT extends string,
+    _WT extends ValsAre<_WT, Table>
+  >(
+    cb: (subq: this) => SqlBuilder<_Cols, _P, _RT, _OT, _WT>
+  ): SqlBuilder<_Cols, _P, _RT, _OT, _WT>
+  select(): SqlBuilder<Cols, P, RT, OT, WT>
+  select(cb?: (subq: this) => any): any {
+    return cb ? cb(this) : this
   }
 
   from<T extends Table & NoDupTable<T, TblNames>>(
     table: T
-  ): SqlBuilder<Cols, P, RT | T["_tableAs"], OT> {
+  ): SqlBuilder<Cols, P, RT | T["_tableAs"], OT, WT> {
     return this.next({
       ...this.state,
       selFromTables: [...this.state.selFromTables, table],
@@ -469,7 +496,7 @@ export class SqlBuilder<
           : Column<TblNames>
       } & { "0": any },
     T extends ColumnsObj<C> = ColumnsObj<C>
-  >(cols: C): SqlBuilder<Cols & SelectColumns<T>, P, RT, OT> {
+  >(cols: C): SqlBuilder<Cols & SelectColumns<T>, P, RT, OT, WT> {
     const colDecs = cols.map(col => new ColumnDeclaration(col))
     return this.next({
       ...this.state,
@@ -480,7 +507,7 @@ export class SqlBuilder<
   join<T extends Table & NoDupTable<T, TblNames>>(
     table: T,
     cond: Condition<TblNames | T["_tableAs"]>
-  ): SqlBuilder<Cols, P, RT | T["_tableAs"], OT> {
+  ): SqlBuilder<Cols, P, RT | T["_tableAs"], OT, WT> {
     const join = new PlainJoin(table, cond)
     return this.next({
       ...this.state,
@@ -491,7 +518,7 @@ export class SqlBuilder<
   leftJoin<T extends Table & NoDupTable<T, TblNames>>(
     table: T,
     cond: Condition<TblNames | T["_tableAs"]>
-  ): SqlBuilder<Cols, P, RT, OT | T["_tableAs"]> {
+  ): SqlBuilder<Cols, P, RT, OT | T["_tableAs"], WT> {
     const join = new LeftJoin(table, cond)
     return this.next({
       ...this.state,
@@ -501,10 +528,10 @@ export class SqlBuilder<
 
   where<CTbles extends TblNames, SP>(
     arg: Condition<CTbles, SP>
-  ): SqlBuilder<Cols, P & SP, RT, OT>
+  ): SqlBuilder<Cols, P & SP, RT, OT, WT>
   where<CTbles extends TblNames, SP>(
-    arg: ((subSelect: SqlBuilder<{}, {}, RT, OT>) => Condition<CTbles, SP>)
-  ): SqlBuilder<Cols, P & SP, RT, OT>
+    arg: ((subSelect: SqlBuilder<{}, {}, RT, OT, WT>) => Condition<CTbles, SP>)
+  ): SqlBuilder<Cols, P & SP, RT, OT, WT>
   where(arg: Condition | ((arg2: any) => Condition)): any {
     const cond = isSqlPart(arg) ? arg : arg(this.next(SqlBuilder.initialState))
 
@@ -514,8 +541,35 @@ export class SqlBuilder<
     })
   }
 
-  private next(nextState: BuilderState): any {
-    return new SqlBuilder(nextState, this.plugin)
+  with<A extends string, WCols extends Record<string, Column>>(
+    alias: A,
+    withSelect: SelectStatement<WCols>
+  ): SqlBuilder<Cols, P, RT, OT, WT & Record<A, Table<WCols, A>>> {
+    const withClause = new WithClause(alias, withSelect)
+
+    const newTableCols = withSelect.selColumns
+      .map(it => it.col)
+      .reduce((acc, c) => ({ ...acc, [c._columnAs]: c }), {})
+
+    const newTable = table({ name: alias, columns: newTableCols })
+
+    return this.next(
+      {
+        ...this.state,
+        selWith: [...this.state.selWith, withClause],
+      },
+      newTable
+    )
+  }
+
+  private next(nextState: BuilderState, newWithTable?: Table): any {
+    return new SqlBuilder(
+      nextState,
+      this.plugin,
+      newWithTable
+        ? { ...(this._withTables as object), [newWithTable._tableAs]: newWithTable }
+        : this._withTables
+    )
   }
 
   private lookupParamNum = (param: Parameterized): number => {
@@ -536,8 +590,23 @@ export interface SqlPlugin {
   execute(part: SqlPart, lpn: LookupParamNum, args?: object): Promise<any>
 }
 
-export function init(plugin: SqlPlugin) {
-  return {
-    select: () => SqlBuilder.select(plugin),
-  }
+export function init(plugin: SqlPlugin): SqlBuilder<{}, {}, never, never, {}> {
+  return SqlBuilder._init(plugin)
+}
+
+export class WithClause<A extends string = string> implements SqlKind {
+  readonly sqlKind = "withClause"
+
+  constructor(readonly alias: A, readonly withQuery: SelectStatement) {}
+}
+
+export interface SubQuery<
+  T,
+  _Cols extends Record<string, Column>,
+  _P,
+  _RT extends string,
+  _OT extends string,
+  _WT extends ValsAre<_WT, Table>
+> {
+  (arg: T): SqlBuilder<_Cols, _P, _RT, _OT, _WT>
 }
