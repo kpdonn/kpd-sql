@@ -12,17 +12,15 @@ export type TableColumns<TN extends string, C extends Record<string, InputCol>> 
   readonly [K in keyof C]: Column<TN, C[K]["type"], K>
 }
 
-export type RemoveKey<T, R extends string> = { [K in Exclude<keyof T, R>]: T[K] }
+export type Condition<CT extends string = string, P = {}> =
+  | IsNotNullCondition<CT, P>
+  | IsNullCondition<CT, P>
+  | EqCondition<CT, P>
+  | AndCondition<CT, P>
+  | OrCondition<CT, P>
+  | InCondition<CT, P>
+  | NotCondition<CT, P>
 
-export type Condition<CT extends string = never, P = {}> = (
-  | IsNotNullCondition
-  | IsNullCondition
-  | EqCondition
-  | AndCondition
-  | OrCondition
-  | InCondition
-  | NotCondition) &
-  RemoveKey<BaseCondition<CT, P>, "sqlKind" | "_condTables" | "_condParams">
 export type JoinType = PlainJoin | LeftJoin
 
 export type SqlPart =
@@ -136,21 +134,21 @@ export class Column<
   eq<Col2 extends Column<any, this["_type"]>, SPN extends string>(
     col2: Col2 | t.TypeOf<TY> | PlaceholderParam<SPN>
   ): Condition<TN | Literal<Col2["_tableAs"]>, SqlParam<SPN, t.TypeOf<TY>>> {
-    return EqCondition.create(this, col2, this._isNot)
+    return EqCondition.create(this, col2, this._isNot) as any
   }
 
   in<C extends ValsAre<C, t.TypeOf<TY>>, P, SPN extends string>(
     rightArg: SqlBuilder<any, any, C, P> | t.TypeOf<TY>[] | PlaceholderParam<SPN>
   ): Condition<TN, P & SqlParam<SPN, t.TypeOf<TY>>> {
-    return InCondition.create(this, rightArg, this._isNot)
+    return InCondition.create(this, rightArg, this._isNot) as any
   }
 
   get isNull(): Condition<TN> {
-    return IsNullCondition.create(this, this._isNot)
+    return IsNullCondition.create(this, this._isNot) as any
   }
 
   get isNotNull(): Condition<TN> {
-    return IsNotNullCondition.create(this, this._isNot)
+    return IsNotNullCondition.create(this, this._isNot) as any
   }
 }
 
@@ -264,13 +262,9 @@ export class IsNotNullCondition<CT extends string = string, P = {}> extends Base
   }
 }
 
-export class EqCondition<
-  Col1 extends Column = Column,
-  Col2 extends Column<string, Col1["_type"]> = any,
-  SPN extends string = any
-> extends BaseCondition<
-  Col1["_tableAs"] | Literal<Col2["_tableAs"]>,
-  SqlParam<SPN, ColType<Col1>>
+export class EqCondition<CT extends string = string, P = {}> extends BaseCondition<
+  CT,
+  P
 > {
   readonly sqlKind = "eq"
   readonly right: Column | Hardcoded | PlaceholderParam
@@ -283,10 +277,7 @@ export class EqCondition<
     return BaseCondition.wrapNot(new EqCondition(left, rightArg), isNot)
   }
 
-  private constructor(
-    readonly left: Col1,
-    rightArg: Col2 | ColType<Col1> | PlaceholderParam<SPN>
-  ) {
+  private constructor(readonly left: Column, rightArg: Column | {} | PlaceholderParam) {
     super()
 
     if (isSqlPart(rightArg)) {
