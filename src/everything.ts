@@ -6,18 +6,9 @@ export type SqlParam<N extends string, T> = string extends N ? {} : Record<N, T>
 
 export type ColType<T extends Column> = t.TypeOf<T["_type"]>
 
-// export interface SQLReady<Cols> extends SelectStatement {
-//   _sqlReady: Cols
-// }
+export type InputCol = { type: t.Any; dbName?: string }
 
-export type InCol = { type: t.Any; dbName?: string }
-
-export type LiteralOr<
-  T extends undefined | string,
-  D extends string
-> = T extends undefined ? D : string extends T ? D : T
-
-export type TableColumns<TN extends string, C extends Record<string, InCol>> = {
+export type TableColumns<TN extends string, C extends Record<string, InputCol>> = {
   readonly [K in keyof C]: Column<TN, C[K]["type"], K>
 }
 
@@ -66,7 +57,7 @@ export class LeftJoin implements SqlKind {
   constructor(readonly joinTable: Table, readonly onCondition: Condition) {}
 }
 
-export class PrivateTable<C extends ValsAre<C, InCol>, AN extends string>
+export class PrivateTable<C extends ValsAre<C, InputCol>, AN extends string>
   implements SqlKind {
   readonly sqlKind = "table"
 
@@ -96,12 +87,12 @@ type NoRO<T> = { -readonly [K in keyof T]: T[K] }
 export type ValsAre<T, V> = { [K in keyof T]: V }
 
 export type Table<
-  C extends ValsAre<C, InCol> = ValsAre<C, InCol>,
+  C extends ValsAre<C, InputCol> = ValsAre<C, InputCol>,
   AsName extends string = string
 > = PrivateTable<C, AsName> & TableColumns<AsName, C>
 
 export interface TableConstructor {
-  new <C extends ValsAre<C, InCol>, AsName extends string>(
+  new <C extends ValsAre<C, InputCol>, AsName extends string>(
     _table: string,
     _columns: C,
     _tableAs: AsName
@@ -109,7 +100,7 @@ export interface TableConstructor {
 }
 export const Table: TableConstructor = PrivateTable as TableConstructor
 
-export function table<C extends ValsAre<C, InCol>, N extends string>(arg: {
+export function table<C extends ValsAre<C, InputCol>, N extends string>(arg: {
   name: N
   columns: C
 }): Table<C, N> {
