@@ -131,14 +131,14 @@ export class Column<
     return new Column(this._tableAs, this._column, this._type, newName)
   }
 
-  eq<Col2 extends Column<any, this["_type"]>, SPN extends string>(
+  eq<Col2 extends Column<string, TY>, SPN extends string>(
     col2: Col2 | t.TypeOf<TY> | PlaceholderParam<SPN>
   ): Condition<TN | Literal<Col2["_tableAs"]>, SqlParam<SPN, t.TypeOf<TY>>> {
     return EqCondition.create(this, col2, this._isNot) as any
   }
 
-  in<C extends ValsAre<C, t.TypeOf<TY>>, P, SPN extends string>(
-    rightArg: SqlBuilder<any, any, C, P> | t.TypeOf<TY>[] | PlaceholderParam<SPN>
+  in<C extends ValsAre<C, Column<string, TY>>, P, SPN extends string>(
+    rightArg: SelectStatement<C, P> | t.TypeOf<TY>[] | PlaceholderParam<SPN>
   ): Condition<TN, P & SqlParam<SPN, t.TypeOf<TY>>> {
     return InCondition.create(this, rightArg, this._isNot) as any
   }
@@ -305,7 +305,7 @@ export class InCondition<CT extends string = string, P = {}> extends BaseConditi
 
   private constructor(
     readonly left: Column,
-    rightArg: SelectStatement | any[] | PlaceholderParam<any>
+    rightArg: SelectStatement | any[] | PlaceholderParam<string>
   ) {
     super()
 
@@ -328,10 +328,9 @@ export type SafeInd<T, K extends keyof Base, Base = T> = Extract<T, Base> extend
 export type NoDuplicates<T extends string> = { "NO DUPLICATE KEYS ALLOWED": T }
 export type ColumnsObj<T> = { [K in TupleKeys<T>]: Extract<T[K], Column> }
 
-export type ColumnsWithTableName<
-  T extends Record<string, Column>,
-  TblName extends string
-> = { [K in keyof T]: T[K]["_tableAs"] extends Literal<TblName> ? T[K] : never }[keyof T]
+export type ColumnsWithTableName<T extends ValsAre<T, Column>, TblName extends string> = {
+  [K in keyof T]: T[K]["_tableAs"] extends Literal<TblName> ? T[K] : never
+}[keyof T]
 
 export type OutputColumns<
   T extends ValsAre<T, Column>,
@@ -344,13 +343,26 @@ export type OutputColumns<
     : never
 }
 
+export type ArrayToUnion<T> = { [K in keyof T]: T[K] }[keyof T]
+
+export type SelectColumns<
+  T extends ValsAre<T, Column>,
+  Cols extends Column = ArrayToUnion<T>
+> = {
+  [K in SafeInd<Cols, "_columnAs">]: Cols extends { ["_columnAs"]: K } ? Cols : never
+}
+
 export type NoDupTable<T extends Table, TableNames extends string> = {
   ["_table"]: T["_tableAs"] extends TableNames ? never : string
 }
 
-export type ExecuteFunc<P, Cols> = {} extends P
-  ? () => Promise<Cols[]>
-  : (args: P) => Promise<Cols[]>
+export type ExecuteFunc<
+  Cols extends Record<string, Column>,
+  P,
+  RT extends string,
+  OT extends string,
+  O = OutputColumns<Cols, RT> & OutputColumns<Cols, OT, null>
+> = {} extends P ? () => Promise<O[]> : (args: P) => Promise<O[]>
 
 export type DeepReadonly<T> = T extends ReadonlyArray<infer U>
   ? DeepReadonlyArray<U>
@@ -367,18 +379,28 @@ export type BuilderState = DeepReadonly<{
   selWhere?: Condition
 }>
 
-export interface SelectStatement extends SqlKind, BuilderState {
+export interface SelectStatement<Cols extends Record<string, Column> = {}, P = {}>
+  extends SqlKind,
+    BuilderState {
+  _ignore: {
+    _c: Cols
+    _p: P
+  }
   readonly sqlKind: "selectStatement"
 }
 
 export class SqlBuilder<
+  Cols extends Record<string, Column> = {},
+  P = {},
   RT extends string = never,
   OT extends string = never,
-  Cols = {},
-  P = {},
   TblNames extends string = Literal<RT> | Literal<OT>
-> implements SelectStatement {
+> implements SelectStatement<Cols, P> {
   readonly sqlKind = "selectStatement"
+  _ignore!: {
+    _c: Cols
+    _p: P
+  }
 
   private static readonly initialState: BuilderState = {
     selFromTables: [],
@@ -402,9 +424,9 @@ export class SqlBuilder<
     return this.state.selWhere
   }
 
-  execute: ExecuteFunc<P, Cols> = (((arg?: P) => {
+  execute: ExecuteFunc<Cols, P, RT, OT> = (((arg?: P) => {
     return this.plugin.execute(this, this.lookupParamNum, arg)
-  }) as any) as ExecuteFunc<P, Cols>
+  }) as any) as ExecuteFunc<Cols, P, RT, OT>
 
   toSql(): string {
     return this.plugin.printSql(this, this.lookupParamNum)
@@ -430,7 +452,7 @@ export class SqlBuilder<
 
   from<T extends Table & NoDupTable<T, TblNames>>(
     table: T
-  ): SqlBuilder<RT | T["_tableAs"], OT, Cols, P> {
+  ): SqlBuilder<Cols, P, RT | T["_tableAs"], OT> {
     return this.next({
       ...this.state,
       selFromTables: [...this.state.selFromTables, table],
@@ -447,9 +469,7 @@ export class SqlBuilder<
           : Column<TblNames>
       } & { "0": any },
     T extends ColumnsObj<C> = ColumnsObj<C>
-  >(
-    cols: C
-  ): SqlBuilder<RT, OT, Cols & OutputColumns<T, RT> & OutputColumns<T, OT, null>, P> {
+  >(cols: C): SqlBuilder<Cols & SelectColumns<T>, P, RT, OT> {
     const colDecs = cols.map(col => new ColumnDeclaration(col))
     return this.next({
       ...this.state,
@@ -460,7 +480,7 @@ export class SqlBuilder<
   join<T extends Table & NoDupTable<T, TblNames>>(
     table: T,
     cond: Condition<TblNames | T["_tableAs"]>
-  ): SqlBuilder<RT | T["_tableAs"], OT, Cols, P> {
+  ): SqlBuilder<Cols, P, RT | T["_tableAs"], OT> {
     const join = new PlainJoin(table, cond)
     return this.next({
       ...this.state,
@@ -471,7 +491,7 @@ export class SqlBuilder<
   leftJoin<T extends Table & NoDupTable<T, TblNames>>(
     table: T,
     cond: Condition<TblNames | T["_tableAs"]>
-  ): SqlBuilder<RT, OT | T["_tableAs"], Cols, P> {
+  ): SqlBuilder<Cols, P, RT, OT | T["_tableAs"]> {
     const join = new LeftJoin(table, cond)
     return this.next({
       ...this.state,
@@ -481,11 +501,11 @@ export class SqlBuilder<
 
   where<CTbles extends TblNames, SP>(
     arg: Condition<CTbles, SP>
-  ): SqlBuilder<RT, OT, Cols, P & SP>
+  ): SqlBuilder<Cols, P & SP, RT, OT>
   where<CTbles extends TblNames, SP>(
-    arg: ((subSelect: SqlBuilder<RT, OT, {}>) => Condition<CTbles, SP>)
-  ): SqlBuilder<RT, OT, Cols, P & SP>
-  where(arg: Condition | ((arg: SqlBuilder) => Condition)): SqlBuilder {
+    arg: ((subSelect: SqlBuilder<{}, {}, RT, OT>) => Condition<CTbles, SP>)
+  ): SqlBuilder<Cols, P & SP, RT, OT>
+  where(arg: Condition | ((arg2: any) => Condition)): any {
     const cond = isSqlPart(arg) ? arg : arg(this.next(SqlBuilder.initialState))
 
     return this.next({
