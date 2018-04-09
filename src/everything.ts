@@ -15,6 +15,8 @@ export type TableColumns<TN extends string, C extends Record<string, InputCol>> 
 export type RemoveKey<T, R extends string> = { [K in Exclude<keyof T, R>]: T[K] }
 
 export type Condition<CT extends string = never, P = {}> = (
+  | IsNotNullCondition
+  | IsNullCondition
   | EqCondition
   | AndCondition
   | OrCondition
@@ -142,6 +144,14 @@ export class Column<
   ): Condition<TN, P & SqlParam<SPN, t.TypeOf<TY>>> {
     return InCondition.create(this, rightArg, this._isNot)
   }
+
+  get isNull(): Condition<TN> {
+    return IsNullCondition.create(this, this._isNot)
+  }
+
+  get isNotNull(): Condition<TN> {
+    return IsNotNullCondition.create(this, this._isNot)
+  }
 }
 
 export class Hardcoded implements SqlKind {
@@ -172,6 +182,13 @@ export abstract class BaseCondition<CT extends string = never, P = {}>
   readonly _condParams!: P
 
   abstract readonly sqlKind: Literal<Condition["sqlKind"]>
+
+  protected static wrapNot<C extends Condition>(
+    condition: C,
+    isNot: boolean
+  ): C | NotCondition {
+    return isNot ? new NotCondition(condition) : condition
+  }
 
   and<C extends BaseCondition>(
     cond: C & Condition
@@ -217,6 +234,36 @@ export class NotCondition<CT extends string = string, P = {}> extends BaseCondit
   }
 }
 
+export class IsNullCondition<CT extends string = string, P = {}> extends BaseCondition<
+  CT,
+  P
+> {
+  readonly sqlKind = "isNull"
+
+  static create(c: Column, isNot: boolean): IsNullCondition | NotCondition {
+    return BaseCondition.wrapNot(new IsNullCondition(c), isNot)
+  }
+
+  private constructor(readonly column: Column) {
+    super()
+  }
+}
+
+export class IsNotNullCondition<CT extends string = string, P = {}> extends BaseCondition<
+  CT,
+  P
+> {
+  readonly sqlKind = "isNotNull"
+
+  static create(c: Column, isNot: boolean): IsNotNullCondition | NotCondition {
+    return BaseCondition.wrapNot(new IsNotNullCondition(c), isNot)
+  }
+
+  private constructor(readonly column: Column) {
+    super()
+  }
+}
+
 export class EqCondition<
   Col1 extends Column = Column,
   Col2 extends Column<string, Col1["_type"]> = any,
@@ -233,11 +280,7 @@ export class EqCondition<
     rightArg: Column<string, Col1["_type"]> | ColType<Col1> | PlaceholderParam,
     isNot: boolean
   ): EqCondition | NotCondition {
-    const eqCondition = new EqCondition(left, rightArg)
-    if (isNot) {
-      return new NotCondition(eqCondition)
-    }
-    return eqCondition
+    return BaseCondition.wrapNot(new EqCondition(left, rightArg), isNot)
   }
 
   private constructor(
@@ -266,11 +309,7 @@ export class InCondition<CT extends string = string, P = {}> extends BaseConditi
     rightArg: SelectStatement | any[] | PlaceholderParam,
     isNot: boolean
   ): InCondition | NotCondition {
-    const inCondition = new InCondition(left, rightArg)
-    if (isNot) {
-      return new NotCondition(inCondition)
-    }
-    return inCondition
+    return BaseCondition.wrapNot(new InCondition(left, rightArg), isNot)
   }
 
   private constructor(

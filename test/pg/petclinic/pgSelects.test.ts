@@ -4,7 +4,7 @@ import { PgPlugin } from "../../../src/postgres"
 
 import * as fs from "fs"
 import * as path from "path"
-import { Visit, Pet, Vet, Owner, Type } from "./tables"
+import { Visit, Pet, Vet, Owner, Type, VetSpecialty, Specialty } from "./tables"
 
 const connectionString = "postgresql://localhost:5432/sqltest"
 
@@ -91,6 +91,36 @@ describe("Select query tests", () => {
     expect(query.toSql()).toMatchSnapshot()
     const results = await query.execute()
     expect(results).toHaveLength(9)
+    expect(results).toMatchSnapshot()
+  })
+
+  it("select vets with no specialty", async () => {
+    const query = db
+      .select()
+      .from(Vet)
+      .leftJoin(VetSpecialty, VetSpecialty.vetId.eq(Vet.id))
+      .leftJoin(Specialty, Specialty.id.eq(VetSpecialty.specialtyId))
+      .columns([Vet.id, Vet.firstName, Vet.lastName, Specialty.name])
+      .where(VetSpecialty.specialtyId.isNull)
+
+    expect(query.toSql()).toMatchSnapshot()
+    const results = await query.execute()
+    expect(results).toHaveLength(2)
+    expect(results).toMatchSnapshot()
+  })
+
+  it("select vets with their specialties", async () => {
+    const query = db
+      .select()
+      .from(Vet)
+      .leftJoin(VetSpecialty, VetSpecialty.vetId.eq(Vet.id))
+      .leftJoin(Specialty, Specialty.id.eq(VetSpecialty.specialtyId))
+      .columns([Vet.id, Vet.firstName, Vet.lastName, Specialty.name])
+      .where(VetSpecialty.specialtyId.isNotNull)
+
+    expect(query.toSql()).toMatchSnapshot()
+    const results = await query.execute()
+    expect(results).toHaveLength(5)
     expect(results).toMatchSnapshot()
   })
 })

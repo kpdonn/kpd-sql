@@ -210,6 +210,84 @@ Array [
 ]
 `;
 
+exports[`Select query tests select vets with no specialty 1`] = `
+"SELECT
+vet.id as \\"id\\",
+vet.first_name as \\"firstName\\",
+vet.last_name as \\"lastName\\",
+specialty.name as \\"name\\"
+FROM
+vet
+LEFT JOIN vet_specialty ON vet_specialty.vet_id = vet.id
+LEFT JOIN specialty ON specialty.id = vet_specialty.specialty_id
+WHERE vet_specialty.specialty_id IS NULL"
+`;
+
+exports[`Select query tests select vets with no specialty 2`] = `
+Array [
+  anonymous {
+    "firstName": "Sharon",
+    "id": 6,
+    "lastName": "Jenkins",
+    "name": null,
+  },
+  anonymous {
+    "firstName": "James",
+    "id": 1,
+    "lastName": "Carter",
+    "name": null,
+  },
+]
+`;
+
+exports[`Select query tests select vets with their specialties 1`] = `
+"SELECT
+vet.id as \\"id\\",
+vet.first_name as \\"firstName\\",
+vet.last_name as \\"lastName\\",
+specialty.name as \\"name\\"
+FROM
+vet
+LEFT JOIN vet_specialty ON vet_specialty.vet_id = vet.id
+LEFT JOIN specialty ON specialty.id = vet_specialty.specialty_id
+WHERE vet_specialty.specialty_id IS NOT NULL"
+`;
+
+exports[`Select query tests select vets with their specialties 2`] = `
+Array [
+  anonymous {
+    "firstName": "Helen",
+    "id": 2,
+    "lastName": "Leary",
+    "name": "radiology",
+  },
+  anonymous {
+    "firstName": "Linda",
+    "id": 3,
+    "lastName": "Douglas",
+    "name": "surgery",
+  },
+  anonymous {
+    "firstName": "Linda",
+    "id": 3,
+    "lastName": "Douglas",
+    "name": "dentistry",
+  },
+  anonymous {
+    "firstName": "Rafael",
+    "id": 4,
+    "lastName": "Ortega",
+    "name": "surgery",
+  },
+  anonymous {
+    "firstName": "Henry",
+    "id": 5,
+    "lastName": "Stevens",
+    "name": "radiology",
+  },
+]
+`;
+
 exports[`Select query tests select with subquery pets live in madison 1`] = `
 "SELECT
 pet.id as \\"id\\",

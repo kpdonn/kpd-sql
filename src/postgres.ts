@@ -71,7 +71,10 @@ export class PgPlugin implements SqlPlugin {
         return `${this.pr(it.left)} = ${this.pr(it.right)}`
       case "inCondition":
         return `${this.pr(it.left)} = ANY (${this.pr(it.right)})`
-
+      case "isNull":
+        return `${this.pr(it.column)} IS NULL`
+      case "isNotNull":
+        return `${this.pr(it.column)} IS NOT NULL`
       case "selectStatement":
         const columnsSql = it.selColumns.map(x => this.pr(x)).join(",\n")
         const fromSql = it.selFromTables.map(x => this.pr(x)).join(",\n")
