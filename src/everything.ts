@@ -639,3 +639,8 @@ export interface SubQuery<
 > {
   (arg: T): SqlBuilder<_Cols, _P, _RT, _OT, _WT>
 }
+
+type AnyHelper<T> = T extends any ? false : true
+
+type IsAny<T> = boolean extends AnyHelper<T> ? true : false
+type NotAny<T> = IsAny<T> extends true ? never : any
