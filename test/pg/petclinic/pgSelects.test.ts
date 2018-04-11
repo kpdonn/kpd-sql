@@ -155,6 +155,38 @@ describe("Select query tests", () => {
     expect(results).toHaveLength(3)
     expect(results).toMatchSnapshot()
   })
+
+  it("with clause cats had visit with surgeon", async () => {
+    const query = db
+      .with(
+        "myWith",
+        db
+          .from(
+            Vet.leftJoin(VetSpecialty, VetSpecialty.vetId.eq(Vet.id)).leftJoin(
+              Specialty,
+              Specialty.id.eq(VetSpecialty.specialtyId)
+            )
+          )
+          .columns([Vet.id, Vet.firstName, Vet.lastName, Specialty.name])
+          .where(Specialty.name.eq(param("specialty")))
+      )
+      .select(sq =>
+        sq
+          .from(
+            sq.table.myWith.leftJoin(
+              Visit.join(Pet.join(Type, Pet.typeId.eq(Type.id)), Visit.petId.eq(Pet.id)),
+              Visit.vetId.eq(sq.table.myWith.id)
+            )
+          )
+          .columns([sq.table.myWith.id, sq.table.myWith.lastName, Visit.petId, Pet.name])
+          .where(sq.table.myWith.lastName.not.eq("FakeLastName").and(Type.name.eq("cat")))
+      )
+
+    expect(query.toSql()).toMatchSnapshot()
+    const results = await query.execute({ specialty: "surgery" })
+    expect(results).toHaveLength(2)
+    expect(results).toMatchSnapshot()
+  })
 })
 
 beforeAll(async () => {

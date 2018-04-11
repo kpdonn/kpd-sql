@@ -56,7 +56,7 @@ export type NoDups<T extends string, TableNames extends string> = T extends Tabl
   ? never
   : {}
 
-abstract class FromTable<
+export abstract class FromTable<
   RT extends string,
   OT extends string,
   TblNames extends string = Literal<RT> | Literal<OT>,
@@ -230,7 +230,7 @@ export function column<T extends t.Any>(type: T, dbName?: string) {
   return { type, dbName }
 }
 
-export abstract class BaseCondition<CT extends string = never, P = {}>
+export abstract class BaseCondition<CT extends string = string, P = {}>
   implements SqlKind {
   readonly _condTables!: CT
   readonly _condParams!: P
@@ -570,10 +570,10 @@ export class SqlBuilder<
     })
   }
 
-  with<A extends string, WCols extends Record<string, Column>>(
+  with<A extends string, WCols extends Record<string, Column>, WParams>(
     alias: A,
-    withSelect: SelectStatement<WCols>
-  ): SqlBuilder<Cols, P, RT, OT, WT & Record<A, Table<WCols, A>>> {
+    withSelect: SelectStatement<WCols, WParams>
+  ): SqlBuilder<Cols, P & WParams, RT, OT, WT & Record<A, Table<WCols, A>>> {
     const withClause = new WithClause(alias, withSelect)
 
     const newTableCols = withSelect.selColumns

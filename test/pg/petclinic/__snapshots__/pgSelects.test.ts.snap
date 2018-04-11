@@ -327,6 +327,42 @@ Array [
 ]
 `;
 
+exports[`Select query tests with clause cats had visit with surgeon 1`] = `
+"WITH \\"myWith\\" AS (SELECT
+\\"vet\\".\\"id\\" as \\"id\\",
+\\"vet\\".\\"first_name\\" as \\"firstName\\",
+\\"vet\\".\\"last_name\\" as \\"lastName\\",
+\\"specialty\\".\\"name\\" as \\"name\\"
+FROM
+( ( \\"vet\\" LEFT JOIN \\"vet_specialty\\" ON \\"vet_specialty\\".\\"vet_id\\" = \\"vet\\".\\"id\\" ) LEFT JOIN \\"specialty\\" ON \\"specialty\\".\\"id\\" = \\"vet_specialty\\".\\"specialty_id\\" )
+WHERE \\"specialty\\".\\"name\\" = $1)
+SELECT
+\\"myWith\\".\\"id\\" as \\"id\\",
+\\"myWith\\".\\"lastName\\" as \\"lastName\\",
+\\"visit\\".\\"pet_id\\" as \\"petId\\",
+\\"pet\\".\\"name\\" as \\"name\\"
+FROM
+( \\"myWith\\" LEFT JOIN ( \\"visit\\" JOIN ( \\"pet\\" JOIN \\"type\\" ON \\"pet\\".\\"type_id\\" = \\"type\\".\\"id\\" ) ON \\"visit\\".\\"pet_id\\" = \\"pet\\".\\"id\\" ) ON \\"visit\\".\\"vet_id\\" = \\"myWith\\".\\"id\\" )
+WHERE (NOT (\\"myWith\\".\\"lastName\\" = $2)) AND (\\"type\\".\\"name\\" = $3)"
+`;
+
+exports[`Select query tests with clause cats had visit with surgeon 2`] = `
+Array [
+  anonymous {
+    "id": 4,
+    "lastName": "Ortega",
+    "name": "Max",
+    "petId": 8,
+  },
+  anonymous {
+    "id": 4,
+    "lastName": "Ortega",
+    "name": "Samantha",
+    "petId": 7,
+  },
+]
+`;
+
 exports[`Select query tests with clause query 1`] = `
 "WITH \\"myWith\\" AS (SELECT
 \\"vet\\".\\"id\\" as \\"id\\",
