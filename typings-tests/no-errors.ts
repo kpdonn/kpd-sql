@@ -1,49 +1,95 @@
+import { table, column } from "../src/everything"
 import * as t from "io-ts"
 
-import { select, tuple } from "../src/implementation"
-import { table } from "../src/table"
-import { sqlReady } from "../src/kpdSql"
-
-const Book = table({
-  name: "book",
+export const Subject = table({
+  name: "subject",
   columns: {
-    id: { type: t.number },
-    title: { type: t.string },
-    year: { type: t.number },
-    pages: { type: t.number },
-    authorId: { type: t.number },
+    id: column(t.number, "id", true),
+    name: column(t.string),
   },
 })
 
-const Author = table({
-  name: "author",
+export const Student = table({
+  name: "student",
   columns: {
-    id: { type: t.number },
-    name: { type: t.string },
-    age: { type: t.number },
+    id: column(t.number, "id", true),
+    firstName: column(t.string, "first_name"),
+    lastName: column(t.string, "last_name"),
+    majorId: column(t.union([t.number, t.null]), "major_id"),
   },
 })
 
-const Other = table({
-  name: "other",
+export const Professor = table({
+  name: "professor",
   columns: {
-    id: { type: t.number },
-    otherName: { type: t.string },
-    otherField: { type: t.number },
+    id: column(t.number, "id", true),
+    firstName: column(t.string, "first_name"),
+    lastName: column(t.string, "last_name"),
+    departmentId: column(t.number, "department_id"),
   },
 })
 
-type Tuple<T = any> = ArrayLike<T> & { "0"?: T }
+export const Course = table({
+  name: "course",
+  columns: {
+    id: column(t.number, "id", true),
+    name: column(t.string),
+    subjectId: column(t.number, "subject_id"),
+    creditHours: column(t.number, "credit_hours"),
+  },
+})
 
-const author23 = Author.id.eq(23)
+export const Semester = table({
+  name: "semester",
+  columns: {
+    id: column(t.number, "id", true),
+    year: column(t.number),
+  },
+})
 
-const selectList = tuple([Book.id, Book.title])
-const AuthorA = Author.as("a")
-const query = select()
-  .from(Book)
-  .leftJoin(Author, Book.id.eq(Author.id))
-  .columns([Book.id, Author.name])
-  .where(author23)
-  .whereSub(sub => Book.id.in(sub.from(Other).columns([Other.id])))
-  .execute()
-console.log(query)
+export const Class = table({
+  name: "class",
+  columns: {
+    id: column(t.number, "id", true),
+    courseId: column(t.number, "course_id"),
+    semesterId: column(t.number, "semester_id"),
+    professorId: column(t.number, "professor_id"),
+  },
+})
+
+export const AssignmentType = table({
+  name: "assignment_type",
+  columns: {
+    id: column(t.number, "id", true),
+    name: column(t.string),
+  },
+})
+
+export const Assignment = table({
+  name: "assignment",
+  columns: {
+    id: column(t.number, "id", true),
+    typeId: column(t.number, "type_id"),
+    classId: column(t.number, "class_id"),
+    pointsPossible: column(t.number, "points_possible"),
+  },
+})
+
+export const StudentClass = table({
+  name: "student_class",
+  columns: {
+    id: column(t.number, "id", true),
+    studentId: column(t.number, "student_id"),
+    classId: column(t.number, "class_id"),
+  },
+})
+
+export const StudentAssignment = table({
+  name: "student_assignment",
+  columns: {
+    id: column(t.number, "id", true),
+    studentId: column(t.number, "student_id"),
+    assignmentId: column(t.number, "assignment_id"),
+    points: column(t.number, "points"),
+  },
+})
