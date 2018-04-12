@@ -1,0 +1,121 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`college select tests trivial group by test 1`] = `
+"SELECT
+\\"class\\".\\"semester_id\\" as \\"semesterId\\"
+FROM
+\\"class\\""
+`;
+
+exports[`college select tests trivial group by test 2`] = `
+Array [
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+]
+`;

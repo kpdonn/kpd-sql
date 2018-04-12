@@ -5,7 +5,7 @@ import { Class } from "./tables"
 import * as fs from "fs"
 import * as path from "path"
 
-const connectionString = "postgresql://localhost:5432/sqltest"
+const connectionString = "postgresql://localhost:5432/collegesqltest"
 
 const pool = new Pool({
   connectionString,
@@ -14,28 +14,16 @@ const pool = new Pool({
 const db = init(PgPlugin.init(pool))
 
 describe("college select tests", () => {
-  it("empty test", async () => {
+  it("trivial group by test", async () => {
     const query = db
       .select()
       .from(Class)
       .groupBy([Class.id, Class.courseId])
       .columns([Class.semesterId])
-  })
 
-  it("group by with test", async () => {
-    const query = db
-      .with(
-        "myWith",
-        db
-          .from(Class)
-          .columns([Class.id, Class.courseId, Class.semesterId, Class.professorId])
-      )
-      .select(sq =>
-        sq
-          .from(sq.table.myWith)
-          .groupBy([sq.table.myWith.id])
-          .columns([sq.table.myWith.id, sq.table.myWith.courseId])
-      )
+    expect(query.toSql()).toMatchSnapshot()
+    const results = await query.execute()
+    expect(results).toMatchSnapshot()
   })
 })
 

@@ -91,6 +91,8 @@ export class PgPlugin implements SqlPlugin {
         return `${this.pr(it.column)} IS NULL`
       case "isNotNull":
         return `${this.pr(it.column)} IS NOT NULL`
+      case "groupBy":
+        return `${it.columns.map(x => this.pr(x)).join(", ")}`
       case "withClause":
         return `"${it.alias}" AS (${this.pr(it.withQuery)})`
       case "selectStatement":
@@ -101,7 +103,9 @@ export class PgPlugin implements SqlPlugin {
         const columnsSql = it.selColumns.map(x => this.pr(x)).join(",\n")
         const fromSql = this.pr(it.selFrom!)
         const whereSql = it.selWhere ? `WHERE ${this.pr(it.selWhere)}` : ""
-        return [withSql, "SELECT", columnsSql, "FROM", fromSql, whereSql]
+        const groupBySql = it.selGroupBy ? `GROUP BY ${this.pr(it.selGroupBy)}` : ""
+
+        return [withSql, "SELECT", columnsSql, "FROM", fromSql, whereSql, groupBySql]
           .filter(x => !!x.length)
           .join("\n")
     }
