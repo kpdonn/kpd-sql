@@ -21,6 +21,22 @@ describe("college select tests", () => {
       .groupBy([Class.id, Class.courseId])
       .columns([Class.semesterId])
   })
+
+  it("group by with test", async () => {
+    const query = db
+      .with(
+        "myWith",
+        db
+          .from(Class)
+          .columns([Class.id, Class.courseId, Class.semesterId, Class.professorId])
+      )
+      .select(sq =>
+        sq
+          .from(sq.table.myWith)
+          .groupBy([sq.table.myWith.id])
+          .columns([sq.table.myWith.id, sq.table.myWith.courseId])
+      )
+  })
 })
 
 beforeAll(async () => {
