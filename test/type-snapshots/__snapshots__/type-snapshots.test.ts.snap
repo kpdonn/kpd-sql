@@ -1,0 +1,420 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Verify output of typings test files matches expected Verify output of typings test file no-errors.ts 1`] = `
+Array [
+  Object {
+    "nodeKind": 71,
+    "symbol": "SqlBuilder",
+    "type": "typeof SqlBuilder",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Class",
+    "type": "PrivateTable<\\"class\\", never> & { readonly id: Column<\\"class\\", NumberType, \\"id\\", true>; readonly courseId: Column<\\"class\\", NumberType, \\"courseId\\", false>; readonly semesterId: Column<\\"class\\", NumberType, \\"semesterId\\", false>; readonly professorId: Column<\\"class\\", NumberType, \\"professorId\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "db",
+    "type": "SqlBuilder<{}, {}, never, never, {}, never, never>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "query",
+    "type": "SqlBuilder<{ semesterId: Column<\\"class\\", NumberType, \\"semesterId\\", false>; }, {}, \\"class\\", never, {}, Column<\\"class\\", NumberType, \\"id\\", true> | Column<\\"class\\", NumberType, \\"courseId\\", false>, \\"class\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.columns",
+    "type": "<C extends ReadonlyArray<Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>> & { [K in keyof T]: (T[K] extends Column<\\"class\\", NumberType, \\"id\\", true> | Column<\\"class\\", NumberType, \\"courseId\\", false> ? {} : Column<\\"class\\", NumberType, \\"id\\", true> extends Column<T[K][\\"_tableAs\\"], any, any, true> ? {} : never) & T[K][\\"_columnAs\\"] extends (Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]> extends never ? never : Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]>[\\"_columnAs\\"]) ? { \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never ? never : Extract<T[K], T[K]>[\\"_columnAs\\"]; } : Column<\\"class\\", Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>; } & { \\"0\\": any; }, T extends { [K in Exclude<keyof C, \\"_A\\" | \\"includes\\" | \\"length\\" | \\"toString\\" | \\"toLocaleString\\" | \\"push\\" | \\"pop\\" | \\"concat\\" | \\"join\\" | \\"reverse\\" | \\"shift\\" | \\"slice\\" | \\"sort\\" | \\"splice\\" | \\"unshift\\" | \\"indexOf\\" | \\"lastIndexOf\\" | \\"every\\" | \\"some\\" | \\"forEach\\" | \\"map\\" | \\"filter\\" | \\"reduce\\" | \\"reduceRight\\" | \\"entries\\" | \\"keys\\" | \\"values\\" | \\"find\\" | \\"findIndex\\" | \\"fill\\" | \\"copyWithin\\">]: Extract<C[K], Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>; } = { [K in Exclude<keyof C, \\"_A\\" | \\"includes\\" | \\"length\\" | \\"toString\\" | \\"toLocaleString\\" | \\"push\\" | \\"pop\\" | \\"concat\\" | \\"join\\" | \\"reverse\\" | \\"shift\\" | \\"slice\\" | \\"sort\\" | \\"splice\\" | \\"unshift\\" | \\"indexOf\\" | \\"lastIndexOf\\" | \\"every\\" | \\"some\\" | \\"forEach\\" | \\"map\\" | \\"filter\\" | \\"reduce\\" | \\"reduceRight\\" | \\"entries\\" | \\"keys\\" | \\"values\\" | \\"find\\" | \\"findIndex\\" | \\"fill\\" | \\"copyWithin\\">]: Extract<C[K], Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>; }>(cols: C) => SqlBuilder<{ [K in Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]> extends never ? never : Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]>[\\"_columnAs\\"]]: { [K in keyof T]: T[K]; }[keyof T] extends { [\\"_columnAs\\"]: K; } ? { [K in keyof T]: T[K]; }[keyof T] : never; }, {}, \\"class\\", never, {}, Column<\\"class\\", NumberType, \\"id\\", true> | Column<\\"class\\", NumberType, \\"courseId\\", false>, \\"class\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.groupBy",
+    "type": "<_GBC extends Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>(groupByCols: _GBC[]) => SqlBuilder<{}, {}, \\"class\\", never, {}, _GBC, \\"class\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.from",
+    "type": "<_RT extends string, _OT extends string>(fromType: (PrivateTable<_RT, _OT> & {}) | PlainJoin<_RT, _OT> | LeftJoin<_RT, _OT>) => SqlBuilder<{}, {}, string extends _RT ? never : _RT, string extends _OT ? never : _OT, {}, never, (string extends (string extends _RT ? never : _RT) ? never : string extends _RT ? never : _RT) | (string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT)>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.select",
+    "type": "{ <_Cols extends Record<string, Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>, _P, _RT extends string, _OT extends string, _WT extends { [K in keyof _WT]: PrivateTable<string, never> & {}; }, _GBC extends Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>(cb: (subq: SqlBuilder<{}, {}, never, never, {}, never, never>) => SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC, (string extends _RT ? never : _RT) | (string extends _OT ? never : _OT)>): SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC, (string extends _RT ? never : _RT) | (string extends _OT ? never : _OT)>; (): SqlBuilder<{}, {}, never, never, {}, never, never>; }",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "id",
+    "type": "Column<\\"class\\", NumberType, \\"id\\", true>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "courseId",
+    "type": "Column<\\"class\\", NumberType, \\"courseId\\", false>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "semesterId",
+    "type": "Column<\\"class\\", NumberType, \\"semesterId\\", false>",
+  },
+]
+`;
+
+exports[`Verify output of typings test files matches expected Verify output of typings test file no-errors.ts 2`] = `Array []`;
+
+exports[`Verify output of typings test files matches expected Verify output of typings test file tables.ts 1`] = `
+Array [
+  Object {
+    "nodeKind": 71,
+    "symbol": "table",
+    "type": "<C extends { [K in keyof C]: { type: t.Type<any, any, any>; dbName?: string | undefined; unique: boolean; }; }, N extends string>(arg: { name: N; columns: C; }) => PrivateTable<N, never> & { readonly [K in keyof C]: Column<N, C[K][\\"type\\"], K, C[K][\\"unique\\"]>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "column",
+    "type": "<T extends t.Type<any, any, any>, U extends boolean = false>(type: T, dbName?: string | undefined, unique?: U | undefined) => { type: T; dbName?: string | undefined; unique: U; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "t",
+    "type": "typeof t",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Subject",
+    "type": "PrivateTable<\\"subject\\", never> & { readonly id: Column<\\"subject\\", t.NumberType, \\"id\\", true>; readonly name: Column<\\"subject\\", t.StringType, \\"name\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "name",
+    "type": "\\"subject\\"",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "columns",
+    "type": "{ id: { type: t.NumberType; dbName?: string | undefined; unique: true; }; name: { type: t.StringType; dbName?: string | undefined; unique: false; }; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "id",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: true; }",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "t.number",
+    "type": "t.NumberType",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "name",
+    "type": "{ type: t.StringType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "t.string",
+    "type": "t.StringType",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Student",
+    "type": "PrivateTable<\\"student\\", never> & { readonly id: Column<\\"student\\", t.NumberType, \\"id\\", true>; readonly firstName: Column<\\"student\\", t.StringType, \\"firstName\\", false>; readonly lastName: Column<\\"student\\", t.StringType, \\"lastName\\", false>; readonly majorId: Column<\\"student\\", t.UnionType<(t.NumberType | t.NullType)[], number | null, number | null, t.mixed>, \\"majorId\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "name",
+    "type": "\\"student\\"",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "columns",
+    "type": "{ id: { type: t.NumberType; dbName?: string | undefined; unique: true; }; firstName: { type: t.StringType; dbName?: string | undefined; unique: false; }; lastName: { type: t.StringType; dbName?: string | undefined; unique: false; }; majorId: { type: t.UnionType<(t.NumberType | t.NullType)[], number | null, number | null, t.mixed>; dbName?: string | undefined; unique: false; }; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "id",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: true; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "firstName",
+    "type": "{ type: t.StringType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "lastName",
+    "type": "{ type: t.StringType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "majorId",
+    "type": "{ type: t.UnionType<(t.NumberType | t.NullType)[], number | null, number | null, t.mixed>; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "t.union",
+    "type": "<RTS extends t.Type<any, any, t.mixed>[]>(types: RTS, name?: string | undefined) => t.UnionType<RTS, RTS[\\"_A\\"][\\"_A\\"], RTS[\\"_A\\"][\\"_O\\"], t.mixed>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "t.null",
+    "type": "t.NullType",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Professor",
+    "type": "PrivateTable<\\"professor\\", never> & { readonly id: Column<\\"professor\\", t.NumberType, \\"id\\", true>; readonly firstName: Column<\\"professor\\", t.StringType, \\"firstName\\", false>; readonly lastName: Column<\\"professor\\", t.StringType, \\"lastName\\", false>; readonly departmentId: Column<\\"professor\\", t.NumberType, \\"departmentId\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "name",
+    "type": "\\"professor\\"",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "columns",
+    "type": "{ id: { type: t.NumberType; dbName?: string | undefined; unique: true; }; firstName: { type: t.StringType; dbName?: string | undefined; unique: false; }; lastName: { type: t.StringType; dbName?: string | undefined; unique: false; }; departmentId: { type: t.NumberType; dbName?: string | undefined; unique: false; }; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "id",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: true; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "firstName",
+    "type": "{ type: t.StringType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "lastName",
+    "type": "{ type: t.StringType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "departmentId",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Course",
+    "type": "PrivateTable<\\"course\\", never> & { readonly id: Column<\\"course\\", t.NumberType, \\"id\\", true>; readonly name: Column<\\"course\\", t.StringType, \\"name\\", false>; readonly subjectId: Column<\\"course\\", t.NumberType, \\"subjectId\\", false>; readonly creditHours: Column<\\"course\\", t.NumberType, \\"creditHours\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "name",
+    "type": "\\"course\\"",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "columns",
+    "type": "{ id: { type: t.NumberType; dbName?: string | undefined; unique: true; }; name: { type: t.StringType; dbName?: string | undefined; unique: false; }; subjectId: { type: t.NumberType; dbName?: string | undefined; unique: false; }; creditHours: { type: t.NumberType; dbName?: string | undefined; unique: false; }; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "id",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: true; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "name",
+    "type": "{ type: t.StringType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "subjectId",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "creditHours",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Semester",
+    "type": "PrivateTable<\\"semester\\", never> & { readonly id: Column<\\"semester\\", t.NumberType, \\"id\\", true>; readonly year: Column<\\"semester\\", t.NumberType, \\"year\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "name",
+    "type": "\\"semester\\"",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "columns",
+    "type": "{ id: { type: t.NumberType; dbName?: string | undefined; unique: true; }; year: { type: t.NumberType; dbName?: string | undefined; unique: false; }; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "id",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: true; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "year",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Class",
+    "type": "PrivateTable<\\"class\\", never> & { readonly id: Column<\\"class\\", t.NumberType, \\"id\\", true>; readonly courseId: Column<\\"class\\", t.NumberType, \\"courseId\\", false>; readonly semesterId: Column<\\"class\\", t.NumberType, \\"semesterId\\", false>; readonly professorId: Column<\\"class\\", t.NumberType, \\"professorId\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "name",
+    "type": "\\"class\\"",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "columns",
+    "type": "{ id: { type: t.NumberType; dbName?: string | undefined; unique: true; }; courseId: { type: t.NumberType; dbName?: string | undefined; unique: false; }; semesterId: { type: t.NumberType; dbName?: string | undefined; unique: false; }; professorId: { type: t.NumberType; dbName?: string | undefined; unique: false; }; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "id",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: true; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "courseId",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "semesterId",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "professorId",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "AssignmentType",
+    "type": "PrivateTable<\\"assignment_type\\", never> & { readonly id: Column<\\"assignment_type\\", t.NumberType, \\"id\\", true>; readonly name: Column<\\"assignment_type\\", t.StringType, \\"name\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "name",
+    "type": "\\"assignment_type\\"",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "columns",
+    "type": "{ id: { type: t.NumberType; dbName?: string | undefined; unique: true; }; name: { type: t.StringType; dbName?: string | undefined; unique: false; }; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "id",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: true; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "name",
+    "type": "{ type: t.StringType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Assignment",
+    "type": "PrivateTable<\\"assignment\\", never> & { readonly id: Column<\\"assignment\\", t.NumberType, \\"id\\", true>; readonly typeId: Column<\\"assignment\\", t.NumberType, \\"typeId\\", false>; readonly classId: Column<\\"assignment\\", t.NumberType, \\"classId\\", false>; readonly pointsPossible: Column<\\"assignment\\", t.NumberType, \\"pointsPossible\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "name",
+    "type": "\\"assignment\\"",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "columns",
+    "type": "{ id: { type: t.NumberType; dbName?: string | undefined; unique: true; }; typeId: { type: t.NumberType; dbName?: string | undefined; unique: false; }; classId: { type: t.NumberType; dbName?: string | undefined; unique: false; }; pointsPossible: { type: t.NumberType; dbName?: string | undefined; unique: false; }; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "id",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: true; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "typeId",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "classId",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "pointsPossible",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "StudentClass",
+    "type": "PrivateTable<\\"student_class\\", never> & { readonly id: Column<\\"student_class\\", t.NumberType, \\"id\\", true>; readonly studentId: Column<\\"student_class\\", t.NumberType, \\"studentId\\", false>; readonly classId: Column<\\"student_class\\", t.NumberType, \\"classId\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "name",
+    "type": "\\"student_class\\"",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "columns",
+    "type": "{ id: { type: t.NumberType; dbName?: string | undefined; unique: true; }; studentId: { type: t.NumberType; dbName?: string | undefined; unique: false; }; classId: { type: t.NumberType; dbName?: string | undefined; unique: false; }; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "id",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: true; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "studentId",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "classId",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "StudentAssignment",
+    "type": "PrivateTable<\\"student_assignment\\", never> & { readonly id: Column<\\"student_assignment\\", t.NumberType, \\"id\\", true>; readonly studentId: Column<\\"student_assignment\\", t.NumberType, \\"studentId\\", false>; readonly assignmentId: Column<\\"student_assignment\\", t.NumberType, \\"assignmentId\\", false>; readonly points: Column<\\"student_assignment\\", t.NumberType, \\"points\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "name",
+    "type": "\\"student_assignment\\"",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "columns",
+    "type": "{ id: { type: t.NumberType; dbName?: string | undefined; unique: true; }; studentId: { type: t.NumberType; dbName?: string | undefined; unique: false; }; assignmentId: { type: t.NumberType; dbName?: string | undefined; unique: false; }; points: { type: t.NumberType; dbName?: string | undefined; unique: false; }; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "id",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: true; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "studentId",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "assignmentId",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "points",
+    "type": "{ type: t.NumberType; dbName?: string | undefined; unique: false; }",
+  },
+]
+`;
+
+exports[`Verify output of typings test files matches expected Verify output of typings test file tables.ts 2`] = `Array []`;

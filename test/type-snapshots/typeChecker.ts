@@ -2,11 +2,8 @@ import ts, { VariableDeclarationList } from "typescript"
 import * as path from "path"
 import * as fs from "fs"
 
-function compile(
-  fileNames: string[],
-  options: ts.CompilerOptions
-): [any[], ts.Diagnostic[]] {
-  const program = ts.createProgram(fileNames, options)
+export function check(fileName: string): [any[], ts.Diagnostic[]] {
+  const program = ts.createProgram([fileName], compilerOptions)
   const emitResult = program.emit()
   const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics)
 
@@ -29,26 +26,12 @@ function compile(
 
   function visit(node: ts.Node) {
     let symbol = checker.getSymbolAtLocation(node)
-    const parentInfos: any[] = []
 
-    if (shouldPrintNodeType(node, fileNames) && symbol && !symbolSeenSet.has(symbol)) {
+    if (shouldPrintNodeType(node, fileName) && symbol && !symbolSeenSet.has(symbol)) {
       symbolSeenSet.add(symbol)
-      parentType(node, 1)
-      output.push({ ...nodeTypeInfo(node, symbol), parentInfos })
+      output.push(nodeTypeInfo(node, symbol))
     }
     ts.forEachChild(node, visit)
-
-    function parentType(node: ts.Node, parentLevel: number) {
-      const parent = node.parent
-      if (parent) {
-        let parentSymbol = checker.getSymbolAtLocation(parent)
-        if (shouldPrintNodeType(parent, fileNames)) {
-          const parentInfo = { ...nodeTypeInfo(parent, parentSymbol), parentLevel }
-          parentInfos.push(parentInfo)
-        }
-        parentType(parent, parentLevel + 1)
-      }
-    }
   }
 
   function nodeTypeInfo(node: ts.Node, symbol?: ts.Symbol) {
@@ -72,15 +55,6 @@ function compile(
     }
   }
 }
-
-it("Verify output of no-errors matches expected", () => {
-  const noErrorsFile = path.resolve(typingsTestDir, "no-errors.ts")
-
-  const [output, diagnostics] = compile([noErrorsFile], compilerOptions)
-
-  expect(output).toMatchSnapshot()
-  expect(diagnostics).toMatchSnapshot()
-})
 
 function readUtf8(fileName: string) {
   const contents = fs.readFileSync(fileName, "utf8")
@@ -107,7 +81,7 @@ const parseConfigHost: ts.ParseConfigHost = {
   },
 }
 
-const typingsTestDir = path.resolve(__dirname, "..", "typings-tests")
+export const typingsTestDir = path.resolve(__dirname, "..", "..", "typings-tests")
 const tsConfigFile = path.resolve(typingsTestDir, "tsconfig.json")
 
 const jsonSourceFile = ts.readJsonConfigFile(tsConfigFile, readUtf8)
@@ -118,7 +92,7 @@ const { options: compilerOptions } = ts.parseJsonSourceFileConfigFileContent(
   typingsTestDir
 )
 
-function shouldPrintNodeType(node: ts.Node, fileNames: string[]): boolean {
+function shouldPrintNodeType(node: ts.Node, fileName: string): boolean {
   if (
     node.kind === ts.SyntaxKind.VariableDeclarationList &&
     (node as VariableDeclarationList).declarations.length <= 1
@@ -131,6 +105,6 @@ function shouldPrintNodeType(node: ts.Node, fileNames: string[]): boolean {
         node.kind <= ts.SyntaxKind.NonNullExpression) ||
       (node.kind >= ts.SyntaxKind.VariableDeclaration &&
         node.kind <= ts.SyntaxKind.EnumDeclaration)) &&
-    fileNames.includes(node.getSourceFile().fileName)
+    fileName === node.getSourceFile().fileName
   )
 }
