@@ -1,11 +1,34 @@
-import ts, { VariableDeclarationList } from "typescript"
+import ts from "typescript"
 import * as path from "path"
 import * as fs from "fs"
 
-export function check(fileName: string): [any[], ts.Diagnostic[]] {
+export function check(fileName: string): [any[], any[]] {
   const program = ts.createProgram([fileName], compilerOptions)
   const emitResult = program.emit()
   const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics)
+
+  const diagnosticsOutput = allDiagnostics.map(diagnostic => {
+    if (diagnostic.file) {
+      let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(
+        diagnostic.start!
+      )
+      let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")
+      return {
+        file: path.basename(diagnostic.file.fileName),
+        line: line + 1,
+        character: character + 1,
+        message,
+        code: diagnostic.code,
+        category: diagnostic.category,
+      }
+    } else {
+      return {
+        message: ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"),
+        code: diagnostic.code,
+        category: diagnostic.category,
+      }
+    }
+  })
 
   // Get the checker, we will use it to find more about classes
   const checker = program.getTypeChecker()
@@ -22,7 +45,7 @@ export function check(fileName: string): [any[], ts.Diagnostic[]] {
     }
   }
 
-  return [output, allDiagnostics]
+  return [output, diagnosticsOutput]
 
   function visit(node: ts.Node) {
     let symbol = checker.getSymbolAtLocation(node)
@@ -93,12 +116,6 @@ const { options: compilerOptions } = ts.parseJsonSourceFileConfigFileContent(
 )
 
 function shouldPrintNodeType(node: ts.Node, fileName: string): boolean {
-  if (
-    node.kind === ts.SyntaxKind.VariableDeclarationList &&
-    (node as VariableDeclarationList).declarations.length <= 1
-  ) {
-    return false
-  }
   return (
     (node.kind === ts.SyntaxKind.Identifier ||
       (node.kind >= ts.SyntaxKind.ArrayLiteralExpression &&

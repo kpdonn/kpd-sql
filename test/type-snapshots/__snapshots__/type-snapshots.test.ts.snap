@@ -1,5 +1,397 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Verify output of typings test files matches expected Verify output of typings test file expect-errors.ts 1`] = `
+Array [
+  Object {
+    "nodeKind": 71,
+    "symbol": "SqlBuilder",
+    "type": "typeof SqlBuilder",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "param",
+    "type": "<N extends string & (string extends N ? never : string)>(paramName: N) => PlaceholderParam<N>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Class",
+    "type": "PrivateTable<\\"class\\", never> & { readonly id: Column<\\"class\\", NumberType, \\"id\\", true>; readonly courseId: Column<\\"class\\", NumberType, \\"courseId\\", false>; readonly semesterId: Column<\\"class\\", NumberType, \\"semesterId\\", false>; readonly professorId: Column<\\"class\\", NumberType, \\"professorId\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Semester",
+    "type": "PrivateTable<\\"semester\\", never> & { readonly id: Column<\\"semester\\", NumberType, \\"id\\", true>; readonly year: Column<\\"semester\\", NumberType, \\"year\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Student",
+    "type": "PrivateTable<\\"student\\", never> & { readonly id: Column<\\"student\\", NumberType, \\"id\\", true>; readonly firstName: Column<\\"student\\", StringType, \\"firstName\\", false>; readonly lastName: Column<\\"student\\", StringType, \\"lastName\\", false>; readonly majorId: Column<\\"student\\", UnionType<(NumberType | NullType)[], number | null, number | null, string | number | boolean | symbol | object | null | undefined>, \\"majorId\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Professor",
+    "type": "PrivateTable<\\"professor\\", never> & { readonly id: Column<\\"professor\\", NumberType, \\"id\\", true>; readonly firstName: Column<\\"professor\\", StringType, \\"firstName\\", false>; readonly lastName: Column<\\"professor\\", StringType, \\"lastName\\", false>; readonly departmentId: Column<\\"professor\\", NumberType, \\"departmentId\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Course",
+    "type": "PrivateTable<\\"course\\", never> & { readonly id: Column<\\"course\\", NumberType, \\"id\\", true>; readonly name: Column<\\"course\\", StringType, \\"name\\", false>; readonly subjectId: Column<\\"course\\", NumberType, \\"subjectId\\", false>; readonly creditHours: Column<\\"course\\", NumberType, \\"creditHours\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "db",
+    "type": "SqlBuilder<{}, {}, never, never, {}, never, never>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "test1",
+    "type": "SqlBuilder<{ [K in Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]> extends never ? never : Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]>[\\"_columnAs\\"]]: { [K in keyof T]: T[K]; }[keyof T] extends { [\\"_columnAs\\"]: K; } ? { [K in keyof T]: T[K]; }[keyof T] : never; }, {}, \\"class\\", never, {}, Column<\\"class\\", NumberType, \\"courseId\\", false>, \\"class\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.columns",
+    "type": "<C extends ReadonlyArray<Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>> & { [K in keyof T]: (T[K] extends Column<\\"class\\", NumberType, \\"courseId\\", false> ? {} : never) & T[K][\\"_columnAs\\"] extends (Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]> extends never ? never : Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]>[\\"_columnAs\\"]) ? { \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never ? never : Extract<T[K], T[K]>[\\"_columnAs\\"]; } : Column<\\"class\\", Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>; } & { \\"0\\": any; }, T extends { [K in Exclude<keyof C, \\"_A\\" | \\"includes\\" | \\"length\\" | \\"toString\\" | \\"toLocaleString\\" | \\"push\\" | \\"pop\\" | \\"concat\\" | \\"join\\" | \\"reverse\\" | \\"shift\\" | \\"slice\\" | \\"sort\\" | \\"splice\\" | \\"unshift\\" | \\"indexOf\\" | \\"lastIndexOf\\" | \\"every\\" | \\"some\\" | \\"forEach\\" | \\"map\\" | \\"filter\\" | \\"reduce\\" | \\"reduceRight\\" | \\"entries\\" | \\"keys\\" | \\"values\\" | \\"find\\" | \\"findIndex\\" | \\"fill\\" | \\"copyWithin\\">]: Extract<C[K], Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>; } = { [K in Exclude<keyof C, \\"_A\\" | \\"includes\\" | \\"length\\" | \\"toString\\" | \\"toLocaleString\\" | \\"push\\" | \\"pop\\" | \\"concat\\" | \\"join\\" | \\"reverse\\" | \\"shift\\" | \\"slice\\" | \\"sort\\" | \\"splice\\" | \\"unshift\\" | \\"indexOf\\" | \\"lastIndexOf\\" | \\"every\\" | \\"some\\" | \\"forEach\\" | \\"map\\" | \\"filter\\" | \\"reduce\\" | \\"reduceRight\\" | \\"entries\\" | \\"keys\\" | \\"values\\" | \\"find\\" | \\"findIndex\\" | \\"fill\\" | \\"copyWithin\\">]: Extract<C[K], Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>; }>(cols: C) => SqlBuilder<{ [K in Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]> extends never ? never : Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]>[\\"_columnAs\\"]]: { [K in keyof T]: T[K]; }[keyof T] extends { [\\"_columnAs\\"]: K; } ? { [K in keyof T]: T[K]; }[keyof T] : never; }, {}, \\"class\\", never, {}, Column<\\"class\\", NumberType, \\"courseId\\", false>, \\"class\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.groupBy",
+    "type": "<_GBC extends Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>(groupByCols: _GBC[]) => SqlBuilder<{}, {}, \\"class\\", never, {}, _GBC, \\"class\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.from",
+    "type": "<_RT extends string, _OT extends string>(fromType: (PrivateTable<_RT, _OT> & {}) | PlainJoin<_RT, _OT> | LeftJoin<_RT, _OT>) => SqlBuilder<{}, {}, string extends _RT ? never : _RT, string extends _OT ? never : _OT, {}, never, (string extends (string extends _RT ? never : _RT) ? never : string extends _RT ? never : _RT) | (string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT)>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.select",
+    "type": "{ <_Cols extends Record<string, Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>, _P, _RT extends string, _OT extends string, _WT extends { [K in keyof _WT]: PrivateTable<string, never> & {}; }, _GBC extends Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>(cb: (subq: SqlBuilder<{}, {}, never, never, {}, never, never>) => SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC, (string extends _RT ? never : _RT) | (string extends _OT ? never : _OT)>): SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC, (string extends _RT ? never : _RT) | (string extends _OT ? never : _OT)>; (): SqlBuilder<{}, {}, never, never, {}, never, never>; }",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "courseId",
+    "type": "Column<\\"class\\", NumberType, \\"courseId\\", false>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "semesterId",
+    "type": "Column<\\"class\\", NumberType, \\"semesterId\\", false>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "test2",
+    "type": "SqlBuilder<{ [K in Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]> extends never ? never : Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]>[\\"_columnAs\\"]]: { [K in keyof T]: T[K]; }[keyof T] extends { [\\"_columnAs\\"]: K; } ? { [K in keyof T]: T[K]; }[keyof T] : never; }, {}, \\"myWith\\", never, {}, Column<\\"myWith\\", NumberType, \\"id\\", false>, \\"myWith\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.select",
+    "type": "{ <_Cols extends Record<string, Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>, _P, _RT extends string, _OT extends string, _WT extends { [K in keyof _WT]: PrivateTable<string, never> & {}; }, _GBC extends Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>(cb: (subq: SqlBuilder<{}, {}, never, never, Record<\\"myWith\\", PrivateTable<\\"myWith\\", never> & { readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false>; readonly courseId: Column<\\"myWith\\", NumberType, \\"courseId\\", false>; readonly semesterId: Column<\\"myWith\\", NumberType, \\"semesterId\\", false>; readonly professorId: Column<\\"myWith\\", NumberType, \\"professorId\\", false>; }>, never, never>) => SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC, (string extends _RT ? never : _RT) | (string extends _OT ? never : _OT)>): SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC, (string extends _RT ? never : _RT) | (string extends _OT ? never : _OT)>; (): SqlBuilder<{}, {}, never, never, Record<\\"myWith\\", PrivateTable<\\"myWith\\", never> & { readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false>; readonly courseId: Column<\\"myWith\\", NumberType, \\"courseId\\", false>; readonly semesterId: Column<\\"myWith\\", NumberType, \\"semesterId\\", false>; readonly professorId: Column<\\"myWith\\", NumberType, \\"professorId\\", false>; }>, never, never>; }",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.with",
+    "type": "<A extends string, WCols extends Record<string, Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>, WParams>(alias: A, withSelect: SelectStatement<WCols, WParams, Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>) => SqlBuilder<{}, WParams & {}, never, never, Record<A, PrivateTable<A, never> & { readonly [K in keyof WCols]: Column<A, WCols[K][\\"type\\"], K, false>; }>, never, never>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.columns",
+    "type": "<C extends ReadonlyArray<Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>> & { [K in keyof T]: T[K][\\"_columnAs\\"] & {} extends (Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]> extends never ? never : Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]>[\\"_columnAs\\"]) ? { \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never ? never : Extract<T[K], T[K]>[\\"_columnAs\\"]; } : Column<\\"class\\", Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>; } & { \\"0\\": any; }, T extends { [K in Exclude<keyof C, \\"_A\\" | \\"includes\\" | \\"length\\" | \\"toString\\" | \\"toLocaleString\\" | \\"push\\" | \\"pop\\" | \\"concat\\" | \\"join\\" | \\"reverse\\" | \\"shift\\" | \\"slice\\" | \\"sort\\" | \\"splice\\" | \\"unshift\\" | \\"indexOf\\" | \\"lastIndexOf\\" | \\"every\\" | \\"some\\" | \\"forEach\\" | \\"map\\" | \\"filter\\" | \\"reduce\\" | \\"reduceRight\\" | \\"entries\\" | \\"keys\\" | \\"values\\" | \\"find\\" | \\"findIndex\\" | \\"fill\\" | \\"copyWithin\\">]: Extract<C[K], Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>; } = { [K in Exclude<keyof C, \\"_A\\" | \\"includes\\" | \\"length\\" | \\"toString\\" | \\"toLocaleString\\" | \\"push\\" | \\"pop\\" | \\"concat\\" | \\"join\\" | \\"reverse\\" | \\"shift\\" | \\"slice\\" | \\"sort\\" | \\"splice\\" | \\"unshift\\" | \\"indexOf\\" | \\"lastIndexOf\\" | \\"every\\" | \\"some\\" | \\"forEach\\" | \\"map\\" | \\"filter\\" | \\"reduce\\" | \\"reduceRight\\" | \\"entries\\" | \\"keys\\" | \\"values\\" | \\"find\\" | \\"findIndex\\" | \\"fill\\" | \\"copyWithin\\">]: Extract<C[K], Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>; }>(cols: C) => SqlBuilder<{ [K in Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]> extends never ? never : Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]>[\\"_columnAs\\"]]: { [K in keyof T]: T[K]; }[keyof T] extends { [\\"_columnAs\\"]: K; } ? { [K in keyof T]: T[K]; }[keyof T] : never; }, {}, \\"class\\", never, {}, never, \\"class\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "id",
+    "type": "Column<\\"class\\", NumberType, \\"id\\", true>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "professorId",
+    "type": "Column<\\"class\\", NumberType, \\"professorId\\", false>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "sq",
+    "type": "SqlBuilder<{}, {}, never, never, Record<\\"myWith\\", PrivateTable<\\"myWith\\", never> & { readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false>; readonly courseId: Column<\\"myWith\\", NumberType, \\"courseId\\", false>; readonly semesterId: Column<\\"myWith\\", NumberType, \\"semesterId\\", false>; readonly professorId: Column<\\"myWith\\", NumberType, \\"professorId\\", false>; }>, never, never>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.columns",
+    "type": "<C extends ReadonlyArray<Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>> & { [K in keyof T]: (T[K] extends Column<\\"myWith\\", NumberType, \\"id\\", false> ? {} : never) & T[K][\\"_columnAs\\"] extends (Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]> extends never ? never : Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]>[\\"_columnAs\\"]) ? { \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never ? never : Extract<T[K], T[K]>[\\"_columnAs\\"]; } : Column<\\"myWith\\", Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>; } & { \\"0\\": any; }, T extends { [K in Exclude<keyof C, \\"_A\\" | \\"includes\\" | \\"length\\" | \\"toString\\" | \\"toLocaleString\\" | \\"push\\" | \\"pop\\" | \\"concat\\" | \\"join\\" | \\"reverse\\" | \\"shift\\" | \\"slice\\" | \\"sort\\" | \\"splice\\" | \\"unshift\\" | \\"indexOf\\" | \\"lastIndexOf\\" | \\"every\\" | \\"some\\" | \\"forEach\\" | \\"map\\" | \\"filter\\" | \\"reduce\\" | \\"reduceRight\\" | \\"entries\\" | \\"keys\\" | \\"values\\" | \\"find\\" | \\"findIndex\\" | \\"fill\\" | \\"copyWithin\\">]: Extract<C[K], Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>; } = { [K in Exclude<keyof C, \\"_A\\" | \\"includes\\" | \\"length\\" | \\"toString\\" | \\"toLocaleString\\" | \\"push\\" | \\"pop\\" | \\"concat\\" | \\"join\\" | \\"reverse\\" | \\"shift\\" | \\"slice\\" | \\"sort\\" | \\"splice\\" | \\"unshift\\" | \\"indexOf\\" | \\"lastIndexOf\\" | \\"every\\" | \\"some\\" | \\"forEach\\" | \\"map\\" | \\"filter\\" | \\"reduce\\" | \\"reduceRight\\" | \\"entries\\" | \\"keys\\" | \\"values\\" | \\"find\\" | \\"findIndex\\" | \\"fill\\" | \\"copyWithin\\">]: Extract<C[K], Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>; }>(cols: C) => SqlBuilder<{ [K in Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]> extends never ? never : Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]>[\\"_columnAs\\"]]: { [K in keyof T]: T[K]; }[keyof T] extends { [\\"_columnAs\\"]: K; } ? { [K in keyof T]: T[K]; }[keyof T] : never; }, {}, \\"myWith\\", never, Record<\\"myWith\\", PrivateTable<\\"myWith\\", never> & { readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false>; readonly courseId: Column<\\"myWith\\", NumberType, \\"courseId\\", false>; readonly semesterId: Column<\\"myWith\\", NumberType, \\"semesterId\\", false>; readonly professorId: Column<\\"myWith\\", NumberType, \\"professorId\\", false>; }>, Column<\\"myWith\\", NumberType, \\"id\\", false>, \\"myWith\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.groupBy",
+    "type": "<_GBC extends Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>(groupByCols: _GBC[]) => SqlBuilder<{}, {}, \\"myWith\\", never, Record<\\"myWith\\", PrivateTable<\\"myWith\\", never> & { readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false>; readonly courseId: Column<\\"myWith\\", NumberType, \\"courseId\\", false>; readonly semesterId: Column<\\"myWith\\", NumberType, \\"semesterId\\", false>; readonly professorId: Column<\\"myWith\\", NumberType, \\"professorId\\", false>; }>, _GBC, \\"myWith\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.from",
+    "type": "<_RT extends string, _OT extends string>(fromType: (PrivateTable<_RT, _OT> & {}) | PlainJoin<_RT, _OT> | LeftJoin<_RT, _OT>) => SqlBuilder<{}, {}, string extends _RT ? never : _RT, string extends _OT ? never : _OT, Record<\\"myWith\\", PrivateTable<\\"myWith\\", never> & { readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false>; readonly courseId: Column<\\"myWith\\", NumberType, \\"courseId\\", false>; readonly semesterId: Column<\\"myWith\\", NumberType, \\"semesterId\\", false>; readonly professorId: Column<\\"myWith\\", NumberType, \\"professorId\\", false>; }>, never, (string extends (string extends _RT ? never : _RT) ? never : string extends _RT ? never : _RT) | (string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT)>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "myWith",
+    "type": "PrivateTable<\\"myWith\\", never> & { readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false>; readonly courseId: Column<\\"myWith\\", NumberType, \\"courseId\\", false>; readonly semesterId: Column<\\"myWith\\", NumberType, \\"semesterId\\", false>; readonly professorId: Column<\\"myWith\\", NumberType, \\"professorId\\", false>; }",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.table",
+    "type": "Record<\\"myWith\\", PrivateTable<\\"myWith\\", never> & { readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false>; readonly courseId: Column<\\"myWith\\", NumberType, \\"courseId\\", false>; readonly semesterId: Column<\\"myWith\\", NumberType, \\"semesterId\\", false>; readonly professorId: Column<\\"myWith\\", NumberType, \\"professorId\\", false>; }>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "id",
+    "type": "Column<\\"myWith\\", NumberType, \\"id\\", false>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "courseId",
+    "type": "Column<\\"myWith\\", NumberType, \\"courseId\\", false>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "test3",
+    "type": "SqlBuilder<{ [K in Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]> extends never ? never : Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]>[\\"_columnAs\\"]]: { [K in keyof T]: T[K]; }[keyof T] extends { [\\"_columnAs\\"]: K; } ? { [K in keyof T]: T[K]; }[keyof T] : never; }, {}, \\"class\\", never, {}, never, \\"class\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "year",
+    "type": "Column<\\"semester\\", NumberType, \\"year\\", false>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "test4",
+    "type": "SqlBuilder<{ [K in Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]> extends never ? never : Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]>[\\"_columnAs\\"]]: { [K in keyof T]: T[K]; }[keyof T] extends { [\\"_columnAs\\"]: K; } ? { [K in keyof T]: T[K]; }[keyof T] : never; }, {}, \\"class\\", never, {}, never, \\"class\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "Column.as",
+    "type": "<NN extends string>(newName: NN) => Column<\\"class\\", NumberType, NN, false>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "test5",
+    "type": "SqlBuilder<{ firstName: Column<\\"student\\", StringType, \\"firstName\\", false>; lastName: Column<\\"student\\", StringType, \\"lastName\\", false>; }, SP & {}, \\"student\\", never, {}, never, \\"student\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.where",
+    "type": "{ <CTbles extends \\"student\\", SP>(arg: IsNotNullCondition<CTbles, SP> | IsNullCondition<CTbles, SP> | EqCondition<CTbles, SP> | AndCondition<CTbles, SP> | OrCondition<CTbles, SP> | InCondition<CTbles, SP> | NotCondition<CTbles, SP>): SqlBuilder<{ firstName: Column<\\"student\\", StringType, \\"firstName\\", false>; lastName: Column<\\"student\\", StringType, \\"lastName\\", false>; }, SP & {}, \\"student\\", never, {}, never, \\"student\\">; <CTbles extends \\"student\\", SP>(arg: (subSelect: SqlBuilder<{}, {}, \\"student\\", never, {}, never, \\"student\\">) => IsNotNullCondition<CTbles, SP> | IsNullCondition<CTbles, SP> | EqCondition<CTbles, SP> | AndCondition<CTbles, SP> | OrCondition<CTbles, SP> | InCondition<CTbles, SP> | NotCondition<CTbles, SP>): SqlBuilder<{ firstName: Column<\\"student\\", StringType, \\"firstName\\", false>; lastName: Column<\\"student\\", StringType, \\"lastName\\", false>; }, SP & {}, \\"student\\", never, {}, never, \\"student\\">; }",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.columns",
+    "type": "<C extends ReadonlyArray<Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>> & { [K in keyof T]: T[K][\\"_columnAs\\"] & {} extends (Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]> extends never ? never : Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]>[\\"_columnAs\\"]) ? { \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never ? never : Extract<T[K], T[K]>[\\"_columnAs\\"]; } : Column<\\"student\\", Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>; } & { \\"0\\": any; }, T extends { [K in Exclude<keyof C, \\"_A\\" | \\"includes\\" | \\"length\\" | \\"toString\\" | \\"toLocaleString\\" | \\"push\\" | \\"pop\\" | \\"concat\\" | \\"join\\" | \\"reverse\\" | \\"shift\\" | \\"slice\\" | \\"sort\\" | \\"splice\\" | \\"unshift\\" | \\"indexOf\\" | \\"lastIndexOf\\" | \\"every\\" | \\"some\\" | \\"forEach\\" | \\"map\\" | \\"filter\\" | \\"reduce\\" | \\"reduceRight\\" | \\"entries\\" | \\"keys\\" | \\"values\\" | \\"find\\" | \\"findIndex\\" | \\"fill\\" | \\"copyWithin\\">]: Extract<C[K], Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>; } = { [K in Exclude<keyof C, \\"_A\\" | \\"includes\\" | \\"length\\" | \\"toString\\" | \\"toLocaleString\\" | \\"push\\" | \\"pop\\" | \\"concat\\" | \\"join\\" | \\"reverse\\" | \\"shift\\" | \\"slice\\" | \\"sort\\" | \\"splice\\" | \\"unshift\\" | \\"indexOf\\" | \\"lastIndexOf\\" | \\"every\\" | \\"some\\" | \\"forEach\\" | \\"map\\" | \\"filter\\" | \\"reduce\\" | \\"reduceRight\\" | \\"entries\\" | \\"keys\\" | \\"values\\" | \\"find\\" | \\"findIndex\\" | \\"fill\\" | \\"copyWithin\\">]: Extract<C[K], Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>; }>(cols: C) => SqlBuilder<{ [K in Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]> extends never ? never : Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]>[\\"_columnAs\\"]]: { [K in keyof T]: T[K]; }[keyof T] extends { [\\"_columnAs\\"]: K; } ? { [K in keyof T]: T[K]; }[keyof T] : never; }, {}, \\"student\\", never, {}, never, \\"student\\">",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "firstName",
+    "type": "Column<\\"student\\", StringType, \\"firstName\\", false>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "lastName",
+    "type": "Column<\\"student\\", StringType, \\"lastName\\", false>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "Column.eq",
+    "type": "<Col2 extends Column<string, UnionType<(NumberType | NullType)[], number | null, number | null, string | number | boolean | symbol | object | null | undefined>, string, boolean>, SPN extends string>(col2: number | Col2 | PlaceholderParam<SPN> | null) => IsNotNullCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>> | IsNullCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>> | EqCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>> | AndCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>> | OrCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>> | InCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>> | NotCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "majorId",
+    "type": "Column<\\"student\\", UnionType<(NumberType | NullType)[], number | null, number | null, string | number | boolean | symbol | object | null | undefined>, \\"majorId\\", false>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "test6",
+    "type": "Promise<({ firstName: string; lastName: string; } & {})[]>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.execute",
+    "type": "(args: Record<\\"myTest\\", number | null>) => Promise<({ firstName: string; lastName: string; } & {})[]>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "test7",
+    "type": "Promise<({ firstName: string; lastName: string; } & {})[]>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "myTest",
+    "type": "string",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "nonLiteralString",
+    "type": "string",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "test8",
+    "type": "SqlBuilder<{ firstName: Column<\\"student\\", StringType, \\"firstName\\", false>; lastName: Column<\\"student\\", StringType, \\"lastName\\", false>; }, (string extends N ? {} : Record<N, number | null>) & {}, \\"student\\", never, {}, never, \\"student\\">",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "test9",
+    "type": "SqlBuilder<{ [K in Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]> extends never ? never : Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]>[\\"_columnAs\\"]]: { [K in keyof T]: T[K]; }[keyof T] extends { [\\"_columnAs\\"]: K; } ? { [K in keyof T]: T[K]; }[keyof T] : never; }, {}, string extends \\"student\\" | (string extends _RT ? never : _RT) ? never : \\"student\\" | (string extends _RT ? never : _RT), string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT, {}, never, (string extends (string extends \\"student\\" | (string extends _RT ? never : _RT) ? never : \\"student\\" | (string extends _RT ? never : _RT)) ? never : string extends \\"student\\" | (string extends _RT ? never : _RT) ? never : \\"student\\" | (string extends _RT ? never : _RT)) | (string extends (string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT) ? never : string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT)>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "SqlBuilder.columns",
+    "type": "<C extends ReadonlyArray<Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>> & { [K in keyof T]: T[K][\\"_columnAs\\"] & {} extends (Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]> extends never ? never : Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]>[\\"_columnAs\\"]) ? { \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never ? never : Extract<T[K], T[K]>[\\"_columnAs\\"]; } : Column<(string extends (string extends \\"student\\" | (string extends _RT ? never : _RT) ? never : \\"student\\" | (string extends _RT ? never : _RT)) ? never : string extends \\"student\\" | (string extends _RT ? never : _RT) ? never : \\"student\\" | (string extends _RT ? never : _RT)) | (string extends (string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT) ? never : string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT), Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>; } & { \\"0\\": any; }, T extends { [K in Exclude<keyof C, \\"_A\\" | \\"includes\\" | \\"length\\" | \\"toString\\" | \\"toLocaleString\\" | \\"push\\" | \\"pop\\" | \\"concat\\" | \\"join\\" | \\"reverse\\" | \\"shift\\" | \\"slice\\" | \\"sort\\" | \\"splice\\" | \\"unshift\\" | \\"indexOf\\" | \\"lastIndexOf\\" | \\"every\\" | \\"some\\" | \\"forEach\\" | \\"map\\" | \\"filter\\" | \\"reduce\\" | \\"reduceRight\\" | \\"entries\\" | \\"keys\\" | \\"values\\" | \\"find\\" | \\"findIndex\\" | \\"fill\\" | \\"copyWithin\\">]: Extract<C[K], Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>; } = { [K in Exclude<keyof C, \\"_A\\" | \\"includes\\" | \\"length\\" | \\"toString\\" | \\"toLocaleString\\" | \\"push\\" | \\"pop\\" | \\"concat\\" | \\"join\\" | \\"reverse\\" | \\"shift\\" | \\"slice\\" | \\"sort\\" | \\"splice\\" | \\"unshift\\" | \\"indexOf\\" | \\"lastIndexOf\\" | \\"every\\" | \\"some\\" | \\"forEach\\" | \\"map\\" | \\"filter\\" | \\"reduce\\" | \\"reduceRight\\" | \\"entries\\" | \\"keys\\" | \\"values\\" | \\"find\\" | \\"findIndex\\" | \\"fill\\" | \\"copyWithin\\">]: Extract<C[K], Column<string, Type<any, any, string | number | boolean | symbol | object | null | undefined>, string, boolean>>; }>(cols: C) => SqlBuilder<{ [K in Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]> extends never ? never : Extract<{ [K in keyof T]: T[K]; }[keyof T], { [K in keyof T]: T[K]; }[keyof T]>[\\"_columnAs\\"]]: { [K in keyof T]: T[K]; }[keyof T] extends { [\\"_columnAs\\"]: K; } ? { [K in keyof T]: T[K]; }[keyof T] : never; }, {}, string extends \\"student\\" | (string extends _RT ? never : _RT) ? never : \\"student\\" | (string extends _RT ? never : _RT), string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT, {}, never, (string extends (string extends \\"student\\" | (string extends _RT ? never : _RT) ? never : \\"student\\" | (string extends _RT ? never : _RT)) ? never : string extends \\"student\\" | (string extends _RT ? never : _RT) ? never : \\"student\\" | (string extends _RT ? never : _RT)) | (string extends (string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT) ? never : string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT)>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "FromTable.leftJoin",
+    "type": "<_RT extends string, _OT extends string, _NewTblNames extends string = (string extends _RT ? never : _RT) | (string extends _OT ? never : _OT), _NTN2 extends _NewTblNames = _NewTblNames>(table: (PrivateTable<_RT, _OT> & {} & (_NewTblNames extends \\"student\\" ? never : {})) | (PlainJoin<_RT, _OT> & (_NewTblNames extends \\"student\\" ? never : {})) | (LeftJoin<_RT, _OT> & (_NewTblNames extends \\"student\\" ? never : {})), cond: IsNotNullCondition<\\"student\\" | _NTN2, {}> | IsNullCondition<\\"student\\" | _NTN2, {}> | EqCondition<\\"student\\" | _NTN2, {}> | AndCondition<\\"student\\" | _NTN2, {}> | OrCondition<\\"student\\" | _NTN2, {}> | InCondition<\\"student\\" | _NTN2, {}> | NotCondition<\\"student\\" | _NTN2, {}>) => (PrivateTable<\\"student\\" | (string extends _RT ? never : _RT), string extends _OT ? never : _OT> & {}) | PlainJoin<\\"student\\" | (string extends _RT ? never : _RT), string extends _OT ? never : _OT> | LeftJoin<\\"student\\" | (string extends _RT ? never : _RT), string extends _OT ? never : _OT>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "FromTable.join",
+    "type": "<_RT extends string, _OT extends string, _NewTblNames extends string = (string extends _RT ? never : _RT) | (string extends _OT ? never : _OT), _NTN2 extends _NewTblNames = _NewTblNames>(table: (PrivateTable<_RT, _OT> & {} & (_NewTblNames extends \\"class\\" ? never : {})) | (PlainJoin<_RT, _OT> & (_NewTblNames extends \\"class\\" ? never : {})) | (LeftJoin<_RT, _OT> & (_NewTblNames extends \\"class\\" ? never : {})), cond: IsNotNullCondition<\\"class\\" | _NTN2, {}> | IsNullCondition<\\"class\\" | _NTN2, {}> | EqCondition<\\"class\\" | _NTN2, {}> | AndCondition<\\"class\\" | _NTN2, {}> | OrCondition<\\"class\\" | _NTN2, {}> | InCondition<\\"class\\" | _NTN2, {}> | NotCondition<\\"class\\" | _NTN2, {}>) => (PrivateTable<\\"class\\" | (string extends _RT ? never : _RT), string extends _OT ? never : _OT> & {}) | PlainJoin<\\"class\\" | (string extends _RT ? never : _RT), string extends _OT ? never : _OT> | LeftJoin<\\"class\\" | (string extends _RT ? never : _RT), string extends _OT ? never : _OT>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "Column.eq",
+    "type": "<Col2 extends Column<string, NumberType, string, boolean>, SPN extends string>(col2: number | Col2 | PlaceholderParam<SPN>) => IsNotNullCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>> | IsNullCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>> | EqCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>> | AndCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>> | OrCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>> | InCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>> | NotCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "id",
+    "type": "Column<\\"course\\", NumberType, \\"id\\", true>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "Column.eq",
+    "type": "<Col2 extends Column<string, StringType, string, boolean>, SPN extends string>(col2: string | Col2 | PlaceholderParam<SPN>) => IsNotNullCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, string>> | IsNullCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, string>> | EqCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, string>> | AndCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, string>> | OrCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, string>> | InCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, string>> | NotCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, string>>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "subjectId",
+    "type": "Column<\\"course\\", NumberType, \\"subjectId\\", false>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "test10",
+    "type": "Promise<({ firstName: string; lastName: string; } & {})[]>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "wrongKey",
+    "type": "number",
+  },
+]
+`;
+
+exports[`Verify output of typings test files matches expected Verify output of typings test file expect-errors.ts 2`] = `
+Array [
+  Object {
+    "category": 1,
+    "character": 12,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 10,
+    "message": "Argument of type '[Column<\\"class\\", NumberType, \\"semesterId\\", false>]' is not assignable to parameter of type 'ReadonlyArray<Column<string, Type<any, any, mixed>, string, boolean>> & { \\"0\\": NoDuplicates<\\"semesterId\\">; } & { \\"0\\": any; }'.
+  Type '[Column<\\"class\\", NumberType, \\"semesterId\\", false>]' is not assignable to type '{ \\"0\\": NoDuplicates<\\"semesterId\\">; }'.
+    Types of property '\\"0\\"' are incompatible.
+      Type 'Column<\\"class\\", NumberType, \\"semesterId\\", false>' is not assignable to type 'NoDuplicates<\\"semesterId\\">'.
+        Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'Column<\\"class\\", NumberType, \\"semesterId\\", false>'.",
+  },
+  Object {
+    "category": 1,
+    "character": 16,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 23,
+    "message": "Argument of type '[Column<\\"myWith\\", NumberType, \\"id\\", false>, Column<\\"myWith\\", NumberType, \\"courseId\\", false>]' is not assignable to parameter of type 'ReadonlyArray<Column<string, Type<any, any, mixed>, string, boolean>> & { \\"0\\": Column<\\"myWith\\", Type<any, any, mixed>, string, boolean>; \\"1\\": NoDuplicates<\\"courseId\\">; } & { \\"0\\": any; }'.
+  Type '[Column<\\"myWith\\", NumberType, \\"id\\", false>, Column<\\"myWith\\", NumberType, \\"courseId\\", false>]' is not assignable to type '{ \\"0\\": Column<\\"myWith\\", Type<any, any, mixed>, string, boolean>; \\"1\\": NoDuplicates<\\"courseId\\">; }'.
+    Types of property '\\"1\\"' are incompatible.
+      Type 'Column<\\"myWith\\", NumberType, \\"courseId\\", false>' is not assignable to type 'NoDuplicates<\\"courseId\\">'.
+        Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'Column<\\"myWith\\", NumberType, \\"courseId\\", false>'.",
+  },
+  Object {
+    "category": 1,
+    "character": 12,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 29,
+    "message": "Argument of type '[Column<\\"class\\", NumberType, \\"semesterId\\", false>, Column<\\"semester\\", NumberType, \\"year\\", false>]' is not assignable to parameter of type 'ReadonlyArray<Column<string, Type<any, any, mixed>, string, boolean>> & { \\"0\\": Column<\\"class\\", Type<any, any, mixed>, string, boolean>; \\"1\\": Column<\\"class\\", Type<any, any, mixed>, string, boolean>; } & { \\"0\\": any; }'.
+  Type '[Column<\\"class\\", NumberType, \\"semesterId\\", false>, Column<\\"semester\\", NumberType, \\"year\\", false>]' is not assignable to type '{ \\"0\\": Column<\\"class\\", Type<any, any, mixed>, string, boolean>; \\"1\\": Column<\\"class\\", Type<any, any, mixed>, string, boolean>; }'.
+    Types of property '\\"1\\"' are incompatible.
+      Type 'Column<\\"semester\\", NumberType, \\"year\\", false>' is not assignable to type 'Column<\\"class\\", Type<any, any, mixed>, string, boolean>'.
+        Type '\\"semester\\"' is not assignable to type '\\"class\\"'.",
+  },
+  Object {
+    "category": 1,
+    "character": 12,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 34,
+    "message": "Argument of type '[Column<\\"class\\", NumberType, \\"semesterId\\", false>, Column<\\"class\\", NumberType, \\"semesterId\\", false>]' is not assignable to parameter of type 'ReadonlyArray<Column<string, Type<any, any, mixed>, string, boolean>> & { \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; } & { \\"0\\": any; }'.
+  Type '[Column<\\"class\\", NumberType, \\"semesterId\\", false>, Column<\\"class\\", NumberType, \\"semesterId\\", false>]' is not assignable to type '{ \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; }'.
+    Types of property '\\"0\\"' are incompatible.
+      Type 'Column<\\"class\\", NumberType, \\"semesterId\\", false>' is not assignable to type 'NoDuplicates<\\"semesterId\\">'.",
+  },
+  Object {
+    "category": 1,
+    "character": 29,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 40,
+    "message": "Argument of type '\\"wrong type\\"' is not assignable to parameter of type 'number | PlaceholderParam<string> | Column<string, UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, string, boolean> | null'.",
+  },
+  Object {
+    "category": 1,
+    "character": 15,
+    "code": 2554,
+    "file": "expect-errors.ts",
+    "line": 42,
+    "message": "Expected 1 arguments, but got 0.",
+  },
+  Object {
+    "category": 1,
+    "character": 12,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 54,
+    "message": "Argument of type '{ myTest: string; }' is not assignable to parameter of type 'Record<\\"myTest\\", number | null>'.
+  Types of property 'myTest' are incompatible.
+    Type 'string' is not assignable to type 'number | null'.",
+  },
+  Object {
+    "category": 1,
+    "character": 35,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 62,
+    "message": "Argument of type 'string' is not assignable to parameter of type 'never'.",
+  },
+  Object {
+    "category": 1,
+    "character": 28,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 69,
+    "message": "Argument of type 'Column<\\"course\\", NumberType, \\"subjectId\\", false>' is not assignable to parameter of type 'string | PlaceholderParam<string> | Column<string, StringType, string, boolean>'.
+  Type 'Column<\\"course\\", NumberType, \\"subjectId\\", false>' is not assignable to type 'Column<string, StringType, string, boolean>'.
+    Type 'NumberType' is not assignable to type 'StringType'.
+      Types of property '_tag' are incompatible.
+        Type '\\"NumberType\\"' is not assignable to type '\\"StringType\\"'.",
+  },
+  Object {
+    "category": 1,
+    "character": 14,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 79,
+    "message": "Argument of type '{ wrongKey: number; }' is not assignable to parameter of type 'Record<\\"myTest\\", number | null>'.
+  Object literal may only specify known properties, and 'wrongKey' does not exist in type 'Record<\\"myTest\\", number | null>'.",
+  },
+]
+`;
+
 exports[`Verify output of typings test files matches expected Verify output of typings test file no-errors.ts 1`] = `
 Array [
   Object {
@@ -11,6 +403,16 @@ Array [
     "nodeKind": 71,
     "symbol": "Class",
     "type": "PrivateTable<\\"class\\", never> & { readonly id: Column<\\"class\\", NumberType, \\"id\\", true>; readonly courseId: Column<\\"class\\", NumberType, \\"courseId\\", false>; readonly semesterId: Column<\\"class\\", NumberType, \\"semesterId\\", false>; readonly professorId: Column<\\"class\\", NumberType, \\"professorId\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Student",
+    "type": "PrivateTable<\\"student\\", never> & { readonly id: Column<\\"student\\", NumberType, \\"id\\", true>; readonly firstName: Column<\\"student\\", StringType, \\"firstName\\", false>; readonly lastName: Column<\\"student\\", StringType, \\"lastName\\", false>; readonly majorId: Column<\\"student\\", UnionType<(NumberType | NullType)[], number | null, number | null, string | number | boolean | symbol | object | null | undefined>, \\"majorId\\", false>; }",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "Course",
+    "type": "PrivateTable<\\"course\\", never> & { readonly id: Column<\\"course\\", NumberType, \\"id\\", true>; readonly name: Column<\\"course\\", StringType, \\"name\\", false>; readonly subjectId: Column<\\"course\\", NumberType, \\"subjectId\\", false>; readonly creditHours: Column<\\"course\\", NumberType, \\"creditHours\\", false>; }",
   },
   Object {
     "nodeKind": 71,
@@ -57,10 +459,64 @@ Array [
     "symbol": "semesterId",
     "type": "Column<\\"class\\", NumberType, \\"semesterId\\", false>",
   },
+  Object {
+    "nodeKind": 71,
+    "symbol": "test9",
+    "type": "SqlBuilder<{}, {}, string extends \\"student\\" | (string extends _RT ? never : _RT) ? never : \\"student\\" | (string extends _RT ? never : _RT), string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT, {}, never, (string extends (string extends \\"student\\" | (string extends _RT ? never : _RT) ? never : \\"student\\" | (string extends _RT ? never : _RT)) ? never : string extends \\"student\\" | (string extends _RT ? never : _RT) ? never : \\"student\\" | (string extends _RT ? never : _RT)) | (string extends (string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT) ? never : string extends (string extends _OT ? never : _OT) ? never : string extends _OT ? never : _OT)>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "FromTable.leftJoin",
+    "type": "<_RT extends string, _OT extends string, _NewTblNames extends string = (string extends _RT ? never : _RT) | (string extends _OT ? never : _OT), _NTN2 extends _NewTblNames = _NewTblNames>(table: (PrivateTable<_RT, _OT> & {} & (_NewTblNames extends \\"student\\" ? never : {})) | (PlainJoin<_RT, _OT> & (_NewTblNames extends \\"student\\" ? never : {})) | (LeftJoin<_RT, _OT> & (_NewTblNames extends \\"student\\" ? never : {})), cond: IsNotNullCondition<\\"student\\" | _NTN2, {}> | IsNullCondition<\\"student\\" | _NTN2, {}> | EqCondition<\\"student\\" | _NTN2, {}> | AndCondition<\\"student\\" | _NTN2, {}> | OrCondition<\\"student\\" | _NTN2, {}> | InCondition<\\"student\\" | _NTN2, {}> | NotCondition<\\"student\\" | _NTN2, {}>) => (PrivateTable<\\"student\\" | (string extends _RT ? never : _RT), string extends _OT ? never : _OT> & {}) | PlainJoin<\\"student\\" | (string extends _RT ? never : _RT), string extends _OT ? never : _OT> | LeftJoin<\\"student\\" | (string extends _RT ? never : _RT), string extends _OT ? never : _OT>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "FromTable.join",
+    "type": "<_RT extends string, _OT extends string, _NewTblNames extends string = (string extends _RT ? never : _RT) | (string extends _OT ? never : _OT), _NTN2 extends _NewTblNames = _NewTblNames>(table: (PrivateTable<_RT, _OT> & {} & (_NewTblNames extends \\"class\\" ? never : {})) | (PlainJoin<_RT, _OT> & (_NewTblNames extends \\"class\\" ? never : {})) | (LeftJoin<_RT, _OT> & (_NewTblNames extends \\"class\\" ? never : {})), cond: IsNotNullCondition<\\"class\\" | _NTN2, {}> | IsNullCondition<\\"class\\" | _NTN2, {}> | EqCondition<\\"class\\" | _NTN2, {}> | AndCondition<\\"class\\" | _NTN2, {}> | OrCondition<\\"class\\" | _NTN2, {}> | InCondition<\\"class\\" | _NTN2, {}> | NotCondition<\\"class\\" | _NTN2, {}>) => (PrivateTable<\\"class\\" | (string extends _RT ? never : _RT), string extends _OT ? never : _OT> & {}) | PlainJoin<\\"class\\" | (string extends _RT ? never : _RT), string extends _OT ? never : _OT> | LeftJoin<\\"class\\" | (string extends _RT ? never : _RT), string extends _OT ? never : _OT>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "Column.eq",
+    "type": "<Col2 extends Column<string, NumberType, string, boolean>, SPN extends string>(col2: number | Col2 | PlaceholderParam<SPN>) => IsNotNullCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>> | IsNullCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>> | EqCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>> | AndCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>> | OrCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>> | InCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>> | NotCondition<\\"course\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number>>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "id",
+    "type": "Column<\\"course\\", NumberType, \\"id\\", true>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "Column.eq",
+    "type": "<Col2 extends Column<string, UnionType<(NumberType | NullType)[], number | null, number | null, string | number | boolean | symbol | object | null | undefined>, string, boolean>, SPN extends string>(col2: number | Col2 | PlaceholderParam<SPN> | null) => IsNotNullCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>> | IsNullCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>> | EqCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>> | AndCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>> | OrCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>> | InCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>> | NotCondition<\\"student\\" | (string extends Col2[\\"_tableAs\\"] ? never : Col2[\\"_tableAs\\"]), string extends SPN ? {} : Record<SPN, number | null>>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "majorId",
+    "type": "Column<\\"student\\", UnionType<(NumberType | NullType)[], number | null, number | null, string | number | boolean | symbol | object | null | undefined>, \\"majorId\\", false>",
+  },
+  Object {
+    "nodeKind": 184,
+    "symbol": "subjectId",
+    "type": "Column<\\"course\\", NumberType, \\"subjectId\\", false>",
+  },
 ]
 `;
 
-exports[`Verify output of typings test files matches expected Verify output of typings test file no-errors.ts 2`] = `Array []`;
+exports[`Verify output of typings test files matches expected Verify output of typings test file no-errors.ts 2`] = `
+Array [
+  Object {
+    "category": 1,
+    "character": 26,
+    "code": 2345,
+    "file": "no-errors.ts",
+    "line": 17,
+    "message": "Argument of type 'Column<\\"course\\", NumberType, \\"subjectId\\", false>' is not assignable to parameter of type 'number | PlaceholderParam<string> | Column<string, UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, string, boolean> | null'.
+  Type 'Column<\\"course\\", NumberType, \\"subjectId\\", false>' is not assignable to type 'Column<string, UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, string, boolean>'.
+    Type 'NumberType' is not assignable to type 'UnionType<(NullType | NumberType)[], number | null, number | null, mixed>'.
+      Property 'types' is missing in type 'NumberType'.",
+  },
+]
+`;
 
 exports[`Verify output of typings test files matches expected Verify output of typings test file tables.ts 1`] = `
 Array [
