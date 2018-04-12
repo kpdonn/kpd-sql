@@ -180,9 +180,11 @@ export class Column<
   TN extends string = string,
   TY extends t.Any = t.Mixed,
   CAS extends string = string,
-  U extends boolean = boolean
+  U extends boolean = boolean,
+  ATY = t.TypeOf<TY>
 > implements SqlKind {
   readonly sqlKind = "column"
+  private _actualType!: ATY
 
   constructor(
     readonly _tableAs: TN,
@@ -208,15 +210,18 @@ export class Column<
     return new Column(this._tableAs, this._column, this.type, newName, this.unique)
   }
 
-  eq<Col2 extends Column<string, TY>, SPN extends string>(
+  eq<
+    Col2 extends Column<string, t.Any, string, boolean, NonNullable<ATY>>,
+    SPN extends string
+  >(
     col2: Col2 | t.TypeOf<TY> | PlaceholderParam<SPN>
-  ): Condition<TN | Literal<Col2["_tableAs"]>, SqlParam<SPN, t.TypeOf<TY>>> {
+  ): Condition<TN | Literal<Col2["_tableAs"]>, SqlParam<SPN, NonNullable<t.TypeOf<TY>>>> {
     return EqCondition.create(this, col2, this._isNot) as any
   }
 
   in<C extends ValsAre<C, Column<string, TY>>, P, SPN extends string>(
     rightArg: SelectStatement<C, P> | t.TypeOf<TY>[] | PlaceholderParam<SPN>
-  ): Condition<TN, P & SqlParam<SPN, t.TypeOf<TY>>> {
+  ): Condition<TN, P & SqlParam<SPN, NonNullable<t.TypeOf<TY>>>> {
     return InCondition.create(this, rightArg, this._isNot) as any
   }
 
