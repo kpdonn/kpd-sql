@@ -77,3 +77,10 @@ const test10 = db
   .columns([Student.firstName, Student.lastName])
   .where(Student.majorId.eq(param("myTest")))
   .execute({ wrongKey: 53 })
+
+const test11 = db
+  .select()
+  .from(Student)
+  .columns([Student.firstName, Student.lastName])
+  .where(Student.majorId.eq(param("myTest")))
+  .execute({ myTest: null })

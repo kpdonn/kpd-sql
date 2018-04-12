@@ -282,6 +282,16 @@ Array [
     "symbol": "wrongKey",
     "type": "number",
   },
+  Object {
+    "nodeKind": 71,
+    "symbol": "test11",
+    "type": "Promise<({ firstName: string; lastName: string; } & {})[]>",
+  },
+  Object {
+    "nodeKind": 71,
+    "symbol": "myTest",
+    "type": "null",
+  },
 ]
 `;
 
