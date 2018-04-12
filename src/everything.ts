@@ -31,6 +31,7 @@ export type FromType<RT extends string = string, OT extends string = string> =
   | LeftJoin<RT, OT>
 
 export type SqlPart =
+  | GroupBy
   | WithClause
   | SelectStatement
   | Condition
@@ -391,6 +392,12 @@ export class InCondition<CT extends string = string, P = {}> extends BaseConditi
   }
 }
 
+export class GroupBy<GBC extends Column = Column> implements SqlKind {
+  readonly sqlKind = "groupBy"
+
+  constructor(readonly columns: GBC[]) {}
+}
+
 export type ArrayKeys = keyof any[]
 
 export type TupleKeys<T> = Exclude<keyof T, ArrayKeys>
@@ -451,14 +458,18 @@ export type BuilderState = DeepReadonly<{
   selColumns: ColumnDeclaration[]
   selWhere?: Condition
   selWith: WithClause[]
+  selGroupBy?: GroupBy
 }>
 
-export interface SelectStatement<Cols extends Record<string, Column> = {}, P = {}>
-  extends SqlKind,
-    BuilderState {
+export interface SelectStatement<
+  Cols extends Record<string, Column> = {},
+  P = {},
+  GBC extends Column = Column
+> extends SqlKind, BuilderState {
   _ignore: {
     _c: Cols
     _p: P
+    _gbc: GBC
   }
   readonly sqlKind: "selectStatement"
 }
@@ -469,12 +480,14 @@ export class SqlBuilder<
   RT extends string,
   OT extends string,
   WT extends ValsAre<WT, Table>,
+  GBC extends Column,
   TblNames extends string = Literal<RT> | Literal<OT>
 > implements SelectStatement<Cols, P> {
   readonly sqlKind = "selectStatement"
   _ignore!: {
     _c: Cols
     _p: P
+    _gbc: GBC
   }
 
   private static readonly initialState: BuilderState = {
@@ -505,6 +518,10 @@ export class SqlBuilder<
     return this._withTables
   }
 
+  get() {
+    return this._withTables
+  }
+
   execute: ExecuteFunc<Cols, P, RT, OT> = (((arg?: P) => {
     return this.plugin.execute(this, this.lookupParamNum, arg)
   }) as any) as ExecuteFunc<Cols, P, RT, OT>
@@ -528,7 +545,7 @@ export class SqlBuilder<
     private readonly _withTables: WT = {} as WT
   ) {}
 
-  static _init(plugin: SqlPlugin): SqlBuilder<{}, {}, never, never, {}> {
+  static _init(plugin: SqlPlugin): SqlBuilder<{}, {}, never, never, {}, never> {
     return new SqlBuilder(SqlBuilder.initialState, plugin)
   }
 
@@ -537,18 +554,26 @@ export class SqlBuilder<
     _P,
     _RT extends string,
     _OT extends string,
-    _WT extends ValsAre<_WT, Table>
+    _WT extends ValsAre<_WT, Table>,
+    _GBC extends Column
   >(
-    cb: (subq: this) => SqlBuilder<_Cols, _P, _RT, _OT, _WT>
-  ): SqlBuilder<_Cols, _P, _RT, _OT, _WT>
-  select(): SqlBuilder<Cols, P, RT, OT, WT>
+    cb: (subq: this) => SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
+  ): SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
+  select(): SqlBuilder<Cols, P, RT, OT, WT, GBC>
   select(cb?: (subq: this) => any): any {
     return cb ? cb(this) : this
   }
 
   from<_RT extends string, _OT extends string>(
     fromType: FromType<_RT, _OT>
-  ): SqlBuilder<Cols, P, Literal<RT> | Literal<_RT>, Literal<OT> | Literal<_OT>, WT> {
+  ): SqlBuilder<
+    Cols,
+    P,
+    Literal<RT> | Literal<_RT>,
+    Literal<OT> | Literal<_OT>,
+    WT,
+    GBC
+  > {
     return this.next({
       ...this.state,
       selFrom: fromType,
@@ -558,14 +583,14 @@ export class SqlBuilder<
   columns<
     C extends ReadonlyArray<Column> &
       {
-        [K in keyof T]: T[K]["_columnAs"] extends (
+        [K in keyof T]: CheckGroupBy<GBC, T[K]> & T[K]["_columnAs"] extends (
           | (SafeInd<T[Exclude<keyof T, K>], "_columnAs">)
           | keyof Cols)
           ? NoDuplicates<SafeInd<T[K], "_columnAs">>
           : Column<TblNames>
       } & { "0": any },
     T extends ColumnsObj<C> = ColumnsObj<C>
-  >(cols: C): SqlBuilder<Cols & SelectColumns<T>, P, RT, OT, WT> {
+  >(cols: C): SqlBuilder<Cols & SelectColumns<T>, P, RT, OT, WT, GBC> {
     const colDecs = cols.map(col => new ColumnDeclaration(col))
     return this.next({
       ...this.state,
@@ -575,10 +600,10 @@ export class SqlBuilder<
 
   where<CTbles extends TblNames, SP>(
     arg: Condition<CTbles, SP>
-  ): SqlBuilder<Cols, P & SP, RT, OT, WT>
+  ): SqlBuilder<Cols, P & SP, RT, OT, WT, GBC>
   where<CTbles extends TblNames, SP>(
-    arg: ((subSelect: SqlBuilder<{}, {}, RT, OT, WT>) => Condition<CTbles, SP>)
-  ): SqlBuilder<Cols, P & SP, RT, OT, WT>
+    arg: ((subSelect: SqlBuilder<{}, {}, RT, OT, WT, GBC>) => Condition<CTbles, SP>)
+  ): SqlBuilder<Cols, P & SP, RT, OT, WT, GBC>
   where(arg: Condition | ((arg2: any) => Condition)): any {
     const cond = isSqlPart(arg) ? arg : arg(this.next(SqlBuilder.initialState))
 
@@ -591,7 +616,7 @@ export class SqlBuilder<
   with<A extends string, WCols extends Record<string, Column>, WParams>(
     alias: A,
     withSelect: SelectStatement<WCols, WParams>
-  ): SqlBuilder<Cols, P & WParams, RT, OT, WT & Record<A, Table<WCols, A>>> {
+  ): SqlBuilder<Cols, P & WParams, RT, OT, WT & Record<A, Table<WCols, A>>, GBC> {
     const withClause = new WithClause(alias, withSelect)
 
     const newTableCols = withSelect.selColumns
@@ -607,6 +632,15 @@ export class SqlBuilder<
       },
       newTable
     )
+  }
+
+  groupBy<_GBC extends Column>(
+    groupByCols: _GBC[]
+  ): SqlBuilder<Cols, P, RT, OT, WT, GBC | _GBC> {
+    return this.next({
+      ...this.state,
+      selGroupBy: new GroupBy(groupByCols),
+    })
   }
 
   private next(nextState: BuilderState, newWithTable?: Table): any {
@@ -637,7 +671,7 @@ export interface SqlPlugin {
   execute(part: SqlPart, lpn: LookupParamNum, args?: object): Promise<any>
 }
 
-export function init(plugin: SqlPlugin): SqlBuilder<{}, {}, never, never, {}> {
+export function init(plugin: SqlPlugin): SqlBuilder<{}, {}, never, never, {}, never> {
   return SqlBuilder._init(plugin)
 }
 
@@ -653,10 +687,15 @@ export interface SubQuery<
   _P,
   _RT extends string,
   _OT extends string,
-  _WT extends ValsAre<_WT, Table>
+  _WT extends ValsAre<_WT, Table>,
+  _GBC extends Column
 > {
-  (arg: T): SqlBuilder<_Cols, _P, _RT, _OT, _WT>
+  (arg: T): SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
 }
+
+export type CheckGroupBy<GBC extends Column, C> = [GBC] extends [never]
+  ? {}
+  : C extends GBC ? {} : never
 
 type AnyHelper<T> = T extends any ? false : true
 

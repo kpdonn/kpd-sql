@@ -1,7 +1,7 @@
 import { Pool } from "pg"
 import { init, param } from "../../../src/everything"
 import { PgPlugin } from "../../../src/postgres"
-
+import { Class } from "./tables"
 import * as fs from "fs"
 import * as path from "path"
 
@@ -15,7 +15,11 @@ const db = init(PgPlugin.init(pool))
 
 describe("college select tests", () => {
   it("empty test", async () => {
-    expect(true).toBeTruthy()
+    const query = db
+      .select()
+      .from(Class)
+      .groupBy([Class.courseId, Class.semesterId])
+      .columns([Class.semesterId])
   })
 })
 
