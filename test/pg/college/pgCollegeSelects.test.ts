@@ -18,7 +18,7 @@ describe("college select tests", () => {
     const query = db
       .select()
       .from(Class)
-      .groupBy([Class.courseId, Class.semesterId])
+      .groupBy([Class.id, Class.courseId])
       .columns([Class.semesterId])
   })
 })

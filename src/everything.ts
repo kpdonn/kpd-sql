@@ -693,9 +693,9 @@ export interface SubQuery<
   (arg: T): SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
 }
 
-export type CheckGroupBy<GBC extends Column, C> = [GBC] extends [never]
+export type CheckGroupBy<GBC extends Column, C extends Column> = [GBC] extends [never]
   ? {}
-  : C extends GBC ? {} : never
+  : C extends GBC ? {} : GBC extends Column<C["_tableAs"], any, any, true> ? {} : never
 
 type AnyHelper<T> = T extends any ? false : true
 
