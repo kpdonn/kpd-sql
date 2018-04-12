@@ -12,8 +12,17 @@ export type InputCol<T extends t.Any = t.Any, U extends boolean = boolean> = {
   unique: U
 }
 
-export type TableColumns<TN extends string, C extends Record<string, InputCol>> = {
-  readonly [K in keyof C]: Column<TN, C[K]["type"], K, C[K]["unique"]>
+export type TableColumns<
+  TN extends string,
+  C extends Record<string, InputCol>,
+  StripUnique extends boolean
+> = {
+  readonly [K in keyof C]: Column<
+    TN,
+    C[K]["type"],
+    K,
+    StripUnique extends true ? false : C[K]["unique"]
+  >
 }
 
 export type Condition<CT extends string = string, P = {}> =
@@ -118,21 +127,19 @@ export class LeftJoin<RT extends string = never, OT extends string = never>
   }
 }
 
-export class PrivateTable<
-  C extends Record<string, InputCol>,
-  AN extends string,
-  OT extends string = never
-> extends FromTable<AN, OT> implements SqlKind {
+export class PrivateTable<AN extends string, OT extends string = never>
+  extends FromTable<AN, OT>
+  implements SqlKind {
   readonly sqlKind = "table"
 
   constructor(
     readonly _table: string,
-    private readonly _columns: C,
+    _columns: Record<string, InputCol>,
     readonly _tableAs: AN
   ) {
     super()
     for (const colName in _columns) {
-      const thisColumns = (this as any) as NoRO<TableColumns<AN, C>>
+      const thisColumns = this as any
       thisColumns[colName] = new Column(
         _tableAs,
         _columns[colName].dbName || colName,
@@ -144,15 +151,14 @@ export class PrivateTable<
   }
 }
 
-type NoRO<T> = { -readonly [K in keyof T]: T[K] }
-
 export type ValsAre<T, V> = { [K in keyof T]: V }
 
 export type Table<
   C extends ValsAre<C, InputCol> = ValsAre<C, InputCol>,
   AsName extends string = string,
-  OT extends string = never
-> = PrivateTable<C, AsName, OT> & TableColumns<AsName, C>
+  OT extends string = never,
+  StripUnique extends boolean = false
+> = PrivateTable<AsName, OT> & TableColumns<AsName, C, StripUnique>
 
 export interface TableConstructor {
   new <C extends ValsAre<C, InputCol>, AsName extends string>(
@@ -616,7 +622,14 @@ export class SqlBuilder<
   with<A extends string, WCols extends Record<string, Column>, WParams>(
     alias: A,
     withSelect: SelectStatement<WCols, WParams>
-  ): SqlBuilder<Cols, P & WParams, RT, OT, WT & Record<A, Table<WCols, A>>, GBC> {
+  ): SqlBuilder<
+    Cols,
+    P & WParams,
+    RT,
+    OT,
+    WT & Record<A, Table<WCols, A, never, true>>,
+    GBC
+  > {
     const withClause = new WithClause(alias, withSelect)
 
     const newTableCols = withSelect.selColumns
