@@ -1,6 +1,7 @@
 import ts from "typescript"
 import * as path from "path"
 import * as fs from "fs"
+import * as prettier from "prettier"
 
 export function check(fileName: string): [any[], any[]] {
   const program = ts.createProgram([fileName], compilerOptions)
@@ -64,6 +65,10 @@ export function check(fileName: string): [any[], any[]] {
       ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.AllowUniqueESSymbolType
     )
 
+    const formattedType = prettier.format(`type T = ${typeAtLocationString}`, {
+      parser: "typescript",
+    })
+
     const symbolFormatFlags =
       ts.SymbolFormatFlags.WriteTypeParametersOrArguments |
       ts.SymbolFormatFlags.AllowAnyNodeKind
@@ -73,7 +78,7 @@ export function check(fileName: string): [any[], any[]] {
 
     return {
       symbol: symbolString,
-      type: typeAtLocationString,
+      type: formattedType,
       nodeKind: node.kind,
     }
   }

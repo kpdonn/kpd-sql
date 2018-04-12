@@ -409,9 +409,7 @@ export class GroupBy<GBC extends Column = Column> implements SqlKind {
   constructor(readonly columns: GBC[]) {}
 }
 
-export type ArrayKeys = keyof any[]
-
-export type TupleKeys<T> = Exclude<keyof T, ArrayKeys>
+export type TupleKeys<T> = Exclude<keyof T, keyof any[]>
 
 export type SafeInd<T, K extends keyof Base, Base = T> = Extract<T, Base> extends never
   ? never
