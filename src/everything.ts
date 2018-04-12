@@ -6,10 +6,14 @@ export type SqlParam<N extends string, T> = string extends N ? {} : Record<N, T>
 
 export type ColType<T extends Column> = t.TypeOf<T["type"]>
 
-export type InputCol = { type: t.Any; dbName?: string }
+export type InputCol<T extends t.Any = t.Any, U extends boolean = boolean> = {
+  type: T
+  dbName?: string
+  unique: U
+}
 
 export type TableColumns<TN extends string, C extends Record<string, InputCol>> = {
-  readonly [K in keyof C]: Column<TN, C[K]["type"], K>
+  readonly [K in keyof C]: Column<TN, C[K]["type"], K, C[K]["unique"]>
 }
 
 export type Condition<CT extends string = string, P = {}> =
@@ -132,7 +136,8 @@ export class PrivateTable<
         _tableAs,
         _columns[colName].dbName || colName,
         _columns[colName].type,
-        colName
+        colName,
+        _columns[colName].unique
       )
     }
   }
@@ -167,7 +172,8 @@ export function table<C extends ValsAre<C, InputCol>, N extends string>(arg: {
 export class Column<
   TN extends string = string,
   TY extends t.Any = t.Mixed,
-  CAS extends string = string
+  CAS extends string = string,
+  U extends boolean = boolean
 > implements SqlKind {
   readonly sqlKind = "column"
 
@@ -176,15 +182,23 @@ export class Column<
     readonly _column: string,
     readonly type: TY,
     readonly _columnAs: CAS,
+    readonly unique: U,
     private readonly _isNot: boolean = false
   ) {}
 
-  get not(): Column<TN, TY, CAS> {
-    return new Column(this._tableAs, this._column, this.type, this._columnAs, true)
+  get not(): Column<TN, TY, CAS, U> {
+    return new Column(
+      this._tableAs,
+      this._column,
+      this.type,
+      this._columnAs,
+      this.unique,
+      true
+    )
   }
 
-  as<NN extends string>(newName: NN): Column<TN, TY, NN> {
-    return new Column(this._tableAs, this._column, this.type, newName)
+  as<NN extends string>(newName: NN): Column<TN, TY, NN, U> {
+    return new Column(this._tableAs, this._column, this.type, newName, this.unique)
   }
 
   eq<Col2 extends Column<string, TY>, SPN extends string>(
@@ -226,8 +240,12 @@ export function param<N extends string & (string extends N ? never : string)>(
   return new PlaceholderParam(paramName)
 }
 
-export function column<T extends t.Any>(type: T, dbName?: string) {
-  return { type, dbName }
+export function column<T extends t.Any, U extends boolean = false>(
+  type: T,
+  dbName?: string,
+  unique?: U
+): InputCol<T, U> {
+  return { type, dbName, unique: unique || false } as InputCol<T, U>
 }
 
 export abstract class BaseCondition<CT extends string = string, P = {}>
