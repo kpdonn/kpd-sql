@@ -1,4 +1,4 @@
-import { SqlBuilder } from "../src/everything"
+import { SqlBuilder, count } from "../src/everything"
 import { Class, Student, Course } from "./tables"
 
 declare const db: SqlBuilder<{}, {}, never, never, {}, never>

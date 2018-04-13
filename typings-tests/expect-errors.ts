@@ -1,4 +1,4 @@
-import { SqlBuilder, param } from "../src/everything"
+import { SqlBuilder, param, Aggregate } from "../src/everything"
 import { Class, Semester, Student, Professor, Course } from "./tables"
 
 declare const db: SqlBuilder<{}, {}, never, never, {}, never>

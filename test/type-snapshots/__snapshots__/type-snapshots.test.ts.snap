@@ -18,12 +18,30 @@ Array [
   },
   Object {
     "nodeKind": 71,
+    "symbol": "Aggregate",
+    "type": "type T = typeof Aggregate;
+",
+  },
+  Object {
+    "nodeKind": 71,
     "symbol": "Class",
     "type": "type T = PrivateTable<\\"class\\", never> & {
-  readonly id: Column<\\"class\\", NumberType, \\"id\\", true, number>;
-  readonly courseId: Column<\\"class\\", NumberType, \\"courseId\\", false, number>;
-  readonly semesterId: Column<\\"class\\", NumberType, \\"semesterId\\", false, number>;
-  readonly professorId: Column<
+  readonly id: TableColumn<\\"class\\", NumberType, \\"id\\", true, number>;
+  readonly courseId: TableColumn<
+    \\"class\\",
+    NumberType,
+    \\"courseId\\",
+    false,
+    number
+  >;
+  readonly semesterId: TableColumn<
+    \\"class\\",
+    NumberType,
+    \\"semesterId\\",
+    false,
+    number
+  >;
+  readonly professorId: TableColumn<
     \\"class\\",
     NumberType,
     \\"professorId\\",
@@ -37,8 +55,8 @@ Array [
     "nodeKind": 71,
     "symbol": "Semester",
     "type": "type T = PrivateTable<\\"semester\\", never> & {
-  readonly id: Column<\\"semester\\", NumberType, \\"id\\", true, number>;
-  readonly year: Column<\\"semester\\", NumberType, \\"year\\", false, number>;
+  readonly id: TableColumn<\\"semester\\", NumberType, \\"id\\", true, number>;
+  readonly year: TableColumn<\\"semester\\", NumberType, \\"year\\", false, number>;
 };
 ",
   },
@@ -46,10 +64,22 @@ Array [
     "nodeKind": 71,
     "symbol": "Student",
     "type": "type T = PrivateTable<\\"student\\", never> & {
-  readonly id: Column<\\"student\\", NumberType, \\"id\\", true, number>;
-  readonly firstName: Column<\\"student\\", StringType, \\"firstName\\", false, string>;
-  readonly lastName: Column<\\"student\\", StringType, \\"lastName\\", false, string>;
-  readonly majorId: Column<
+  readonly id: TableColumn<\\"student\\", NumberType, \\"id\\", true, number>;
+  readonly firstName: TableColumn<
+    \\"student\\",
+    StringType,
+    \\"firstName\\",
+    false,
+    string
+  >;
+  readonly lastName: TableColumn<
+    \\"student\\",
+    StringType,
+    \\"lastName\\",
+    false,
+    string
+  >;
+  readonly majorId: TableColumn<
     \\"student\\",
     UnionType<
       (NumberType | NullType)[],
@@ -68,16 +98,22 @@ Array [
     "nodeKind": 71,
     "symbol": "Professor",
     "type": "type T = PrivateTable<\\"professor\\", never> & {
-  readonly id: Column<\\"professor\\", NumberType, \\"id\\", true, number>;
-  readonly firstName: Column<
+  readonly id: TableColumn<\\"professor\\", NumberType, \\"id\\", true, number>;
+  readonly firstName: TableColumn<
     \\"professor\\",
     StringType,
     \\"firstName\\",
     false,
     string
   >;
-  readonly lastName: Column<\\"professor\\", StringType, \\"lastName\\", false, string>;
-  readonly departmentId: Column<
+  readonly lastName: TableColumn<
+    \\"professor\\",
+    StringType,
+    \\"lastName\\",
+    false,
+    string
+  >;
+  readonly departmentId: TableColumn<
     \\"professor\\",
     NumberType,
     \\"departmentId\\",
@@ -91,10 +127,16 @@ Array [
     "nodeKind": 71,
     "symbol": "Course",
     "type": "type T = PrivateTable<\\"course\\", never> & {
-  readonly id: Column<\\"course\\", NumberType, \\"id\\", true, number>;
-  readonly name: Column<\\"course\\", StringType, \\"name\\", false, string>;
-  readonly subjectId: Column<\\"course\\", NumberType, \\"subjectId\\", false, number>;
-  readonly creditHours: Column<
+  readonly id: TableColumn<\\"course\\", NumberType, \\"id\\", true, number>;
+  readonly name: TableColumn<\\"course\\", StringType, \\"name\\", false, string>;
+  readonly subjectId: TableColumn<
+    \\"course\\",
+    NumberType,
+    \\"subjectId\\",
+    false,
+    number
+  >;
+  readonly creditHours: TableColumn<
     \\"course\\",
     NumberType,
     \\"creditHours\\",
@@ -133,7 +175,7 @@ Array [
   \\"class\\",
   never,
   {},
-  Column<\\"class\\", NumberType, \\"courseId\\", false, number>,
+  TableColumn<\\"class\\", NumberType, \\"courseId\\", false, number>,
   \\"class\\"
 >;
 ",
@@ -143,50 +185,40 @@ Array [
     "symbol": "SqlBuilder.columns",
     "type": "type T = <
   C extends ReadonlyArray<
-    Column<
-      string,
-      Type<
-        any,
-        any,
-        string | number | boolean | symbol | object | null | undefined
-      >,
-      string,
-      boolean,
-      any
-    >
+    BaseColumn<string, Type<any, any, any>, string, boolean, any>
   > &
     {
-      [K in keyof T]: (T[K] extends Column<
-        \\"class\\",
-        NumberType,
-        \\"courseId\\",
-        false,
-        number
+      [K in keyof T]: (T[K] extends Aggregate<
+        string,
+        Type<any, any, any>,
+        string,
+        any
       >
         ? {}
-        : never) &
-        T[K][\\"_columnAs\\"] extends (Extract<
-        T[Exclude<keyof T, K>],
-        T[Exclude<keyof T, K>]
-      > extends never
-        ? never
-        : Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]>[\\"_columnAs\\"])
-        ? {
-            \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never
-              ? never
-              : Extract<T[K], T[K]>[\\"_columnAs\\"];
-          }
-        : Column<
+        : T[K] extends TableColumn<
             \\"class\\",
-            Type<
-              any,
-              any,
-              string | number | boolean | symbol | object | null | undefined
-            >,
-            string,
-            boolean,
-            any
+            NumberType,
+            \\"courseId\\",
+            false,
+            number
           >
+          ? {}
+          : never) &
+        (T[K][\\"_columnAs\\"] extends (Extract<
+          T[Exclude<keyof T, K>],
+          T[Exclude<keyof T, K>]
+        > extends never
+          ? never
+          : Extract<
+              T[Exclude<keyof T, K>],
+              T[Exclude<keyof T, K>]
+            >[\\"_columnAs\\"])
+          ? {
+              \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never
+                ? never
+                : Extract<T[K], T[K]>[\\"_columnAs\\"];
+            }
+          : BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>)
     } & { \\"0\\": any },
   T extends {
     [K in Exclude<
@@ -224,17 +256,7 @@ Array [
       | \\"copyWithin\\"
     >]: Extract<
       C[K],
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >
   } = {
     [K in Exclude<
@@ -272,17 +294,7 @@ Array [
       | \\"copyWithin\\"
     >]: Extract<
       C[K],
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >
   }
 >(
@@ -307,7 +319,7 @@ Array [
   \\"class\\",
   never,
   {},
-  Column<\\"class\\", NumberType, \\"courseId\\", false, number>,
+  TableColumn<\\"class\\", NumberType, \\"courseId\\", false, number>,
   \\"class\\"
 >;
 ",
@@ -316,17 +328,7 @@ Array [
     "nodeKind": 184,
     "symbol": "SqlBuilder.groupBy",
     "type": "type T = <
-  _GBC extends Column<
-    string,
-    Type<
-      any,
-      any,
-      string | number | boolean | symbol | object | null | undefined
-    >,
-    string,
-    boolean,
-    any
-  >
+  _GBC extends BaseColumn<string, Type<any, any, any>, string, boolean, any>
 >(
   groupByCols: _GBC[]
 ) => SqlBuilder<{}, {}, \\"class\\", never, {}, _GBC, \\"class\\">;
@@ -363,33 +365,13 @@ Array [
   <
     _Cols extends Record<
       string,
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >,
     _P,
     _RT extends string,
     _OT extends string,
     _WT extends { [K in keyof _WT]: PrivateTable<string, never> & {} },
-    _GBC extends Column<
-      string,
-      Type<
-        any,
-        any,
-        string | number | boolean | symbol | object | null | undefined
-      >,
-      string,
-      boolean,
-      any
-    >
+    _GBC extends BaseColumn<string, Type<any, any, any>, string, boolean, any>
   >(
     cb: (
       subq: SqlBuilder<{}, {}, never, never, {}, never, never>
@@ -418,13 +400,13 @@ Array [
   Object {
     "nodeKind": 184,
     "symbol": "courseId",
-    "type": "type T = Column<\\"class\\", NumberType, \\"courseId\\", false, number>;
+    "type": "type T = TableColumn<\\"class\\", NumberType, \\"courseId\\", false, number>;
 ",
   },
   Object {
     "nodeKind": 184,
     "symbol": "semesterId",
-    "type": "type T = Column<\\"class\\", NumberType, \\"semesterId\\", false, number>;
+    "type": "type T = TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>;
 ",
   },
   Object {
@@ -450,7 +432,7 @@ Array [
   \\"myWith\\",
   never,
   {},
-  Column<\\"myWith\\", NumberType, \\"id\\", false, number>,
+  TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>,
   \\"myWith\\"
 >;
 ",
@@ -462,33 +444,13 @@ Array [
   <
     _Cols extends Record<
       string,
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >,
     _P,
     _RT extends string,
     _OT extends string,
     _WT extends { [K in keyof _WT]: PrivateTable<string, never> & {} },
-    _GBC extends Column<
-      string,
-      Type<
-        any,
-        any,
-        string | number | boolean | symbol | object | null | undefined
-      >,
-      string,
-      boolean,
-      any
-    >
+    _GBC extends BaseColumn<string, Type<any, any, any>, string, boolean, any>
   >(
     cb: (
       subq: SqlBuilder<
@@ -499,22 +461,22 @@ Array [
         Record<
           \\"myWith\\",
           PrivateTable<\\"myWith\\", never> & {
-            readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false, number>;
-            readonly courseId: Column<
+            readonly id: TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>;
+            readonly courseId: TableColumn<
               \\"myWith\\",
               NumberType,
               \\"courseId\\",
               false,
               number
             >;
-            readonly semesterId: Column<
+            readonly semesterId: TableColumn<
               \\"myWith\\",
               NumberType,
               \\"semesterId\\",
               false,
               number
             >;
-            readonly professorId: Column<
+            readonly professorId: TableColumn<
               \\"myWith\\",
               NumberType,
               \\"professorId\\",
@@ -552,22 +514,22 @@ Array [
     Record<
       \\"myWith\\",
       PrivateTable<\\"myWith\\", never> & {
-        readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false, number>;
-        readonly courseId: Column<
+        readonly id: TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>;
+        readonly courseId: TableColumn<
           \\"myWith\\",
           NumberType,
           \\"courseId\\",
           false,
           number
         >;
-        readonly semesterId: Column<
+        readonly semesterId: TableColumn<
           \\"myWith\\",
           NumberType,
           \\"semesterId\\",
           false,
           number
         >;
-        readonly professorId: Column<
+        readonly professorId: TableColumn<
           \\"myWith\\",
           NumberType,
           \\"professorId\\",
@@ -589,17 +551,7 @@ Array [
   A extends string,
   WCols extends Record<
     string,
-    Column<
-      string,
-      Type<
-        any,
-        any,
-        string | number | boolean | symbol | object | null | undefined
-      >,
-      string,
-      boolean,
-      any
-    >
+    BaseColumn<string, Type<any, any, any>, string, boolean, any>
   >,
   WParams
 >(
@@ -607,17 +559,7 @@ Array [
   withSelect: SelectStatement<
     WCols,
     WParams,
-    Column<
-      string,
-      Type<
-        any,
-        any,
-        string | number | boolean | symbol | object | null | undefined
-      >,
-      string,
-      boolean,
-      any
-    >
+    BaseColumn<string, Type<any, any, any>, string, boolean, any>
   >
 ) => SqlBuilder<
   {},
@@ -628,7 +570,7 @@ Array [
     A,
     PrivateTable<A, never> &
       {
-        readonly [K in keyof WCols]: Column<
+        readonly [K in keyof WCols]: TableColumn<
           A,
           WCols[K][\\"type\\"],
           K,
@@ -647,41 +589,36 @@ Array [
     "symbol": "SqlBuilder.columns",
     "type": "type T = <
   C extends ReadonlyArray<
-    Column<
-      string,
-      Type<
-        any,
-        any,
-        string | number | boolean | symbol | object | null | undefined
-      >,
-      string,
-      boolean,
-      any
-    >
+    BaseColumn<string, Type<any, any, any>, string, boolean, any>
   > &
     {
-      [K in keyof T]: T[K][\\"_columnAs\\"] & {} extends (Extract<
-        T[Exclude<keyof T, K>],
-        T[Exclude<keyof T, K>]
-      > extends never
-        ? never
-        : Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]>[\\"_columnAs\\"])
-        ? {
-            \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never
-              ? never
-              : Extract<T[K], T[K]>[\\"_columnAs\\"];
-          }
-        : Column<
-            \\"class\\",
-            Type<
-              any,
-              any,
-              string | number | boolean | symbol | object | null | undefined
-            >,
-            string,
-            boolean,
-            any
-          >
+      [K in keyof T]: ((T[K] extends Aggregate<
+        string,
+        Type<any, any, any>,
+        string,
+        any
+      >
+        ? true
+        : false) extends false
+        ? {}
+        : T[K] extends Aggregate<string, Type<any, any, any>, string, any>
+          ? {}
+          : T[K] extends never ? {} : never) &
+        (T[K][\\"_columnAs\\"] extends (Extract<
+          T[Exclude<keyof T, K>],
+          T[Exclude<keyof T, K>]
+        > extends never
+          ? never
+          : Extract<
+              T[Exclude<keyof T, K>],
+              T[Exclude<keyof T, K>]
+            >[\\"_columnAs\\"])
+          ? {
+              \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never
+                ? never
+                : Extract<T[K], T[K]>[\\"_columnAs\\"];
+            }
+          : BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>)
     } & { \\"0\\": any },
   T extends {
     [K in Exclude<
@@ -719,17 +656,7 @@ Array [
       | \\"copyWithin\\"
     >]: Extract<
       C[K],
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >
   } = {
     [K in Exclude<
@@ -767,17 +694,7 @@ Array [
       | \\"copyWithin\\"
     >]: Extract<
       C[K],
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >
   }
 >(
@@ -810,13 +727,13 @@ Array [
   Object {
     "nodeKind": 184,
     "symbol": "id",
-    "type": "type T = Column<\\"class\\", NumberType, \\"id\\", true, number>;
+    "type": "type T = TableColumn<\\"class\\", NumberType, \\"id\\", true, number>;
 ",
   },
   Object {
     "nodeKind": 184,
     "symbol": "professorId",
-    "type": "type T = Column<\\"class\\", NumberType, \\"professorId\\", false, number>;
+    "type": "type T = TableColumn<\\"class\\", NumberType, \\"professorId\\", false, number>;
 ",
   },
   Object {
@@ -830,22 +747,22 @@ Array [
   Record<
     \\"myWith\\",
     PrivateTable<\\"myWith\\", never> & {
-      readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false, number>;
-      readonly courseId: Column<
+      readonly id: TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>;
+      readonly courseId: TableColumn<
         \\"myWith\\",
         NumberType,
         \\"courseId\\",
         false,
         number
       >;
-      readonly semesterId: Column<
+      readonly semesterId: TableColumn<
         \\"myWith\\",
         NumberType,
         \\"semesterId\\",
         false,
         number
       >;
-      readonly professorId: Column<
+      readonly professorId: TableColumn<
         \\"myWith\\",
         NumberType,
         \\"professorId\\",
@@ -864,50 +781,34 @@ Array [
     "symbol": "SqlBuilder.columns",
     "type": "type T = <
   C extends ReadonlyArray<
-    Column<
-      string,
-      Type<
-        any,
-        any,
-        string | number | boolean | symbol | object | null | undefined
-      >,
-      string,
-      boolean,
-      any
-    >
+    BaseColumn<string, Type<any, any, any>, string, boolean, any>
   > &
     {
-      [K in keyof T]: (T[K] extends Column<
-        \\"myWith\\",
-        NumberType,
-        \\"id\\",
-        false,
-        number
+      [K in keyof T]: (T[K] extends Aggregate<
+        string,
+        Type<any, any, any>,
+        string,
+        any
       >
         ? {}
-        : never) &
-        T[K][\\"_columnAs\\"] extends (Extract<
-        T[Exclude<keyof T, K>],
-        T[Exclude<keyof T, K>]
-      > extends never
-        ? never
-        : Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]>[\\"_columnAs\\"])
-        ? {
-            \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never
-              ? never
-              : Extract<T[K], T[K]>[\\"_columnAs\\"];
-          }
-        : Column<
-            \\"myWith\\",
-            Type<
-              any,
-              any,
-              string | number | boolean | symbol | object | null | undefined
-            >,
-            string,
-            boolean,
-            any
-          >
+        : T[K] extends TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>
+          ? {}
+          : never) &
+        (T[K][\\"_columnAs\\"] extends (Extract<
+          T[Exclude<keyof T, K>],
+          T[Exclude<keyof T, K>]
+        > extends never
+          ? never
+          : Extract<
+              T[Exclude<keyof T, K>],
+              T[Exclude<keyof T, K>]
+            >[\\"_columnAs\\"])
+          ? {
+              \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never
+                ? never
+                : Extract<T[K], T[K]>[\\"_columnAs\\"];
+            }
+          : BaseColumn<\\"myWith\\", Type<any, any, any>, string, boolean, any>)
     } & { \\"0\\": any },
   T extends {
     [K in Exclude<
@@ -945,17 +846,7 @@ Array [
       | \\"copyWithin\\"
     >]: Extract<
       C[K],
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >
   } = {
     [K in Exclude<
@@ -993,17 +884,7 @@ Array [
       | \\"copyWithin\\"
     >]: Extract<
       C[K],
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >
   }
 >(
@@ -1030,22 +911,22 @@ Array [
   Record<
     \\"myWith\\",
     PrivateTable<\\"myWith\\", never> & {
-      readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false, number>;
-      readonly courseId: Column<
+      readonly id: TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>;
+      readonly courseId: TableColumn<
         \\"myWith\\",
         NumberType,
         \\"courseId\\",
         false,
         number
       >;
-      readonly semesterId: Column<
+      readonly semesterId: TableColumn<
         \\"myWith\\",
         NumberType,
         \\"semesterId\\",
         false,
         number
       >;
-      readonly professorId: Column<
+      readonly professorId: TableColumn<
         \\"myWith\\",
         NumberType,
         \\"professorId\\",
@@ -1054,7 +935,7 @@ Array [
       >;
     }
   >,
-  Column<\\"myWith\\", NumberType, \\"id\\", false, number>,
+  TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>,
   \\"myWith\\"
 >;
 ",
@@ -1063,17 +944,7 @@ Array [
     "nodeKind": 184,
     "symbol": "SqlBuilder.groupBy",
     "type": "type T = <
-  _GBC extends Column<
-    string,
-    Type<
-      any,
-      any,
-      string | number | boolean | symbol | object | null | undefined
-    >,
-    string,
-    boolean,
-    any
-  >
+  _GBC extends BaseColumn<string, Type<any, any, any>, string, boolean, any>
 >(
   groupByCols: _GBC[]
 ) => SqlBuilder<
@@ -1084,22 +955,22 @@ Array [
   Record<
     \\"myWith\\",
     PrivateTable<\\"myWith\\", never> & {
-      readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false, number>;
-      readonly courseId: Column<
+      readonly id: TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>;
+      readonly courseId: TableColumn<
         \\"myWith\\",
         NumberType,
         \\"courseId\\",
         false,
         number
       >;
-      readonly semesterId: Column<
+      readonly semesterId: TableColumn<
         \\"myWith\\",
         NumberType,
         \\"semesterId\\",
         false,
         number
       >;
-      readonly professorId: Column<
+      readonly professorId: TableColumn<
         \\"myWith\\",
         NumberType,
         \\"professorId\\",
@@ -1129,22 +1000,22 @@ Array [
   Record<
     \\"myWith\\",
     PrivateTable<\\"myWith\\", never> & {
-      readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false, number>;
-      readonly courseId: Column<
+      readonly id: TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>;
+      readonly courseId: TableColumn<
         \\"myWith\\",
         NumberType,
         \\"courseId\\",
         false,
         number
       >;
-      readonly semesterId: Column<
+      readonly semesterId: TableColumn<
         \\"myWith\\",
         NumberType,
         \\"semesterId\\",
         false,
         number
       >;
-      readonly professorId: Column<
+      readonly professorId: TableColumn<
         \\"myWith\\",
         NumberType,
         \\"professorId\\",
@@ -1167,16 +1038,22 @@ Array [
     "nodeKind": 184,
     "symbol": "myWith",
     "type": "type T = PrivateTable<\\"myWith\\", never> & {
-  readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false, number>;
-  readonly courseId: Column<\\"myWith\\", NumberType, \\"courseId\\", false, number>;
-  readonly semesterId: Column<
+  readonly id: TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>;
+  readonly courseId: TableColumn<
+    \\"myWith\\",
+    NumberType,
+    \\"courseId\\",
+    false,
+    number
+  >;
+  readonly semesterId: TableColumn<
     \\"myWith\\",
     NumberType,
     \\"semesterId\\",
     false,
     number
   >;
-  readonly professorId: Column<
+  readonly professorId: TableColumn<
     \\"myWith\\",
     NumberType,
     \\"professorId\\",
@@ -1192,16 +1069,22 @@ Array [
     "type": "type T = Record<
   \\"myWith\\",
   PrivateTable<\\"myWith\\", never> & {
-    readonly id: Column<\\"myWith\\", NumberType, \\"id\\", false, number>;
-    readonly courseId: Column<\\"myWith\\", NumberType, \\"courseId\\", false, number>;
-    readonly semesterId: Column<
+    readonly id: TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>;
+    readonly courseId: TableColumn<
+      \\"myWith\\",
+      NumberType,
+      \\"courseId\\",
+      false,
+      number
+    >;
+    readonly semesterId: TableColumn<
       \\"myWith\\",
       NumberType,
       \\"semesterId\\",
       false,
       number
     >;
-    readonly professorId: Column<
+    readonly professorId: TableColumn<
       \\"myWith\\",
       NumberType,
       \\"professorId\\",
@@ -1215,13 +1098,13 @@ Array [
   Object {
     "nodeKind": 184,
     "symbol": "id",
-    "type": "type T = Column<\\"myWith\\", NumberType, \\"id\\", false, number>;
+    "type": "type T = TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>;
 ",
   },
   Object {
     "nodeKind": 184,
     "symbol": "courseId",
-    "type": "type T = Column<\\"myWith\\", NumberType, \\"courseId\\", false, number>;
+    "type": "type T = TableColumn<\\"myWith\\", NumberType, \\"courseId\\", false, number>;
 ",
   },
   Object {
@@ -1255,7 +1138,7 @@ Array [
   Object {
     "nodeKind": 184,
     "symbol": "year",
-    "type": "type T = Column<\\"semester\\", NumberType, \\"year\\", false, number>;
+    "type": "type T = TableColumn<\\"semester\\", NumberType, \\"year\\", false, number>;
 ",
   },
   Object {
@@ -1288,10 +1171,12 @@ Array [
   },
   Object {
     "nodeKind": 184,
-    "symbol": "Column.as",
+    "symbol": "TableColumn.as",
     "type": "type T = <NN extends string>(
   newName: NN
-) => Column<\\"class\\", NumberType, NN, false, number>;
+) =>
+  | TableColumn<\\"class\\", NumberType, NN, false, number>
+  | Aggregate<\\"class\\", NumberType, NN, number>;
 ",
   },
   Object {
@@ -1299,8 +1184,8 @@ Array [
     "symbol": "test5",
     "type": "type T = SqlBuilder<
   {
-    firstName: Column<\\"student\\", StringType, \\"firstName\\", false, string>;
-    lastName: Column<\\"student\\", StringType, \\"lastName\\", false, string>;
+    firstName: TableColumn<\\"student\\", StringType, \\"firstName\\", false, string>;
+    lastName: TableColumn<\\"student\\", StringType, \\"lastName\\", false, string>;
   },
   SP & {},
   \\"student\\",
@@ -1326,8 +1211,8 @@ Array [
       | NotCondition<CTbles, SP>
   ): SqlBuilder<
     {
-      firstName: Column<\\"student\\", StringType, \\"firstName\\", false, string>;
-      lastName: Column<\\"student\\", StringType, \\"lastName\\", false, string>;
+      firstName: TableColumn<\\"student\\", StringType, \\"firstName\\", false, string>;
+      lastName: TableColumn<\\"student\\", StringType, \\"lastName\\", false, string>;
     },
     SP & {},
     \\"student\\",
@@ -1349,8 +1234,8 @@ Array [
       | NotCondition<CTbles, SP>
   ): SqlBuilder<
     {
-      firstName: Column<\\"student\\", StringType, \\"firstName\\", false, string>;
-      lastName: Column<\\"student\\", StringType, \\"lastName\\", false, string>;
+      firstName: TableColumn<\\"student\\", StringType, \\"firstName\\", false, string>;
+      lastName: TableColumn<\\"student\\", StringType, \\"lastName\\", false, string>;
     },
     SP & {},
     \\"student\\",
@@ -1367,41 +1252,36 @@ Array [
     "symbol": "SqlBuilder.columns",
     "type": "type T = <
   C extends ReadonlyArray<
-    Column<
-      string,
-      Type<
-        any,
-        any,
-        string | number | boolean | symbol | object | null | undefined
-      >,
-      string,
-      boolean,
-      any
-    >
+    BaseColumn<string, Type<any, any, any>, string, boolean, any>
   > &
     {
-      [K in keyof T]: T[K][\\"_columnAs\\"] & {} extends (Extract<
-        T[Exclude<keyof T, K>],
-        T[Exclude<keyof T, K>]
-      > extends never
-        ? never
-        : Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]>[\\"_columnAs\\"])
-        ? {
-            \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never
-              ? never
-              : Extract<T[K], T[K]>[\\"_columnAs\\"];
-          }
-        : Column<
-            \\"student\\",
-            Type<
-              any,
-              any,
-              string | number | boolean | symbol | object | null | undefined
-            >,
-            string,
-            boolean,
-            any
-          >
+      [K in keyof T]: ((T[K] extends Aggregate<
+        string,
+        Type<any, any, any>,
+        string,
+        any
+      >
+        ? true
+        : false) extends false
+        ? {}
+        : T[K] extends Aggregate<string, Type<any, any, any>, string, any>
+          ? {}
+          : T[K] extends never ? {} : never) &
+        (T[K][\\"_columnAs\\"] extends (Extract<
+          T[Exclude<keyof T, K>],
+          T[Exclude<keyof T, K>]
+        > extends never
+          ? never
+          : Extract<
+              T[Exclude<keyof T, K>],
+              T[Exclude<keyof T, K>]
+            >[\\"_columnAs\\"])
+          ? {
+              \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never
+                ? never
+                : Extract<T[K], T[K]>[\\"_columnAs\\"];
+            }
+          : BaseColumn<\\"student\\", Type<any, any, any>, string, boolean, any>)
     } & { \\"0\\": any },
   T extends {
     [K in Exclude<
@@ -1439,17 +1319,7 @@ Array [
       | \\"copyWithin\\"
     >]: Extract<
       C[K],
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >
   } = {
     [K in Exclude<
@@ -1487,17 +1357,7 @@ Array [
       | \\"copyWithin\\"
     >]: Extract<
       C[K],
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >
   }
 >(
@@ -1530,20 +1390,22 @@ Array [
   Object {
     "nodeKind": 184,
     "symbol": "firstName",
-    "type": "type T = Column<\\"student\\", StringType, \\"firstName\\", false, string>;
+    "type": "type T = TableColumn<\\"student\\", StringType, \\"firstName\\", false, string>;
 ",
   },
   Object {
     "nodeKind": 184,
     "symbol": "lastName",
-    "type": "type T = Column<\\"student\\", StringType, \\"lastName\\", false, string>;
+    "type": "type T = TableColumn<\\"student\\", StringType, \\"lastName\\", false, string>;
 ",
   },
   Object {
     "nodeKind": 184,
-    "symbol": "Column.eq",
+    "symbol": "BaseColumn.eq",
     "type": "type T = <
-  Col2 extends Column<string, Type<any, any, any>, string, boolean, number>,
+  Col2 extends
+    | TableColumn<string, Type<any, any, any>, string, boolean, number>
+    | Aggregate<string, Type<any, any, any>, string, number>,
   SPN extends string
 >(
   col2: number | Col2 | PlaceholderParam<SPN> | null
@@ -1581,7 +1443,7 @@ Array [
   Object {
     "nodeKind": 184,
     "symbol": "majorId",
-    "type": "type T = Column<
+    "type": "type T = TableColumn<
   \\"student\\",
   UnionType<
     (NumberType | NullType)[],
@@ -1632,8 +1494,8 @@ Array [
     "symbol": "test8",
     "type": "type T = SqlBuilder<
   {
-    firstName: Column<\\"student\\", StringType, \\"firstName\\", false, string>;
-    lastName: Column<\\"student\\", StringType, \\"lastName\\", false, string>;
+    firstName: TableColumn<\\"student\\", StringType, \\"firstName\\", false, string>;
+    lastName: TableColumn<\\"student\\", StringType, \\"lastName\\", false, string>;
   },
   (string extends N ? {} : Record<N, number>) & {},
   \\"student\\",
@@ -1696,56 +1558,61 @@ Array [
     "symbol": "SqlBuilder.columns",
     "type": "type T = <
   C extends ReadonlyArray<
-    Column<
-      string,
-      Type<
-        any,
-        any,
-        string | number | boolean | symbol | object | null | undefined
-      >,
-      string,
-      boolean,
-      any
-    >
+    BaseColumn<string, Type<any, any, any>, string, boolean, any>
   > &
     {
-      [K in keyof T]: T[K][\\"_columnAs\\"] & {} extends (Extract<
-        T[Exclude<keyof T, K>],
-        T[Exclude<keyof T, K>]
-      > extends never
-        ? never
-        : Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]>[\\"_columnAs\\"])
-        ? {
-            \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never
-              ? never
-              : Extract<T[K], T[K]>[\\"_columnAs\\"];
-          }
-        : Column<
-            | (string extends (string extends
-                | \\"student\\"
-                | (string extends _RT ? never : _RT)
+      [K in keyof T]: ((T[K] extends Aggregate<
+        string,
+        Type<any, any, any>,
+        string,
+        any
+      >
+        ? true
+        : false) extends false
+        ? {}
+        : T[K] extends Aggregate<string, Type<any, any, any>, string, any>
+          ? {}
+          : T[K] extends never ? {} : never) &
+        (T[K][\\"_columnAs\\"] extends (Extract<
+          T[Exclude<keyof T, K>],
+          T[Exclude<keyof T, K>]
+        > extends never
+          ? never
+          : Extract<
+              T[Exclude<keyof T, K>],
+              T[Exclude<keyof T, K>]
+            >[\\"_columnAs\\"])
+          ? {
+              \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never
                 ? never
-                : \\"student\\" | (string extends _RT ? never : _RT))
-                ? never
-                : string extends \\"student\\" | (string extends _RT ? never : _RT)
+                : Extract<T[K], T[K]>[\\"_columnAs\\"];
+            }
+          : BaseColumn<
+              | (string extends (string extends
+                  | \\"student\\"
+                  | (string extends _RT ? never : _RT)
                   ? never
                   : \\"student\\" | (string extends _RT ? never : _RT))
-            | (string extends (string extends (string extends _OT ? never : _OT)
-                ? never
-                : string extends _OT ? never : _OT)
-                ? never
-                : string extends (string extends _OT ? never : _OT)
                   ? never
-                  : string extends _OT ? never : _OT),
-            Type<
-              any,
-              any,
-              string | number | boolean | symbol | object | null | undefined
-            >,
-            string,
-            boolean,
-            any
-          >
+                  : string extends
+                      | \\"student\\"
+                      | (string extends _RT ? never : _RT)
+                    ? never
+                    : \\"student\\" | (string extends _RT ? never : _RT))
+              | (string extends (string extends (string extends _OT
+                  ? never
+                  : _OT)
+                  ? never
+                  : string extends _OT ? never : _OT)
+                  ? never
+                  : string extends (string extends _OT ? never : _OT)
+                    ? never
+                    : string extends _OT ? never : _OT),
+              Type<any, any, any>,
+              string,
+              boolean,
+              any
+            >)
     } & { \\"0\\": any },
   T extends {
     [K in Exclude<
@@ -1783,17 +1650,7 @@ Array [
       | \\"copyWithin\\"
     >]: Extract<
       C[K],
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >
   } = {
     [K in Exclude<
@@ -1831,17 +1688,7 @@ Array [
       | \\"copyWithin\\"
     >]: Extract<
       C[K],
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >
   }
 >(
@@ -1972,9 +1819,11 @@ Array [
   },
   Object {
     "nodeKind": 184,
-    "symbol": "Column.eq",
+    "symbol": "BaseColumn.eq",
     "type": "type T = <
-  Col2 extends Column<string, Type<any, any, any>, string, boolean, number>,
+  Col2 extends
+    | TableColumn<string, Type<any, any, any>, string, boolean, number>
+    | Aggregate<string, Type<any, any, any>, string, number>,
   SPN extends string
 >(
   col2: number | Col2 | PlaceholderParam<SPN>
@@ -2012,14 +1861,16 @@ Array [
   Object {
     "nodeKind": 184,
     "symbol": "id",
-    "type": "type T = Column<\\"course\\", NumberType, \\"id\\", true, number>;
+    "type": "type T = TableColumn<\\"course\\", NumberType, \\"id\\", true, number>;
 ",
   },
   Object {
     "nodeKind": 184,
-    "symbol": "Column.eq",
+    "symbol": "BaseColumn.eq",
     "type": "type T = <
-  Col2 extends Column<string, Type<any, any, any>, string, boolean, string>,
+  Col2 extends
+    | TableColumn<string, Type<any, any, any>, string, boolean, string>
+    | Aggregate<string, Type<any, any, any>, string, string>,
   SPN extends string
 >(
   col2: string | Col2 | PlaceholderParam<SPN>
@@ -2057,7 +1908,7 @@ Array [
   Object {
     "nodeKind": 184,
     "symbol": "subjectId",
-    "type": "type T = Column<\\"course\\", NumberType, \\"subjectId\\", false, number>;
+    "type": "type T = TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>;
 ",
   },
   Object {
@@ -2095,11 +1946,10 @@ Array [
     "code": 2345,
     "file": "expect-errors.ts",
     "line": 10,
-    "message": "Argument of type '[Column<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<Column<string, Type<any, any, mixed>, string, boolean, any>> & { \\"0\\": NoDuplicates<\\"semesterId\\">; } & { \\"0\\": any; }'.
-  Type '[Column<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to type '{ \\"0\\": NoDuplicates<\\"semesterId\\">; }'.
+    "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any>> & { \\"0\\": never; } & { \\"0\\": any; }'.
+  Type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to type '{ \\"0\\": never; }'.
     Types of property '\\"0\\"' are incompatible.
-      Type 'Column<\\"class\\", NumberType, \\"semesterId\\", false, number>' is not assignable to type 'NoDuplicates<\\"semesterId\\">'.
-        Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'Column<\\"class\\", NumberType, \\"semesterId\\", false, number>'.",
+      Type 'TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>' is not assignable to type 'never'.",
   },
   Object {
     "category": 1,
@@ -2107,11 +1957,10 @@ Array [
     "code": 2345,
     "file": "expect-errors.ts",
     "line": 23,
-    "message": "Argument of type '[Column<\\"myWith\\", NumberType, \\"id\\", false, number>, Column<\\"myWith\\", NumberType, \\"courseId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<Column<string, Type<any, any, mixed>, string, boolean, any>> & { \\"0\\": Column<\\"myWith\\", Type<any, any, mixed>, string, boolean, any>; \\"1\\": NoDuplicates<\\"courseId\\">; } & { \\"0\\": any; }'.
-  Type '[Column<\\"myWith\\", NumberType, \\"id\\", false, number>, Column<\\"myWith\\", NumberType, \\"courseId\\", false, number>]' is not assignable to type '{ \\"0\\": Column<\\"myWith\\", Type<any, any, mixed>, string, boolean, any>; \\"1\\": NoDuplicates<\\"courseId\\">; }'.
+    "message": "Argument of type '[TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>, TableColumn<\\"myWith\\", NumberType, \\"courseId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any>> & { \\"0\\": BaseColumn<\\"myWith\\", Type<any, any, any>, string, boolean, any>; \\"1\\": never; } & { \\"0\\": any; }'.
+  Type '[TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>, TableColumn<\\"myWith\\", NumberType, \\"courseId\\", false, number>]' is not assignable to type '{ \\"0\\": BaseColumn<\\"myWith\\", Type<any, any, any>, string, boolean, any>; \\"1\\": never; }'.
     Types of property '\\"1\\"' are incompatible.
-      Type 'Column<\\"myWith\\", NumberType, \\"courseId\\", false, number>' is not assignable to type 'NoDuplicates<\\"courseId\\">'.
-        Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'Column<\\"myWith\\", NumberType, \\"courseId\\", false, number>'.",
+      Type 'TableColumn<\\"myWith\\", NumberType, \\"courseId\\", false, number>' is not assignable to type 'never'.",
   },
   Object {
     "category": 1,
@@ -2119,11 +1968,12 @@ Array [
     "code": 2345,
     "file": "expect-errors.ts",
     "line": 29,
-    "message": "Argument of type '[Column<\\"class\\", NumberType, \\"semesterId\\", false, number>, Column<\\"semester\\", NumberType, \\"year\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<Column<string, Type<any, any, mixed>, string, boolean, any>> & { \\"0\\": Column<\\"class\\", Type<any, any, mixed>, string, boolean, any>; \\"1\\": Column<\\"class\\", Type<any, any, mixed>, string, boolean, any>; } & { \\"0\\": any; }'.
-  Type '[Column<\\"class\\", NumberType, \\"semesterId\\", false, number>, Column<\\"semester\\", NumberType, \\"year\\", false, number>]' is not assignable to type '{ \\"0\\": Column<\\"class\\", Type<any, any, mixed>, string, boolean, any>; \\"1\\": Column<\\"class\\", Type<any, any, mixed>, string, boolean, any>; }'.
+    "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, TableColumn<\\"semester\\", NumberType, \\"year\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any>> & { \\"0\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; \\"1\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; } & { \\"0\\": any; }'.
+  Type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, TableColumn<\\"semester\\", NumberType, \\"year\\", false, number>]' is not assignable to type '{ \\"0\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; \\"1\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; }'.
     Types of property '\\"1\\"' are incompatible.
-      Type 'Column<\\"semester\\", NumberType, \\"year\\", false, number>' is not assignable to type 'Column<\\"class\\", Type<any, any, mixed>, string, boolean, any>'.
-        Type '\\"semester\\"' is not assignable to type '\\"class\\"'.",
+      Type 'TableColumn<\\"semester\\", NumberType, \\"year\\", false, number>' is not assignable to type 'BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>'.
+        Types of property '_tableAs' are incompatible.
+          Type '\\"semester\\"' is not assignable to type '\\"class\\"'.",
   },
   Object {
     "category": 1,
@@ -2131,10 +1981,11 @@ Array [
     "code": 2345,
     "file": "expect-errors.ts",
     "line": 34,
-    "message": "Argument of type '[Column<\\"class\\", NumberType, \\"semesterId\\", false, number>, Column<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<Column<string, Type<any, any, mixed>, string, boolean, any>> & { \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; } & { \\"0\\": any; }'.
-  Type '[Column<\\"class\\", NumberType, \\"semesterId\\", false, number>, Column<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to type '{ \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; }'.
+    "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, Column<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any>> & { \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; } & { \\"0\\": any; }'.
+  Type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, Column<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to type '{ \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; }'.
     Types of property '\\"0\\"' are incompatible.
-      Type 'Column<\\"class\\", NumberType, \\"semesterId\\", false, number>' is not assignable to type 'NoDuplicates<\\"semesterId\\">'.",
+      Type 'TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>' is not assignable to type 'NoDuplicates<\\"semesterId\\">'.
+        Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>'.",
   },
   Object {
     "category": 1,
@@ -2142,7 +1993,7 @@ Array [
     "code": 2345,
     "file": "expect-errors.ts",
     "line": 40,
-    "message": "Argument of type '\\"wrong type\\"' is not assignable to parameter of type 'number | PlaceholderParam<string> | Column<string, Type<any, any, any>, string, boolean, number> | null'.",
+    "message": "Argument of type '\\"wrong type\\"' is not assignable to parameter of type 'number | PlaceholderParam<string> | TableColumn<string, Type<any, any, any>, string, boolean, number> | Aggregate<string, Type<any, any, any>, string, number> | null'.",
   },
   Object {
     "category": 1,
@@ -2176,9 +2027,10 @@ Array [
     "code": 2345,
     "file": "expect-errors.ts",
     "line": 69,
-    "message": "Argument of type 'Column<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to parameter of type 'string | PlaceholderParam<string> | Column<string, Type<any, any, any>, string, boolean, string>'.
-  Type 'Column<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to type 'Column<string, Type<any, any, any>, string, boolean, string>'.
-    Type 'number' is not assignable to type 'string'.",
+    "message": "Argument of type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to parameter of type 'string | PlaceholderParam<string> | TableColumn<string, Type<any, any, any>, string, boolean, string> | Aggregate<string, Type<any, any, any>, string, string>'.
+  Type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to type 'Aggregate<string, Type<any, any, any>, string, string>'.
+    Types of property 'sqlKind' are incompatible.
+      Type '\\"column\\"' is not assignable to type '\\"aggregate\\"'.",
   },
   Object {
     "category": 1,
@@ -2212,12 +2064,30 @@ Array [
   },
   Object {
     "nodeKind": 71,
+    "symbol": "count",
+    "type": "type T = () => Aggregate<never, NumberType, \\"count\\", number>;
+",
+  },
+  Object {
+    "nodeKind": 71,
     "symbol": "Class",
     "type": "type T = PrivateTable<\\"class\\", never> & {
-  readonly id: Column<\\"class\\", NumberType, \\"id\\", true, number>;
-  readonly courseId: Column<\\"class\\", NumberType, \\"courseId\\", false, number>;
-  readonly semesterId: Column<\\"class\\", NumberType, \\"semesterId\\", false, number>;
-  readonly professorId: Column<
+  readonly id: TableColumn<\\"class\\", NumberType, \\"id\\", true, number>;
+  readonly courseId: TableColumn<
+    \\"class\\",
+    NumberType,
+    \\"courseId\\",
+    false,
+    number
+  >;
+  readonly semesterId: TableColumn<
+    \\"class\\",
+    NumberType,
+    \\"semesterId\\",
+    false,
+    number
+  >;
+  readonly professorId: TableColumn<
     \\"class\\",
     NumberType,
     \\"professorId\\",
@@ -2231,10 +2101,22 @@ Array [
     "nodeKind": 71,
     "symbol": "Student",
     "type": "type T = PrivateTable<\\"student\\", never> & {
-  readonly id: Column<\\"student\\", NumberType, \\"id\\", true, number>;
-  readonly firstName: Column<\\"student\\", StringType, \\"firstName\\", false, string>;
-  readonly lastName: Column<\\"student\\", StringType, \\"lastName\\", false, string>;
-  readonly majorId: Column<
+  readonly id: TableColumn<\\"student\\", NumberType, \\"id\\", true, number>;
+  readonly firstName: TableColumn<
+    \\"student\\",
+    StringType,
+    \\"firstName\\",
+    false,
+    string
+  >;
+  readonly lastName: TableColumn<
+    \\"student\\",
+    StringType,
+    \\"lastName\\",
+    false,
+    string
+  >;
+  readonly majorId: TableColumn<
     \\"student\\",
     UnionType<
       (NumberType | NullType)[],
@@ -2253,10 +2135,16 @@ Array [
     "nodeKind": 71,
     "symbol": "Course",
     "type": "type T = PrivateTable<\\"course\\", never> & {
-  readonly id: Column<\\"course\\", NumberType, \\"id\\", true, number>;
-  readonly name: Column<\\"course\\", StringType, \\"name\\", false, string>;
-  readonly subjectId: Column<\\"course\\", NumberType, \\"subjectId\\", false, number>;
-  readonly creditHours: Column<
+  readonly id: TableColumn<\\"course\\", NumberType, \\"id\\", true, number>;
+  readonly name: TableColumn<\\"course\\", StringType, \\"name\\", false, string>;
+  readonly subjectId: TableColumn<
+    \\"course\\",
+    NumberType,
+    \\"subjectId\\",
+    false,
+    number
+  >;
+  readonly creditHours: TableColumn<
     \\"course\\",
     NumberType,
     \\"creditHours\\",
@@ -2276,13 +2164,13 @@ Array [
     "nodeKind": 71,
     "symbol": "query",
     "type": "type T = SqlBuilder<
-  { semesterId: Column<\\"class\\", NumberType, \\"semesterId\\", false, number> },
+  { semesterId: TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number> },
   {},
   \\"class\\",
   never,
   {},
-  | Column<\\"class\\", NumberType, \\"id\\", true, number>
-  | Column<\\"class\\", NumberType, \\"courseId\\", false, number>,
+  | TableColumn<\\"class\\", NumberType, \\"id\\", true, number>
+  | TableColumn<\\"class\\", NumberType, \\"courseId\\", false, number>,
   \\"class\\"
 >;
 ",
@@ -2292,55 +2180,44 @@ Array [
     "symbol": "SqlBuilder.columns",
     "type": "type T = <
   C extends ReadonlyArray<
-    Column<
-      string,
-      Type<
-        any,
-        any,
-        string | number | boolean | symbol | object | null | undefined
-      >,
-      string,
-      boolean,
-      any
-    >
+    BaseColumn<string, Type<any, any, any>, string, boolean, any>
   > &
     {
-      [K in keyof T]: (T[K] extends
-        | Column<\\"class\\", NumberType, \\"id\\", true, number>
-        | Column<\\"class\\", NumberType, \\"courseId\\", false, number>
-
+      [K in keyof T]: (T[K] extends Aggregate<
+        string,
+        Type<any, any, any>,
+        string,
+        any
+      >
         ? {}
-        : Column<\\"class\\", NumberType, \\"id\\", true, number> extends Column<
-            T[K][\\"_tableAs\\"],
-            any,
-            any,
-            true,
-            any
-          >
+        : T[K] extends
+            | TableColumn<\\"class\\", NumberType, \\"id\\", true, number>
+            | TableColumn<\\"class\\", NumberType, \\"courseId\\", false, number>
           ? {}
-          : never) &
-        T[K][\\"_columnAs\\"] extends (Extract<
-        T[Exclude<keyof T, K>],
-        T[Exclude<keyof T, K>]
-      > extends never
-        ? never
-        : Extract<T[Exclude<keyof T, K>], T[Exclude<keyof T, K>]>[\\"_columnAs\\"])
-        ? {
-            \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never
-              ? never
-              : Extract<T[K], T[K]>[\\"_columnAs\\"];
-          }
-        : Column<
-            \\"class\\",
-            Type<
-              any,
-              any,
-              string | number | boolean | symbol | object | null | undefined
-            >,
-            string,
-            boolean,
-            any
-          >
+          : TableColumn<
+              \\"class\\",
+              NumberType,
+              \\"id\\",
+              true,
+              number
+            > extends BaseColumn<T[K][\\"_tableAs\\"], any, any, true, any>
+            ? {}
+            : never) &
+        (T[K][\\"_columnAs\\"] extends (Extract<
+          T[Exclude<keyof T, K>],
+          T[Exclude<keyof T, K>]
+        > extends never
+          ? never
+          : Extract<
+              T[Exclude<keyof T, K>],
+              T[Exclude<keyof T, K>]
+            >[\\"_columnAs\\"])
+          ? {
+              \\"NO DUPLICATE KEYS ALLOWED\\": Extract<T[K], T[K]> extends never
+                ? never
+                : Extract<T[K], T[K]>[\\"_columnAs\\"];
+            }
+          : BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>)
     } & { \\"0\\": any },
   T extends {
     [K in Exclude<
@@ -2378,17 +2255,7 @@ Array [
       | \\"copyWithin\\"
     >]: Extract<
       C[K],
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >
   } = {
     [K in Exclude<
@@ -2426,17 +2293,7 @@ Array [
       | \\"copyWithin\\"
     >]: Extract<
       C[K],
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >
   }
 >(
@@ -2461,8 +2318,8 @@ Array [
   \\"class\\",
   never,
   {},
-  | Column<\\"class\\", NumberType, \\"id\\", true, number>
-  | Column<\\"class\\", NumberType, \\"courseId\\", false, number>,
+  | TableColumn<\\"class\\", NumberType, \\"id\\", true, number>
+  | TableColumn<\\"class\\", NumberType, \\"courseId\\", false, number>,
   \\"class\\"
 >;
 ",
@@ -2471,17 +2328,7 @@ Array [
     "nodeKind": 184,
     "symbol": "SqlBuilder.groupBy",
     "type": "type T = <
-  _GBC extends Column<
-    string,
-    Type<
-      any,
-      any,
-      string | number | boolean | symbol | object | null | undefined
-    >,
-    string,
-    boolean,
-    any
-  >
+  _GBC extends BaseColumn<string, Type<any, any, any>, string, boolean, any>
 >(
   groupByCols: _GBC[]
 ) => SqlBuilder<{}, {}, \\"class\\", never, {}, _GBC, \\"class\\">;
@@ -2518,33 +2365,13 @@ Array [
   <
     _Cols extends Record<
       string,
-      Column<
-        string,
-        Type<
-          any,
-          any,
-          string | number | boolean | symbol | object | null | undefined
-        >,
-        string,
-        boolean,
-        any
-      >
+      BaseColumn<string, Type<any, any, any>, string, boolean, any>
     >,
     _P,
     _RT extends string,
     _OT extends string,
     _WT extends { [K in keyof _WT]: PrivateTable<string, never> & {} },
-    _GBC extends Column<
-      string,
-      Type<
-        any,
-        any,
-        string | number | boolean | symbol | object | null | undefined
-      >,
-      string,
-      boolean,
-      any
-    >
+    _GBC extends BaseColumn<string, Type<any, any, any>, string, boolean, any>
   >(
     cb: (
       subq: SqlBuilder<{}, {}, never, never, {}, never, never>
@@ -2573,19 +2400,19 @@ Array [
   Object {
     "nodeKind": 184,
     "symbol": "id",
-    "type": "type T = Column<\\"class\\", NumberType, \\"id\\", true, number>;
+    "type": "type T = TableColumn<\\"class\\", NumberType, \\"id\\", true, number>;
 ",
   },
   Object {
     "nodeKind": 184,
     "symbol": "courseId",
-    "type": "type T = Column<\\"class\\", NumberType, \\"courseId\\", false, number>;
+    "type": "type T = TableColumn<\\"class\\", NumberType, \\"courseId\\", false, number>;
 ",
   },
   Object {
     "nodeKind": 184,
     "symbol": "semesterId",
-    "type": "type T = Column<\\"class\\", NumberType, \\"semesterId\\", false, number>;
+    "type": "type T = TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>;
 ",
   },
   Object {
@@ -2684,9 +2511,11 @@ Array [
   },
   Object {
     "nodeKind": 184,
-    "symbol": "Column.eq",
+    "symbol": "BaseColumn.eq",
     "type": "type T = <
-  Col2 extends Column<string, Type<any, any, any>, string, boolean, number>,
+  Col2 extends
+    | TableColumn<string, Type<any, any, any>, string, boolean, number>
+    | Aggregate<string, Type<any, any, any>, string, number>,
   SPN extends string
 >(
   col2: number | Col2 | PlaceholderParam<SPN>
@@ -2724,14 +2553,16 @@ Array [
   Object {
     "nodeKind": 184,
     "symbol": "id",
-    "type": "type T = Column<\\"course\\", NumberType, \\"id\\", true, number>;
+    "type": "type T = TableColumn<\\"course\\", NumberType, \\"id\\", true, number>;
 ",
   },
   Object {
     "nodeKind": 184,
-    "symbol": "Column.eq",
+    "symbol": "BaseColumn.eq",
     "type": "type T = <
-  Col2 extends Column<string, Type<any, any, any>, string, boolean, number>,
+  Col2 extends
+    | TableColumn<string, Type<any, any, any>, string, boolean, number>
+    | Aggregate<string, Type<any, any, any>, string, number>,
   SPN extends string
 >(
   col2: number | Col2 | PlaceholderParam<SPN> | null
@@ -2769,7 +2600,7 @@ Array [
   Object {
     "nodeKind": 184,
     "symbol": "majorId",
-    "type": "type T = Column<
+    "type": "type T = TableColumn<
   \\"student\\",
   UnionType<
     (NumberType | NullType)[],
@@ -2786,7 +2617,7 @@ Array [
   Object {
     "nodeKind": 184,
     "symbol": "subjectId",
-    "type": "type T = Column<\\"course\\", NumberType, \\"subjectId\\", false, number>;
+    "type": "type T = TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>;
 ",
   },
 ]
@@ -2812,7 +2643,7 @@ Array [
   arg: { name: N; columns: C }
 ) => PrivateTable<N, never> &
   {
-    readonly [K in keyof C]: Column<
+    readonly [K in keyof C]: TableColumn<
       N,
       C[K][\\"type\\"],
       K,
@@ -2834,6 +2665,12 @@ Array [
   },
   Object {
     "nodeKind": 71,
+    "symbol": "Aggregate",
+    "type": "type T = typeof Aggregate;
+",
+  },
+  Object {
+    "nodeKind": 71,
     "symbol": "t",
     "type": "type T = typeof t;
 ",
@@ -2842,8 +2679,8 @@ Array [
     "nodeKind": 71,
     "symbol": "Subject",
     "type": "type T = PrivateTable<\\"subject\\", never> & {
-  readonly id: Column<\\"subject\\", t.NumberType, \\"id\\", true, number>;
-  readonly name: Column<\\"subject\\", t.StringType, \\"name\\", false, string>;
+  readonly id: TableColumn<\\"subject\\", t.NumberType, \\"id\\", true, number>;
+  readonly name: TableColumn<\\"subject\\", t.StringType, \\"name\\", false, string>;
 };
 ",
   },
@@ -2890,16 +2727,22 @@ Array [
     "nodeKind": 71,
     "symbol": "Student",
     "type": "type T = PrivateTable<\\"student\\", never> & {
-  readonly id: Column<\\"student\\", t.NumberType, \\"id\\", true, number>;
-  readonly firstName: Column<
+  readonly id: TableColumn<\\"student\\", t.NumberType, \\"id\\", true, number>;
+  readonly firstName: TableColumn<
     \\"student\\",
     t.StringType,
     \\"firstName\\",
     false,
     string
   >;
-  readonly lastName: Column<\\"student\\", t.StringType, \\"lastName\\", false, string>;
-  readonly majorId: Column<
+  readonly lastName: TableColumn<
+    \\"student\\",
+    t.StringType,
+    \\"lastName\\",
+    false,
+    string
+  >;
+  readonly majorId: TableColumn<
     \\"student\\",
     t.UnionType<
       (t.NumberType | t.NullType)[],
@@ -2992,22 +2835,22 @@ Array [
     "nodeKind": 71,
     "symbol": "Professor",
     "type": "type T = PrivateTable<\\"professor\\", never> & {
-  readonly id: Column<\\"professor\\", t.NumberType, \\"id\\", true, number>;
-  readonly firstName: Column<
+  readonly id: TableColumn<\\"professor\\", t.NumberType, \\"id\\", true, number>;
+  readonly firstName: TableColumn<
     \\"professor\\",
     t.StringType,
     \\"firstName\\",
     false,
     string
   >;
-  readonly lastName: Column<
+  readonly lastName: TableColumn<
     \\"professor\\",
     t.StringType,
     \\"lastName\\",
     false,
     string
   >;
-  readonly departmentId: Column<
+  readonly departmentId: TableColumn<
     \\"professor\\",
     t.NumberType,
     \\"departmentId\\",
@@ -3066,16 +2909,16 @@ Array [
     "nodeKind": 71,
     "symbol": "Course",
     "type": "type T = PrivateTable<\\"course\\", never> & {
-  readonly id: Column<\\"course\\", t.NumberType, \\"id\\", true, number>;
-  readonly name: Column<\\"course\\", t.StringType, \\"name\\", false, string>;
-  readonly subjectId: Column<
+  readonly id: TableColumn<\\"course\\", t.NumberType, \\"id\\", true, number>;
+  readonly name: TableColumn<\\"course\\", t.StringType, \\"name\\", false, string>;
+  readonly subjectId: TableColumn<
     \\"course\\",
     t.NumberType,
     \\"subjectId\\",
     false,
     number
   >;
-  readonly creditHours: Column<
+  readonly creditHours: TableColumn<
     \\"course\\",
     t.NumberType,
     \\"creditHours\\",
@@ -3134,8 +2977,8 @@ Array [
     "nodeKind": 71,
     "symbol": "Semester",
     "type": "type T = PrivateTable<\\"semester\\", never> & {
-  readonly id: Column<\\"semester\\", t.NumberType, \\"id\\", true, number>;
-  readonly year: Column<\\"semester\\", t.NumberType, \\"year\\", false, number>;
+  readonly id: TableColumn<\\"semester\\", t.NumberType, \\"id\\", true, number>;
+  readonly year: TableColumn<\\"semester\\", t.NumberType, \\"year\\", false, number>;
 };
 ",
   },
@@ -3170,16 +3013,22 @@ Array [
     "nodeKind": 71,
     "symbol": "Class",
     "type": "type T = PrivateTable<\\"class\\", never> & {
-  readonly id: Column<\\"class\\", t.NumberType, \\"id\\", true, number>;
-  readonly courseId: Column<\\"class\\", t.NumberType, \\"courseId\\", false, number>;
-  readonly semesterId: Column<
+  readonly id: TableColumn<\\"class\\", t.NumberType, \\"id\\", true, number>;
+  readonly courseId: TableColumn<
+    \\"class\\",
+    t.NumberType,
+    \\"courseId\\",
+    false,
+    number
+  >;
+  readonly semesterId: TableColumn<
     \\"class\\",
     t.NumberType,
     \\"semesterId\\",
     false,
     number
   >;
-  readonly professorId: Column<
+  readonly professorId: TableColumn<
     \\"class\\",
     t.NumberType,
     \\"professorId\\",
@@ -3242,8 +3091,14 @@ Array [
     "nodeKind": 71,
     "symbol": "AssignmentType",
     "type": "type T = PrivateTable<\\"assignment_type\\", never> & {
-  readonly id: Column<\\"assignment_type\\", t.NumberType, \\"id\\", true, number>;
-  readonly name: Column<\\"assignment_type\\", t.StringType, \\"name\\", false, string>;
+  readonly id: TableColumn<\\"assignment_type\\", t.NumberType, \\"id\\", true, number>;
+  readonly name: TableColumn<
+    \\"assignment_type\\",
+    t.StringType,
+    \\"name\\",
+    false,
+    string
+  >;
 };
 ",
   },
@@ -3278,16 +3133,22 @@ Array [
     "nodeKind": 71,
     "symbol": "Assignment",
     "type": "type T = PrivateTable<\\"assignment\\", never> & {
-  readonly id: Column<\\"assignment\\", t.NumberType, \\"id\\", true, number>;
-  readonly typeId: Column<\\"assignment\\", t.NumberType, \\"typeId\\", false, number>;
-  readonly classId: Column<
+  readonly id: TableColumn<\\"assignment\\", t.NumberType, \\"id\\", true, number>;
+  readonly typeId: TableColumn<
+    \\"assignment\\",
+    t.NumberType,
+    \\"typeId\\",
+    false,
+    number
+  >;
+  readonly classId: TableColumn<
     \\"assignment\\",
     t.NumberType,
     \\"classId\\",
     false,
     number
   >;
-  readonly pointsPossible: Column<
+  readonly pointsPossible: TableColumn<
     \\"assignment\\",
     t.NumberType,
     \\"pointsPossible\\",
@@ -3346,15 +3207,15 @@ Array [
     "nodeKind": 71,
     "symbol": "StudentClass",
     "type": "type T = PrivateTable<\\"student_class\\", never> & {
-  readonly id: Column<\\"student_class\\", t.NumberType, \\"id\\", true, number>;
-  readonly studentId: Column<
+  readonly id: TableColumn<\\"student_class\\", t.NumberType, \\"id\\", true, number>;
+  readonly studentId: TableColumn<
     \\"student_class\\",
     t.NumberType,
     \\"studentId\\",
     false,
     number
   >;
-  readonly classId: Column<
+  readonly classId: TableColumn<
     \\"student_class\\",
     t.NumberType,
     \\"classId\\",
@@ -3402,22 +3263,28 @@ Array [
     "nodeKind": 71,
     "symbol": "StudentAssignment",
     "type": "type T = PrivateTable<\\"student_assignment\\", never> & {
-  readonly id: Column<\\"student_assignment\\", t.NumberType, \\"id\\", true, number>;
-  readonly studentId: Column<
+  readonly id: TableColumn<
+    \\"student_assignment\\",
+    t.NumberType,
+    \\"id\\",
+    true,
+    number
+  >;
+  readonly studentId: TableColumn<
     \\"student_assignment\\",
     t.NumberType,
     \\"studentId\\",
     false,
     number
   >;
-  readonly assignmentId: Column<
+  readonly assignmentId: TableColumn<
     \\"student_assignment\\",
     t.NumberType,
     \\"assignmentId\\",
     false,
     number
   >;
-  readonly points: Column<
+  readonly points: TableColumn<
     \\"student_assignment\\",
     t.NumberType,
     \\"points\\",
