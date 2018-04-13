@@ -50,6 +50,14 @@ export type SqlPart =
   | Hardcoded
   | ColumnDeclaration
 
+export type Column<
+  TN extends string = string,
+  TY extends t.Any = t.Any,
+  CAS extends string = string,
+  U extends boolean = boolean,
+  ATY extends t.TypeOf<TY> = t.TypeOf<TY>
+> = TableColumn<TN, TY, CAS, U, ATY> | Aggregate<TN, TY, CAS, ATY>
+
 export type Parameterized = PlaceholderParam | Hardcoded
 
 export interface SqlKind {
@@ -176,14 +184,6 @@ export function table<C extends ValsAre<C, InputCol>, N extends string>(arg: {
   return new Table(arg.name, arg.columns, arg.name)
 }
 
-export type Column<
-  TN extends string = string,
-  TY extends t.Any = t.Any,
-  CAS extends string = string,
-  U extends boolean = boolean,
-  ATY extends t.TypeOf<TY> = t.TypeOf<TY>
-> = TableColumn<TN, TY, CAS, U, ATY> | Aggregate<TN, TY, CAS, ATY>
-
 export abstract class BaseColumn<
   TN extends string = string,
   TY extends t.Any = t.Any,
@@ -212,7 +212,7 @@ export abstract class BaseColumn<
     return EqCondition.create(this as any, col2, this._isNot) as any
   }
 
-  in<C extends ValsAre<C, Column<string, TY>>, P, SPN extends string>(
+  in<C extends ValsAre<C, BaseColumn<string, TY>>, P, SPN extends string>(
     rightArg: SelectStatement<C, P> | t.TypeOf<TY>[] | PlaceholderParam<SPN>
   ): Condition<TN, P & SqlParam<SPN, NonNullable<t.TypeOf<TY>>>> {
     return InCondition.create(this as any, rightArg, this._isNot) as any
@@ -282,7 +282,7 @@ export class TableColumn<
     )
   }
 
-  as<NN extends string>(newName: NN): Column<TN, TY, NN, U> {
+  as<NN extends string>(newName: NN): TableColumn<TN, TY, NN, U> {
     return new TableColumn(this._tableAs, this._column, this.type, newName, this.unique)
   }
 }
