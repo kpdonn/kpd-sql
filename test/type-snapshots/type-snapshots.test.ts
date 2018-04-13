@@ -10,8 +10,7 @@ describe("Verify output of typings test files matches expected", async () => {
 
   files.forEach(file =>
     it(`Verify output of typings test file ${path.basename(file)}`, async () => {
-      const [output, diagnostics] = check(file)
-      expect(output).toMatchSnapshot()
+      const diagnostics = check(file)
       expect(diagnostics).toMatchSnapshot()
     })
   )

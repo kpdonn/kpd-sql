@@ -1,9 +1,8 @@
 import ts from "typescript"
 import * as path from "path"
 import * as fs from "fs"
-import * as prettier from "prettier"
 
-export function check(fileName: string): [any[], any[]] {
+export function check(fileName: string): any[] {
   const program = ts.createProgram([fileName], compilerOptions)
   const emitResult = program.emit()
   const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics)
@@ -31,57 +30,7 @@ export function check(fileName: string): [any[], any[]] {
     }
   })
 
-  // Get the checker, we will use it to find more about classes
-  const checker = program.getTypeChecker()
-
-  const output: any[] = []
-
-  const symbolSeenSet = new Set<ts.Symbol>()
-
-  // Visit every sourceFile in the program
-  for (const sourceFile of program.getSourceFiles()) {
-    if (!sourceFile.isDeclarationFile) {
-      // Walk the tree to search for classes
-      ts.forEachChild(sourceFile, visit)
-    }
-  }
-
-  return [output, diagnosticsOutput]
-
-  function visit(node: ts.Node) {
-    let symbol = checker.getSymbolAtLocation(node)
-
-    if (shouldPrintNodeType(node, fileName) && symbol && !symbolSeenSet.has(symbol)) {
-      symbolSeenSet.add(symbol)
-      output.push(nodeTypeInfo(node, symbol))
-    }
-    ts.forEachChild(node, visit)
-  }
-
-  function nodeTypeInfo(node: ts.Node, symbol?: ts.Symbol) {
-    const typeAtLocationString = checker.typeToString(
-      checker.getTypeAtLocation(node),
-      node.parent,
-      ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.AllowUniqueESSymbolType
-    )
-
-    const formattedType = prettier.format(`type T = ${typeAtLocationString}`, {
-      parser: "typescript",
-    })
-
-    const symbolFormatFlags =
-      ts.SymbolFormatFlags.WriteTypeParametersOrArguments |
-      ts.SymbolFormatFlags.AllowAnyNodeKind
-    const symbolString = symbol
-      ? checker.symbolToString(symbol, node.parent, symbolFormatFlags)
-      : symbol
-
-    return {
-      symbol: symbolString,
-      type: formattedType,
-      nodeKind: node.kind,
-    }
-  }
+  return diagnosticsOutput
 }
 
 function readUtf8(fileName: string) {
