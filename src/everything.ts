@@ -469,7 +469,9 @@ export type SafeInd<T, K extends keyof Base, Base = T> = Extract<T, Base> extend
   : Extract<T, Base>[K]
 
 export type NoDuplicates<T extends string> = { "NO DUPLICATE KEYS ALLOWED": T }
-export type ColumnsObj<T> = { [K in TupleKeys<T>]: Extract<T[K], BaseColumn> }
+export type ColumnsObj<T> = {
+  [K in TupleKeys<T>]: Extract<T[K], BaseColumn | AllCols<any, string>>
+}
 
 export type ColumnsWithTableName<
   T extends ValsAre<T, BaseColumn>,
@@ -487,10 +489,18 @@ export type OutputColumns<
     : never
 }
 
-export type ArrayToUnion<T> = { [K in keyof T]: T[K] }[keyof T]
+export type ArrayToUnion<
+  T extends ValsAre<T, BaseColumn | { columns: Record<string, BaseColumn> }>
+> = {
+  [K in keyof T]: T[K] extends BaseColumn
+    ? T[K]
+    : T[K] extends { columns: any }
+      ? Extract<T[K]["columns"][keyof (T[K]["columns"])], BaseColumn>
+      : never
+}[keyof T]
 
 export type SelectColumns<
-  T extends ValsAre<T, BaseColumn>,
+  T extends ValsAre<T, BaseColumn | AllCols<any, string>>,
   Cols extends BaseColumn = ArrayToUnion<T>
 > = {
   [K in SafeInd<Cols, "_columnAs">]: Cols extends { ["_columnAs"]: K } ? Cols : never
@@ -644,18 +654,45 @@ export class SqlBuilder<
   }
 
   columns<
-    C extends ReadonlyArray<BaseColumn> &
+    C extends ReadonlyArray<BaseColumn | AllCols<any, string>> &
       {
-        [K in keyof T]: CheckGroupBy<GBC, T[K]> &
-          (T[K]["_columnAs"] extends (
-            | (SafeInd<T[Exclude<keyof T, K>], "_columnAs">)
-            | keyof Cols)
-            ? NoDuplicates<SafeInd<T[K], "_columnAs">>
-            : BaseColumn<TblNames>)
+        [K in keyof T]: T[K] extends BaseColumn
+          ? (CheckGroupBy<GBC, T[K]> &
+              (T[K]["_columnAs"] extends (
+                | (ColumnNames<T[Exclude<keyof T, K>]>)
+                | keyof Cols)
+                ? NoDuplicates<SafeInd<T[K], "_columnAs">>
+                : BaseColumn<TblNames>))
+          : T[K] extends AllCols<{}, string>
+            ? {
+                columns: {
+                  [K2 in keyof T[K]["columns"]]: K2 extends (
+                    | (ColumnNames<T[Exclude<keyof T, K>]>)
+                    | keyof Cols
+                    | Exclude<keyof T[K]["columns"], K2>)
+                    ? NoDuplicates<K2>
+                    : BaseColumn<TblNames>
+                }
+              }
+            : never
       } & { "0": any },
     T extends ColumnsObj<C> = ColumnsObj<C>
   >(cols: C): SqlBuilder<Cols & SelectColumns<T>, P, RT, OT, WT, GBC> {
-    const colDecs = cols.map(col => new ColumnDeclaration(col))
+    const colDecs = cols.reduce(
+      (acc, col) => {
+        if ("columns" in col) {
+          return [
+            ...acc,
+            ...Object.keys(col.columns).map(
+              colName => new ColumnDeclaration(col.columns[colName])
+            ),
+          ]
+        } else {
+          return [...acc, new ColumnDeclaration(col)]
+        }
+      },
+      [] as ColumnDeclaration[]
+    )
     return this.next({
       ...this.state,
       selColumns: [...this.state.selColumns, ...colDecs],
@@ -789,3 +826,18 @@ type NotAny<T> = IsAny<T> extends true ? never : any
 export function count(): Aggregate<never, t.NumberType, "count"> {
   return {} as any
 }
+
+export type AllCols<C extends ValsAre<C, InputCol>, TN extends string> = {
+  _tableName: TN
+  columns: TableColumns<TN, C, false>
+}
+
+export declare function all<C extends ValsAre<C, InputCol>, TN extends string>(
+  table: Table<C, TN>
+): AllCols<C, TN>
+
+export type ColumnNames<
+  T extends BaseColumn | AllCols<any, string>
+> = T extends BaseColumn
+  ? SafeInd<T, "_columnAs">
+  : T extends AllCols<any, string> ? keyof SafeInd<T, "columns"> : never
