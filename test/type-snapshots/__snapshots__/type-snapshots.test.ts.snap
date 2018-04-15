@@ -43,8 +43,8 @@ Array [
     "code": 2345,
     "file": "expect-errors.ts",
     "line": 34,
-    "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, Column<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any>> & { \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; } & { \\"0\\": any; }'.
-  Type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, Column<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to type '{ \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; }'.
+    "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any>> & { \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; } & { \\"0\\": any; }'.
+  Type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to type '{ \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; }'.
     Types of property '\\"0\\"' are incompatible.
       Type 'TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>' is not assignable to type 'NoDuplicates<\\"semesterId\\">'.
         Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>'.",
@@ -91,8 +91,7 @@ Array [
     "line": 69,
     "message": "Argument of type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to parameter of type 'string | PlaceholderParam<string> | TableColumn<string, Type<any, any, any>, string, boolean, string> | Aggregate<string, Type<any, any, any>, string, string>'.
   Type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to type 'Aggregate<string, Type<any, any, any>, string, string>'.
-    Types of property 'sqlKind' are incompatible.
-      Type '\\"column\\"' is not assignable to type '\\"aggregate\\"'.",
+    Property '_aggColumn' is missing in type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>'.",
   },
   Object {
     "category": 1,

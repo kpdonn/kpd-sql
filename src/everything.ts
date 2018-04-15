@@ -238,16 +238,16 @@ export class Aggregate<
   readonly unique = false
 
   constructor(
-    readonly _column: Column<TN>,
     type: TY,
     _columnAs: CAS,
+    readonly _aggColumn: Column<TN>,
     _isNot: boolean = false
   ) {
-    super(_column._tableAs, type, _columnAs, false, _isNot)
+    super(_aggColumn._tableAs, type, _columnAs, false, _isNot)
   }
 
   get not(): Aggregate<TN, TY, CAS, ATY> {
-    return new Aggregate(this._column, this.type, this._columnAs, !this._isNot)
+    return new Aggregate(this.type, this._columnAs, this._aggColumn, !this._isNot)
   }
 }
 
