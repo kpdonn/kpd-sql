@@ -74,7 +74,7 @@ function isSqlPart(obj: any): obj is SqlPart {
 export class ColumnDeclaration implements SqlKind {
   readonly sqlKind = "columnDeclaration"
 
-  constructor(readonly col: BaseColumn) {}
+  constructor(readonly col: Column) {}
 }
 
 export type NoDups<T extends string, TableNames extends string> = T extends TableNames
@@ -222,7 +222,7 @@ export abstract class BaseColumn<
     return EqCondition.create(this as any, col2, this._isNot) as any
   }
 
-  in<C extends ValsAre<C, BaseColumn<string, TY>>, P, SPN extends string>(
+  in<C extends ValsAre<C, Column<string, TY>>, P, SPN extends string>(
     rightArg: SelectStatement<C, P> | t.TypeOf<TY>[] | PlaceholderParam<SPN>
   ): Condition<TN, P & SqlParam<SPN, NonNullable<t.TypeOf<TY>>>> {
     return InCondition.create(this as any, rightArg, this._isNot) as any
@@ -251,7 +251,7 @@ export class Aggregate<
     type: TY,
     _columnAs: CAS,
     readonly funcName: string,
-    readonly _aggColumn: Column<TN> | Column<TN>[],
+    readonly _aggColumn: Column<TN>,
     _isNot: boolean = false
   ) {
     super(type, _columnAs, false, undefined, _isNot)
@@ -276,11 +276,7 @@ export class CountAggregate<TN extends string = never, CAS extends string = "cou
 
   readonly unique = false
 
-  constructor(
-    _columnAs: CAS,
-    readonly _aggColumn?: Column<TN> | Column<TN>[],
-    _isNot: boolean = false
-  ) {
+  constructor(_columnAs: CAS, readonly _aggColumn?: Column<TN>, _isNot: boolean = false) {
     super(t.number, _columnAs, false, undefined, _isNot)
   }
 
@@ -501,7 +497,7 @@ export class InCondition<CT extends string = string, P = {}> extends BaseConditi
   }
 }
 
-export class GroupBy<GBC extends BaseColumn = BaseColumn> implements SqlKind {
+export class GroupBy<GBC extends Column = Column> implements SqlKind {
   readonly sqlKind = "groupBy"
 
   constructor(readonly columns: GBC[]) {}
@@ -571,18 +567,18 @@ export interface DeepReadonlyArray<T> extends ReadonlyArray<DeepReadonly<T>> {}
 
 export type DeepReadonlyObject<T> = { readonly [P in keyof T]: DeepReadonly<T[P]> }
 
-export type BuilderState = DeepReadonly<{
-  selFrom?: FromType
-  selColumns: ColumnDeclaration[]
-  selWhere?: Condition
-  selWith: WithClause[]
-  selGroupBy?: GroupBy
-}>
+export type BuilderState = {
+  readonly selFrom?: FromType
+  readonly selColumns: ReadonlyArray<ColumnDeclaration>
+  readonly selWhere?: Condition
+  readonly selWith: ReadonlyArray<WithClause>
+  readonly selGroupBy?: GroupBy
+}
 
 export interface SelectStatement<
-  Cols extends Record<string, BaseColumn> = {},
+  Cols extends Record<string, Column> = {},
   P = {},
-  GBC extends BaseColumn = BaseColumn
+  GBC extends Column = Column
 > extends SqlKind, BuilderState {
   _ignore: {
     _c: Cols
@@ -593,12 +589,12 @@ export interface SelectStatement<
 }
 
 export class SqlBuilder<
-  Cols extends Record<string, BaseColumn>,
+  Cols extends Record<string, Column>,
   P,
   RT extends string,
   OT extends string,
   WT extends ValsAre<WT, Table>,
-  GBC extends BaseColumn,
+  GBC extends Column,
   TblNames extends string = Literal<RT> | Literal<OT>
 > implements SelectStatement<Cols, P> {
   readonly sqlKind = "selectStatement"
@@ -668,12 +664,12 @@ export class SqlBuilder<
   }
 
   select<
-    _Cols extends Record<string, BaseColumn>,
+    _Cols extends Record<string, Column>,
     _P,
     _RT extends string,
     _OT extends string,
     _WT extends ValsAre<_WT, Table>,
-    _GBC extends BaseColumn
+    _GBC extends Column
   >(
     cb: (subq: this) => SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
   ): SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
@@ -699,7 +695,7 @@ export class SqlBuilder<
   }
 
   columns<
-    C extends ReadonlyArray<BaseColumn | AllCols<any, string>> &
+    C extends ReadonlyArray<Column | AllCols<any, string>> &
       {
         [K in keyof T]: T[K] extends BaseColumn
           ? (CheckGroupBy<GBC, T[K], T> &
@@ -764,7 +760,7 @@ export class SqlBuilder<
     })
   }
 
-  with<A extends string, WCols extends Record<string, BaseColumn>, WParams>(
+  with<A extends string, WCols extends Record<string, Column>, WParams>(
     alias: A,
     withSelect: SelectStatement<WCols, WParams>
   ): SqlBuilder<
@@ -792,7 +788,7 @@ export class SqlBuilder<
     )
   }
 
-  groupBy<_GBC extends BaseColumn>(
+  groupBy<_GBC extends Column>(
     groupByCols: _GBC[]
   ): SqlBuilder<Cols, P, RT, OT, WT, GBC | _GBC> {
     return this.next({
@@ -841,12 +837,12 @@ export class WithClause<A extends string = string> implements SqlKind {
 
 export interface SubQuery<
   T,
-  _Cols extends Record<string, BaseColumn>,
+  _Cols extends Record<string, Column>,
   _P,
   _RT extends string,
   _OT extends string,
   _WT extends ValsAre<_WT, Table>,
-  _GBC extends BaseColumn
+  _GBC extends Column
 > {
   (arg: T): SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
 }
