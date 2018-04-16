@@ -95,6 +95,10 @@ export class PgPlugin implements SqlPlugin {
         return `${it.columns.map(x => this.pr(x)).join(", ")}`
       case "withClause":
         return `"${it.alias}" AS (${this.pr(it.withQuery)})`
+      case "aggregate":
+        return `${it.funcName}(${this.pr(it._aggColumn)})`
+      case "countAggregate":
+        return it._aggColumn ? `count(${this.pr(it._aggColumn)})` : `count(*)`
       case "selectStatement":
         const withSql =
           it.selWith.length > 0
