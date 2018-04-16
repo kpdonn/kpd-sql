@@ -1,5 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`college select tests number students 1`] = `
+"SELECT
+count(*) as \\"count\\"
+FROM
+\\"student\\""
+`;
+
+exports[`college select tests number students 2`] = `
+Array [
+  anonymous {
+    "count": "20",
+  },
+]
+`;
+
 exports[`college select tests trivial group by test 1`] = `
 "SELECT
 \\"class\\".\\"semester_id\\" as \\"semesterId\\"

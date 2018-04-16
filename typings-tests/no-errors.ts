@@ -61,4 +61,14 @@ async function tests() {
       .groupBy([Class.id])
       .columns([Class.id, count()])
   }
+
+  {
+    const test: Array<{
+      count: number
+    }> = await db
+      .select()
+      .from(Student)
+      .columns([count()])
+      .execute()
+  }
 }

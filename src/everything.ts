@@ -528,6 +528,19 @@ export type OutputColumns<
     : never
 }
 
+export type ColumnsWithNoTableName<T extends ValsAre<T, BaseColumn>> = {
+  [K in keyof T]: [NonNullable<T[K]["_tableAs"]>] extends [never] ? T[K] : never
+}[keyof T]
+
+export type NoTableColumns<
+  T extends ValsAre<T, BaseColumn>,
+  Cols extends BaseColumn = ColumnsWithNoTableName<T>
+> = {
+  [K in SafeInd<Cols, "_columnAs">]: Cols extends { ["_columnAs"]: K }
+    ? t.TypeOf<Cols["type"]>
+    : never
+}
+
 export type ArrayToUnion<
   T extends ValsAre<T, BaseColumn | { columns: Record<string, BaseColumn> }>
 > = {
@@ -554,7 +567,7 @@ export type ExecuteFunc<
   P,
   RT extends string,
   OT extends string,
-  O = OutputColumns<Cols, RT> & OutputColumns<Cols, OT, null>
+  O = NoTableColumns<Cols> & OutputColumns<Cols, RT> & OutputColumns<Cols, OT, null>
 > = {} extends P ? () => Promise<O[]> : (args: P) => Promise<O[]>
 
 export type DeepReadonly<T> = T extends ReadonlyArray<infer U>
@@ -865,7 +878,7 @@ type IsAny<T> = boolean extends AnyHelper<T> ? true : false
 type NotAny<T> = IsAny<T> extends true ? never : any
 
 export function count(): CountAggregate<never, "count"> {
-  return {} as any
+  return new CountAggregate("count")
 }
 
 export interface AllCols<C extends ValsAre<C, InputCol>, TN extends string> {
