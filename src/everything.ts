@@ -56,7 +56,10 @@ export type Column<
   CAS extends string = string,
   U extends boolean = boolean,
   ATY extends t.TypeOf<TY> = t.TypeOf<TY>
-> = TableColumn<TN, TY, CAS, U, ATY> | Aggregate<TN, TY, CAS, ATY>
+> =
+  | TableColumn<TN, TY, CAS, U, ATY>
+  | Aggregate<TN, TY, CAS, ATY>
+  | CountAggregate<TN, CAS>
 
 export type Parameterized = PlaceholderParam | Hardcoded
 
@@ -148,11 +151,11 @@ export class PrivateTable<
 
     for (const colName in _columns) {
       this._tableColumns[colName] = new TableColumn(
-        _tableAs,
         _columns[colName].dbName || colName,
         _columns[colName].type,
         colName,
-        _columns[colName].unique
+        _columns[colName].unique,
+        _tableAs
       )
     }
     Object.assign(this, this._tableColumns)
@@ -198,11 +201,11 @@ export abstract class BaseColumn<
   private _actualType!: ATY
 
   constructor(
-    readonly _tableAs: TN,
     readonly type: TY,
     readonly _columnAs: CAS,
     readonly unique: U,
-    protected readonly _isNot: boolean
+    readonly _tableAs?: TN,
+    protected readonly _isNot: boolean = false
   ) {}
 
   abstract get not(): BaseColumn<TN, TY, CAS, U, ATY>
@@ -212,7 +215,10 @@ export abstract class BaseColumn<
     SPN extends string
   >(
     col2: Col2 | t.TypeOf<TY> | PlaceholderParam<SPN>
-  ): Condition<TN | Literal<Col2["_tableAs"]>, SqlParam<SPN, NonNullable<t.TypeOf<TY>>>> {
+  ): Condition<
+    TN | Literal<NonNullable<Col2["_tableAs"]>>,
+    SqlParam<SPN, NonNullable<t.TypeOf<TY>>>
+  > {
     return EqCondition.create(this as any, col2, this._isNot) as any
   }
 
@@ -232,9 +238,9 @@ export abstract class BaseColumn<
 }
 
 export class Aggregate<
-  TN extends string,
-  TY extends t.Any,
-  CAS extends string,
+  TN extends string = string,
+  TY extends t.Any = t.Any,
+  CAS extends string = string,
   ATY extends t.TypeOf<TY> = t.TypeOf<TY>
 > extends BaseColumn<TN, TY, CAS, false, ATY> implements SqlKind {
   readonly sqlKind = "aggregate"
@@ -244,14 +250,42 @@ export class Aggregate<
   constructor(
     type: TY,
     _columnAs: CAS,
-    readonly _aggColumn: Column<TN>,
+    readonly funcName: string,
+    readonly _aggColumn: Column<TN> | Column<TN>[],
     _isNot: boolean = false
   ) {
-    super(_aggColumn._tableAs, type, _columnAs, false, _isNot)
+    super(type, _columnAs, false, undefined, _isNot)
   }
 
   get not(): Aggregate<TN, TY, CAS, ATY> {
-    return new Aggregate(this.type, this._columnAs, this._aggColumn, !this._isNot)
+    return new Aggregate(
+      this.type,
+      this._columnAs,
+      this.funcName,
+      this._aggColumn,
+      !this._isNot
+    )
+  }
+}
+
+export class CountAggregate<TN extends string = never, CAS extends string = "count">
+  extends BaseColumn<TN, t.NumberType, CAS, false, number>
+  implements SqlKind {
+  readonly sqlKind = "countAggregate"
+  readonly funcName = "count"
+
+  readonly unique = false
+
+  constructor(
+    _columnAs: CAS,
+    readonly _aggColumn?: Column<TN> | Column<TN>[],
+    _isNot: boolean = false
+  ) {
+    super(t.number, _columnAs, false, undefined, _isNot)
+  }
+
+  get not(): CountAggregate<TN, CAS> {
+    return new CountAggregate(this._columnAs, this._aggColumn, !this._isNot)
   }
 }
 
@@ -265,29 +299,36 @@ export class TableColumn<
   readonly sqlKind = "column"
 
   constructor(
-    _tableAs: TN,
     readonly _column: string,
     type: TY,
     _columnAs: CAS,
     unique: U,
+    readonly _tableAs: TN,
     _isNot: boolean = false
   ) {
-    super(_tableAs, type, _columnAs, unique, _isNot)
+    super(type, _columnAs, unique, _tableAs, _isNot)
   }
 
   get not(): TableColumn<TN, TY, CAS, U, ATY> {
     return new TableColumn(
-      this._tableAs,
       this._column,
       this.type,
       this._columnAs,
       this.unique,
+      this._tableAs,
       !this._isNot
     )
   }
 
   as<NN extends string>(newName: NN): TableColumn<TN, TY, NN, U> {
-    return new TableColumn(this._tableAs, this._column, this.type, newName, this.unique)
+    return new TableColumn(
+      this._column,
+      this.type,
+      newName,
+      this.unique,
+      this._tableAs,
+      this._isNot
+    )
   }
 }
 
@@ -661,7 +702,7 @@ export class SqlBuilder<
     C extends ReadonlyArray<BaseColumn | AllCols<any, string>> &
       {
         [K in keyof T]: T[K] extends BaseColumn
-          ? (CheckGroupBy<GBC, T[K]> &
+          ? (CheckGroupBy<GBC, T[K], T> &
               (T[K]["_columnAs"] extends (
                 | (ColumnNames<T[Exclude<keyof T, K>]>)
                 | keyof Cols)
@@ -672,7 +713,8 @@ export class SqlBuilder<
                 columns: {
                   [K2 in keyof T[K]["columns"]]: CheckGroupBy<
                     GBC,
-                    Extract<T[K]["columns"][K2], BaseColumn>
+                    Extract<T[K]["columns"][K2], BaseColumn>,
+                    T
                   > &
                     (K2 extends (
                       | (ColumnNames<T[Exclude<keyof T, K>]>)
@@ -809,29 +851,29 @@ export interface SubQuery<
   (arg: T): SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
 }
 
-export type IsAggregated<GBC extends BaseColumn, C extends BaseColumn> = [GBC] extends [
-  never
-]
-  ? C extends Aggregate<string, t.Any, string> ? true : false
+export type IsAggregated<GBC extends BaseColumn, T> = [GBC] extends [never]
+  ? [Extract<T[keyof T], Aggregate | CountAggregate>] extends [never] ? false : true
   : true
 
-export type CheckGroupBy<GBC extends BaseColumn, C extends BaseColumn> = IsAggregated<
+export type CheckGroupBy<GBC extends BaseColumn, C extends BaseColumn, T> = IsAggregated<
   GBC,
-  C
+  T
 > extends false
   ? {}
   : C extends Aggregate<string, t.Any, string>
     ? {}
-    : C extends GBC
+    : C extends CountAggregate<string, string>
       ? {}
-      : GBC extends BaseColumn<C["_tableAs"], any, any, true> ? {} : never
+      : C extends GBC
+        ? {}
+        : GBC extends BaseColumn<NonNullable<C["_tableAs"]>, any, any, true> ? {} : never
 
 type AnyHelper<T> = T extends any ? false : true
 
 type IsAny<T> = boolean extends AnyHelper<T> ? true : false
 type NotAny<T> = IsAny<T> extends true ? never : any
 
-export function count(): Aggregate<never, t.NumberType, "count"> {
+export function count(): CountAggregate<never, "count"> {
   return {} as any
 }
 

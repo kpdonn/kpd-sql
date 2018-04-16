@@ -35,7 +35,7 @@ Array [
     Types of property '\\"1\\"' are incompatible.
       Type 'TableColumn<\\"semester\\", NumberType, \\"year\\", false, number>' is not assignable to type 'BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>'.
         Types of property '_tableAs' are incompatible.
-          Type '\\"semester\\"' is not assignable to type '\\"class\\"'.",
+          Type '\\"semester\\"' is not assignable to type '\\"class\\" | undefined'.",
   },
   Object {
     "category": 1,
@@ -55,7 +55,7 @@ Array [
     "code": 2345,
     "file": "expect-errors.ts",
     "line": 41,
-    "message": "Argument of type '\\"wrong type\\"' is not assignable to parameter of type 'number | PlaceholderParam<string> | TableColumn<string, Type<any, any, any>, string, boolean, number> | Aggregate<string, Type<any, any, any>, string, number> | null'.",
+    "message": "Argument of type '\\"wrong type\\"' is not assignable to parameter of type 'number | CountAggregate<string, string> | PlaceholderParam<string> | TableColumn<string, Type<any, any, any>, string, boolean, number> | Aggregate<string, Type<any, any, any>, string, number> | null'.",
   },
   Object {
     "category": 1,
@@ -97,9 +97,9 @@ Array [
     "code": 2345,
     "file": "expect-errors.ts",
     "line": 70,
-    "message": "Argument of type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to parameter of type 'string | PlaceholderParam<string> | TableColumn<string, Type<any, any, any>, string, boolean, string> | Aggregate<string, Type<any, any, any>, string, string>'.
+    "message": "Argument of type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to parameter of type 'string | CountAggregate<string, string> | PlaceholderParam<string> | TableColumn<string, Type<any, any, any>, string, boolean, string> | Aggregate<string, Type<any, any, any>, string, string>'.
   Type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to type 'Aggregate<string, Type<any, any, any>, string, string>'.
-    Property '_aggColumn' is missing in type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>'.",
+    Property 'funcName' is missing in type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>'.",
   },
   Object {
     "category": 1,
@@ -161,6 +161,17 @@ Array [
           Type 'TableColumns<\\"class\\", { id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }, false>' is not assignable to type '{ readonly id: never; readonly courseId: BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; readonly semesterId: never; readonly professorId: never; }'.
             Types of property 'id' are incompatible.
               Type 'TableColumn<\\"class\\", NumberType, \\"id\\", true, number>' is not assignable to type 'never'.",
+  },
+  Object {
+    "category": 1,
+    "character": 16,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 127,
+    "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"id\\", true, number>, CountAggregate<never, \\"count\\">]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any> | AllCols<any, string>> & { \\"0\\": never; \\"1\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; } & { \\"0\\": any; }'.
+  Type '[TableColumn<\\"class\\", NumberType, \\"id\\", true, number>, CountAggregate<never, \\"count\\">]' is not assignable to type '{ \\"0\\": never; \\"1\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; }'.
+    Types of property '\\"0\\"' are incompatible.
+      Type 'TableColumn<\\"class\\", NumberType, \\"id\\", true, number>' is not assignable to type 'never'.",
   },
 ]
 `;

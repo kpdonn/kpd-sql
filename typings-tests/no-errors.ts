@@ -46,4 +46,19 @@ async function tests() {
       .groupBy([Class.id])
       .columns([Class["*"]])
   }
+
+  {
+    const test = db
+      .select()
+      .from(Class)
+      .columns([count()])
+  }
+
+  {
+    const test = db
+      .select()
+      .from(Class)
+      .groupBy([Class.id])
+      .columns([Class.id, count()])
+  }
 }

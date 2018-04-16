@@ -1,4 +1,4 @@
-import { SqlBuilder, param, Aggregate } from "../src/everything"
+import { SqlBuilder, param, Aggregate, count } from "../src/everything"
 import { Class, Semester, Student, Professor, Course } from "./tables"
 
 declare const db: SqlBuilder<{}, {}, never, never, {}, never>
@@ -118,5 +118,12 @@ async function test() {
       .from(Class)
       .groupBy([Class.courseId])
       .columns([Class["*"]])
+  }
+
+  {
+    const test = db
+      .select()
+      .from(Class)
+      .columns([Class.id, count()])
   }
 }
