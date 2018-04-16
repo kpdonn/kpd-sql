@@ -85,4 +85,38 @@ async function test() {
     .columns([Student.firstName, Student.lastName])
     .where(Student.majorId.eq(param("myTest")))
     .execute({ myTest: null })
+
+  {
+    const test = await db
+      .select()
+      .from(
+        Student.leftJoin(
+          Class.join(Course, Course.id.eq(Class.courseId)),
+          Student.majorId.eq(Course.subjectId)
+        )
+      )
+      .columns([Class.id, Student["*"]])
+      .execute()
+  }
+
+  {
+    const test = await db
+      .select()
+      .from(
+        Student.leftJoin(
+          Class.join(Course, Course.id.eq(Class.courseId)),
+          Student.majorId.eq(Course.subjectId)
+        )
+      )
+      .columns([Class["*"], Student["*"]])
+      .execute()
+  }
+
+  {
+    const test = db
+      .select()
+      .from(Class)
+      .groupBy([Class.courseId])
+      .columns([Class["*"]])
+  }
 }

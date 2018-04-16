@@ -20,4 +20,30 @@ async function tests() {
         )
       )
   }
+
+  {
+    const test: ({
+      id: number
+      firstName: string
+      lastName: string
+      majorId: number | null
+    })[] = await db
+      .select()
+      .from(
+        Student.leftJoin(
+          Class.join(Course, Course.id.eq(Class.courseId)),
+          Student.majorId.eq(Course.subjectId)
+        )
+      )
+      .columns([Student["*"]])
+      .execute()
+  }
+
+  {
+    const test = db
+      .select()
+      .from(Class)
+      .groupBy([Class.id])
+      .columns([Class["*"]])
+  }
 }

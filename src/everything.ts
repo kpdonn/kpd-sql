@@ -135,20 +135,19 @@ export class LeftJoin<RT extends string = never, OT extends string = never>
   }
 }
 
-export class PrivateTable<AN extends string, OT extends string = never>
-  extends FromTable<AN, OT>
-  implements SqlKind {
+export class PrivateTable<
+  AN extends string,
+  OT extends string,
+  C extends ValsAre<C, InputCol>
+> extends FromTable<AN, OT> implements SqlKind {
   readonly sqlKind = "table"
-
-  constructor(
-    readonly _table: string,
-    _columns: Record<string, InputCol>,
-    readonly _tableAs: AN
-  ) {
+  readonly _tableColumns: Record<string, TableColumn<AN, t.Any, string, boolean>>
+  constructor(readonly _table: string, _columns: C, readonly _tableAs: AN) {
     super()
+    this._tableColumns = {}
+
     for (const colName in _columns) {
-      const thisColumns = this as any
-      thisColumns[colName] = new TableColumn(
+      this._tableColumns[colName] = new TableColumn(
         _tableAs,
         _columns[colName].dbName || colName,
         _columns[colName].type,
@@ -156,6 +155,11 @@ export class PrivateTable<AN extends string, OT extends string = never>
         _columns[colName].unique
       )
     }
+    Object.assign(this, this._tableColumns)
+  }
+
+  get "*"(): AllCols<C, AN> {
+    return all(this as any)
   }
 }
 
@@ -166,7 +170,7 @@ export type Table<
   AsName extends string = string,
   OT extends string = never,
   StripUnique extends boolean = false
-> = PrivateTable<AsName, OT> & TableColumns<AsName, C, StripUnique>
+> = PrivateTable<AsName, OT, C> & TableColumns<AsName, C, StripUnique>
 
 export interface TableConstructor {
   new <C extends ValsAre<C, InputCol>, AsName extends string>(
@@ -666,12 +670,16 @@ export class SqlBuilder<
           : T[K] extends AllCols<{}, string>
             ? {
                 columns: {
-                  [K2 in keyof T[K]["columns"]]: K2 extends (
-                    | (ColumnNames<T[Exclude<keyof T, K>]>)
-                    | keyof Cols
-                    | Exclude<keyof T[K]["columns"], K2>)
-                    ? NoDuplicates<K2>
-                    : BaseColumn<TblNames>
+                  [K2 in keyof T[K]["columns"]]: CheckGroupBy<
+                    GBC,
+                    Extract<T[K]["columns"][K2], BaseColumn>
+                  > &
+                    (K2 extends (
+                      | (ColumnNames<T[Exclude<keyof T, K>]>)
+                      | keyof Cols
+                      | Exclude<keyof T[K]["columns"], K2>)
+                      ? NoDuplicates<K2>
+                      : BaseColumn<TblNames>)
                 }
               }
             : never

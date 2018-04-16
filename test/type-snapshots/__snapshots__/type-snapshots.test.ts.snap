@@ -120,6 +120,48 @@ Array [
   Types of property 'myTest' are incompatible.
     Type 'null' is not assignable to type 'number'.",
   },
+  Object {
+    "category": 1,
+    "character": 16,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 98,
+    "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"id\\", true, number>, AllCols<{ id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }, \\"student\\">]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any> | AllCols<any, string>> & { \\"0\\": NoDuplicates<\\"id\\">; \\"1\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly firstName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly lastName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly majorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }; }; } & { \\"0\\": any; }'.
+  Type '[TableColumn<\\"class\\", NumberType, \\"id\\", true, number>, AllCols<{ id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }, \\"student\\">]' is not assignable to type '{ \\"0\\": NoDuplicates<\\"id\\">; \\"1\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly firstName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly lastName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly majorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }; }; }'.
+    Types of property '\\"0\\"' are incompatible.
+      Type 'TableColumn<\\"class\\", NumberType, \\"id\\", true, number>' is not assignable to type 'NoDuplicates<\\"id\\">'.
+        Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'TableColumn<\\"class\\", NumberType, \\"id\\", true, number>'.",
+  },
+  Object {
+    "category": 1,
+    "character": 16,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 111,
+    "message": "Argument of type '[AllCols<{ id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }, \\"class\\">, AllCols<{ id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }, \\"student\\">]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any> | AllCols<any, string>> & { \\"0\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly courseId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly semesterId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly professorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }; }; \\"1\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly firstName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly lastName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly majorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }; }; } & { \\"0\\": any; }'.
+  Type '[AllCols<{ id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }, \\"class\\">, AllCols<{ id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }, \\"student\\">]' is not assignable to type '{ \\"0\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly courseId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly semesterId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly professorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }; }; \\"1\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly firstName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly lastName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly majorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }; }; }'.
+    Types of property '\\"0\\"' are incompatible.
+      Type 'AllCols<{ id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }, \\"class\\">' is not assignable to type '{ columns: { readonly id: NoDuplicates<\\"id\\">; readonly courseId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly semesterId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly professorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }; }'.
+        Types of property 'columns' are incompatible.
+          Type 'TableColumns<\\"class\\", { id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }, false>' is not assignable to type '{ readonly id: NoDuplicates<\\"id\\">; readonly courseId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly semesterId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly professorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }'.
+            Types of property 'id' are incompatible.
+              Type 'TableColumn<\\"class\\", NumberType, \\"id\\", true, number>' is not assignable to type 'NoDuplicates<\\"id\\">'.",
+  },
+  Object {
+    "category": 1,
+    "character": 16,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 120,
+    "message": "Argument of type '[AllCols<{ id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }, \\"class\\">]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any> | AllCols<any, string>> & { \\"0\\": { columns: { readonly id: never; readonly courseId: BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; readonly semesterId: never; readonly professorId: never; }; }; } & { \\"0\\": any; }'.
+  Type '[AllCols<{ id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }, \\"class\\">]' is not assignable to type '{ \\"0\\": { columns: { readonly id: never; readonly courseId: BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; readonly semesterId: never; readonly professorId: never; }; }; }'.
+    Types of property '\\"0\\"' are incompatible.
+      Type 'AllCols<{ id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }, \\"class\\">' is not assignable to type '{ columns: { readonly id: never; readonly courseId: BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; readonly semesterId: never; readonly professorId: never; }; }'.
+        Types of property 'columns' are incompatible.
+          Type 'TableColumns<\\"class\\", { id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }, false>' is not assignable to type '{ readonly id: never; readonly courseId: BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; readonly semesterId: never; readonly professorId: never; }'.
+            Types of property 'id' are incompatible.
+              Type 'TableColumn<\\"class\\", NumberType, \\"id\\", true, number>' is not assignable to type 'never'.",
+  },
 ]
 `;
 
