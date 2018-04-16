@@ -4,10 +4,10 @@ exports[`Verify output of typings test files matches expected Verify output of t
 Array [
   Object {
     "category": 1,
-    "character": 12,
+    "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 10,
+    "line": 11,
     "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any> | AllCols<any, string>> & { \\"0\\": never; } & { \\"0\\": any; }'.
   Type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to type '{ \\"0\\": never; }'.
     Types of property '\\"0\\"' are incompatible.
@@ -15,10 +15,10 @@ Array [
   },
   Object {
     "category": 1,
-    "character": 16,
+    "character": 18,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 23,
+    "line": 24,
     "message": "Argument of type '[TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>, TableColumn<\\"myWith\\", NumberType, \\"courseId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any> | AllCols<any, string>> & { \\"0\\": BaseColumn<\\"myWith\\", Type<any, any, any>, string, boolean, any>; \\"1\\": never; } & { \\"0\\": any; }'.
   Type '[TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>, TableColumn<\\"myWith\\", NumberType, \\"courseId\\", false, number>]' is not assignable to type '{ \\"0\\": BaseColumn<\\"myWith\\", Type<any, any, any>, string, boolean, any>; \\"1\\": never; }'.
     Types of property '\\"1\\"' are incompatible.
@@ -26,10 +26,10 @@ Array [
   },
   Object {
     "category": 1,
-    "character": 12,
+    "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 29,
+    "line": 30,
     "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, TableColumn<\\"semester\\", NumberType, \\"year\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any> | AllCols<any, string>> & { \\"0\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; \\"1\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; } & { \\"0\\": any; }'.
   Type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, TableColumn<\\"semester\\", NumberType, \\"year\\", false, number>]' is not assignable to type '{ \\"0\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; \\"1\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; }'.
     Types of property '\\"1\\"' are incompatible.
@@ -39,10 +39,10 @@ Array [
   },
   Object {
     "category": 1,
-    "character": 12,
+    "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 34,
+    "line": 35,
     "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<BaseColumn<string, Type<any, any, any>, string, boolean, any> | AllCols<any, string>> & { \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; } & { \\"0\\": any; }'.
   Type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to type '{ \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; }'.
     Types of property '\\"0\\"' are incompatible.
@@ -51,63 +51,71 @@ Array [
   },
   Object {
     "category": 1,
-    "character": 29,
+    "character": 31,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 40,
+    "line": 41,
     "message": "Argument of type '\\"wrong type\\"' is not assignable to parameter of type 'number | PlaceholderParam<string> | TableColumn<string, Type<any, any, any>, string, boolean, number> | Aggregate<string, Type<any, any, any>, string, number> | null'.",
   },
   Object {
     "category": 1,
-    "character": 15,
+    "character": 17,
     "code": 2554,
     "file": "expect-errors.ts",
-    "line": 42,
+    "line": 43,
     "message": "Expected 1 arguments, but got 0.",
-  },
-  Object {
-    "category": 1,
-    "character": 12,
-    "code": 2345,
-    "file": "expect-errors.ts",
-    "line": 54,
-    "message": "Argument of type '{ myTest: string; }' is not assignable to parameter of type 'Record<\\"myTest\\", number>'.
-  Types of property 'myTest' are incompatible.
-    Type 'string' is not assignable to type 'number'.",
-  },
-  Object {
-    "category": 1,
-    "character": 35,
-    "code": 2345,
-    "file": "expect-errors.ts",
-    "line": 62,
-    "message": "Argument of type 'string' is not assignable to parameter of type 'never'.",
-  },
-  Object {
-    "category": 1,
-    "character": 28,
-    "code": 2345,
-    "file": "expect-errors.ts",
-    "line": 69,
-    "message": "Argument of type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to parameter of type 'string | PlaceholderParam<string> | TableColumn<string, Type<any, any, any>, string, boolean, string> | Aggregate<string, Type<any, any, any>, string, string>'.
-  Type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to type 'Aggregate<string, Type<any, any, any>, string, string>'.
-    Property '_aggColumn' is missing in type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>'.",
   },
   Object {
     "category": 1,
     "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 79,
+    "line": 55,
+    "message": "Argument of type '{ myTest: string; }' is not assignable to parameter of type 'Record<\\"myTest\\", number>'.
+  Types of property 'myTest' are incompatible.
+    Type 'string' is not assignable to type 'number'.",
+  },
+  Object {
+    "category": 1,
+    "character": 3,
+    "code": 1184,
+    "file": "expect-errors.ts",
+    "line": 57,
+    "message": "Modifiers cannot appear here.",
+  },
+  Object {
+    "category": 1,
+    "character": 37,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 63,
+    "message": "Argument of type 'string' is not assignable to parameter of type 'never'.",
+  },
+  Object {
+    "category": 1,
+    "character": 30,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 70,
+    "message": "Argument of type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to parameter of type 'string | PlaceholderParam<string> | TableColumn<string, Type<any, any, any>, string, boolean, string> | Aggregate<string, Type<any, any, any>, string, string>'.
+  Type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to type 'Aggregate<string, Type<any, any, any>, string, string>'.
+    Property '_aggColumn' is missing in type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>'.",
+  },
+  Object {
+    "category": 1,
+    "character": 16,
+    "code": 2345,
+    "file": "expect-errors.ts",
+    "line": 80,
     "message": "Argument of type '{ wrongKey: number; }' is not assignable to parameter of type 'Record<\\"myTest\\", number>'.
   Object literal may only specify known properties, and 'wrongKey' does not exist in type 'Record<\\"myTest\\", number>'.",
   },
   Object {
     "category": 1,
-    "character": 12,
+    "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 86,
+    "line": 87,
     "message": "Argument of type '{ myTest: null; }' is not assignable to parameter of type 'Record<\\"myTest\\", number>'.
   Types of property 'myTest' are incompatible.
     Type 'null' is not assignable to type 'number'.",

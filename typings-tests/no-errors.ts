@@ -1,19 +1,23 @@
-import { SqlBuilder, count } from "../src/everything"
+import { SqlBuilder, count, all } from "../src/everything"
 import { Class, Student, Course } from "./tables"
 
 declare const db: SqlBuilder<{}, {}, never, never, {}, never>
 
-const query = db
-  .select()
-  .from(Class)
-  .groupBy([Class.id, Class.courseId])
-  .columns([Class.semesterId])
+async function tests() {
+  const query = db
+    .select()
+    .from(Class)
+    .groupBy([Class.id, Class.courseId])
+    .columns([Class.semesterId])
 
-const test9 = db
-  .select()
-  .from(
-    Student.leftJoin(
-      Class.join(Course, Course.id.eq(Class.courseId)),
-      Student.majorId.eq(Course.subjectId)
-    )
-  )
+  {
+    const test9 = db
+      .select()
+      .from(
+        Student.leftJoin(
+          Class.join(Course, Course.id.eq(Class.courseId)),
+          Student.majorId.eq(Course.subjectId)
+        )
+      )
+  }
+}
