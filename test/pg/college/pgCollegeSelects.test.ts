@@ -1,9 +1,9 @@
 import * as fs from "fs"
 import * as path from "path"
 import { Pool } from "pg"
-import { init, count } from "../../../src/everything"
+import { count, init, sum } from "../../../src/everything"
 import { PgPlugin } from "../../../src/postgres"
-import { Class, Student } from "./tables"
+import { Class, Course, Student, StudentClass } from "./tables"
 
 const connectionString = "postgresql://localhost:5432/collegesqltest"
 
@@ -31,6 +31,22 @@ describe("college select tests", () => {
       .select()
       .from(Student)
       .columns([count()])
+
+    expect(query.toSql()).toMatchSnapshot()
+    const results = await query.execute()
+    expect(results).toMatchSnapshot()
+  })
+
+  it("Students credit hours by semester", async () => {
+    const query = db
+      .select()
+      .from(
+        Student.join(StudentClass, Student.id.eq(StudentClass.studentId))
+          .join(Class, Class.id.eq(StudentClass.classId))
+          .join(Course, Course.id.eq(Class.courseId))
+      )
+      .groupBy([Student.id, Class.semesterId])
+      .columns([Student["*"], Class.semesterId, sum(Course.creditHours)])
 
     expect(query.toSql()).toMatchSnapshot()
     const results = await query.execute()

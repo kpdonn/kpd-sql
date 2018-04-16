@@ -30,6 +30,7 @@
     "{src,test,typings-tests}/**/*.{ts,tsx}": [
       "git diff-files --quiet --exit-code",
       "prettier --write",
+      "tslint",
       "git add"
     ],
     "**/*.{json,css,js}": [

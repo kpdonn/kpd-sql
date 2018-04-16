@@ -643,8 +643,8 @@ export class SqlBuilder<
     return this._withTables
   }
 
-  get() {
-    return this._withTables
+  get selGroupBy() {
+    return this.state.selGroupBy
   }
 
   execute: ExecuteFunc<Cols, P, RT, OT> = (((arg?: P) => {
@@ -886,12 +886,24 @@ export interface AllCols<C extends ValsAre<C, InputCol>, TN extends string> {
   columns: TableColumns<TN, C, false>
 }
 
-export declare function all<C extends ValsAre<C, InputCol>, TN extends string>(
+export function all<C extends ValsAre<C, InputCol>, TN extends string>(
+  // tslint:disable-next-line:no-shadowed-variable
   table: Table<C, TN>
-): AllCols<C, TN>
+): AllCols<C, TN> {
+  return {
+    _tableName: table._tableAs,
+    columns: table._tableColumns as any,
+  }
+}
 
 export type ColumnNames<
   T extends BaseColumn | AllCols<any, string>
 > = T extends BaseColumn
   ? SafeInd<T, "_columnAs">
   : T extends AllCols<any, string> ? keyof SafeInd<T, "columns"> : never
+
+export function sum<TN extends string = string, CAS extends string = string>(
+  col: Column<TN, t.NumberType, CAS>
+): Aggregate<TN, t.NumberType, "sum"> {
+  return new Aggregate(t.number, "sum", "sum", col)
+}

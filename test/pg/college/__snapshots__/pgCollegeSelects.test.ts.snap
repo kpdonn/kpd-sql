@@ -1,5 +1,327 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`college select tests Students credit hours by semester 1`] = `
+"SELECT
+\\"student\\".\\"id\\" as \\"id\\",
+\\"student\\".\\"first_name\\" as \\"firstName\\",
+\\"student\\".\\"last_name\\" as \\"lastName\\",
+\\"student\\".\\"major_id\\" as \\"majorId\\",
+\\"class\\".\\"semester_id\\" as \\"semesterId\\",
+sum(\\"course\\".\\"credit_hours\\") as \\"sum\\"
+FROM
+( ( ( \\"student\\" JOIN \\"student_class\\" ON \\"student\\".\\"id\\" = \\"student_class\\".\\"student_id\\" ) JOIN \\"class\\" ON \\"class\\".\\"id\\" = \\"student_class\\".\\"class_id\\" ) JOIN \\"course\\" ON \\"course\\".\\"id\\" = \\"class\\".\\"course_id\\" )
+GROUP BY \\"student\\".\\"id\\", \\"class\\".\\"semester_id\\""
+`;
+
+exports[`college select tests Students credit hours by semester 2`] = `
+Array [
+  anonymous {
+    "firstName": "Davonte",
+    "id": 1,
+    "lastName": "Leannon",
+    "majorId": null,
+    "semesterId": 1,
+    "sum": "7",
+  },
+  anonymous {
+    "firstName": "Lester",
+    "id": 13,
+    "lastName": "Wuckert",
+    "majorId": 2,
+    "semesterId": 2,
+    "sum": "11",
+  },
+  anonymous {
+    "firstName": "Raven",
+    "id": 11,
+    "lastName": "Lebsack",
+    "majorId": 2,
+    "semesterId": 1,
+    "sum": "3",
+  },
+  anonymous {
+    "firstName": "Arno",
+    "id": 18,
+    "lastName": "Bradtke",
+    "majorId": 3,
+    "semesterId": 2,
+    "sum": "22",
+  },
+  anonymous {
+    "firstName": "Murl",
+    "id": 3,
+    "lastName": "Kuphal",
+    "majorId": null,
+    "semesterId": 2,
+    "sum": "18",
+  },
+  anonymous {
+    "firstName": "Grady",
+    "id": 6,
+    "lastName": "Rau",
+    "majorId": 1,
+    "semesterId": 1,
+    "sum": "8",
+  },
+  anonymous {
+    "firstName": "Murl",
+    "id": 3,
+    "lastName": "Kuphal",
+    "majorId": null,
+    "semesterId": 1,
+    "sum": "5",
+  },
+  anonymous {
+    "firstName": "Norris",
+    "id": 8,
+    "lastName": "Johnson",
+    "majorId": 1,
+    "semesterId": 1,
+    "sum": "9",
+  },
+  anonymous {
+    "firstName": "Herminio",
+    "id": 12,
+    "lastName": "Morissette",
+    "majorId": 2,
+    "semesterId": 1,
+    "sum": "6",
+  },
+  anonymous {
+    "firstName": "Imani",
+    "id": 14,
+    "lastName": "Kuhlman",
+    "majorId": 2,
+    "semesterId": 2,
+    "sum": "20",
+  },
+  anonymous {
+    "firstName": "Cristobal",
+    "id": 7,
+    "lastName": "Wyman",
+    "majorId": 1,
+    "semesterId": 1,
+    "sum": "9",
+  },
+  anonymous {
+    "firstName": "Timothy",
+    "id": 5,
+    "lastName": "Metz",
+    "majorId": null,
+    "semesterId": 1,
+    "sum": "15",
+  },
+  anonymous {
+    "firstName": "Timothy",
+    "id": 5,
+    "lastName": "Metz",
+    "majorId": null,
+    "semesterId": 2,
+    "sum": "8",
+  },
+  anonymous {
+    "firstName": "Lester",
+    "id": 13,
+    "lastName": "Wuckert",
+    "majorId": 2,
+    "semesterId": 1,
+    "sum": "9",
+  },
+  anonymous {
+    "firstName": "Cristobal",
+    "id": 7,
+    "lastName": "Wyman",
+    "majorId": 1,
+    "semesterId": 2,
+    "sum": "27",
+  },
+  anonymous {
+    "firstName": "Norris",
+    "id": 8,
+    "lastName": "Johnson",
+    "majorId": 1,
+    "semesterId": 2,
+    "sum": "20",
+  },
+  anonymous {
+    "firstName": "Georgette",
+    "id": 17,
+    "lastName": "Fisher",
+    "majorId": 3,
+    "semesterId": 2,
+    "sum": "10",
+  },
+  anonymous {
+    "firstName": "Charlie",
+    "id": 16,
+    "lastName": "Bashirian",
+    "majorId": 3,
+    "semesterId": 2,
+    "sum": "21",
+  },
+  anonymous {
+    "firstName": "Grady",
+    "id": 6,
+    "lastName": "Rau",
+    "majorId": 1,
+    "semesterId": 2,
+    "sum": "14",
+  },
+  anonymous {
+    "firstName": "Hosea",
+    "id": 19,
+    "lastName": "Ziemann",
+    "majorId": 3,
+    "semesterId": 2,
+    "sum": "25",
+  },
+  anonymous {
+    "firstName": "Alexandria",
+    "id": 4,
+    "lastName": "Reinger",
+    "majorId": null,
+    "semesterId": 2,
+    "sum": "5",
+  },
+  anonymous {
+    "firstName": "Hosea",
+    "id": 19,
+    "lastName": "Ziemann",
+    "majorId": 3,
+    "semesterId": 1,
+    "sum": "4",
+  },
+  anonymous {
+    "firstName": "Queenie",
+    "id": 9,
+    "lastName": "Baumbach",
+    "majorId": 1,
+    "semesterId": 1,
+    "sum": "16",
+  },
+  anonymous {
+    "firstName": "Davonte",
+    "id": 1,
+    "lastName": "Leannon",
+    "majorId": null,
+    "semesterId": 2,
+    "sum": "4",
+  },
+  anonymous {
+    "firstName": "Georgette",
+    "id": 17,
+    "lastName": "Fisher",
+    "majorId": 3,
+    "semesterId": 1,
+    "sum": "15",
+  },
+  anonymous {
+    "firstName": "Trisha",
+    "id": 2,
+    "lastName": "Kertzmann",
+    "majorId": null,
+    "semesterId": 2,
+    "sum": "7",
+  },
+  anonymous {
+    "firstName": "Trisha",
+    "id": 2,
+    "lastName": "Kertzmann",
+    "majorId": null,
+    "semesterId": 1,
+    "sum": "13",
+  },
+  anonymous {
+    "firstName": "Alexandria",
+    "id": 4,
+    "lastName": "Reinger",
+    "majorId": null,
+    "semesterId": 1,
+    "sum": "11",
+  },
+  anonymous {
+    "firstName": "Arno",
+    "id": 18,
+    "lastName": "Bradtke",
+    "majorId": 3,
+    "semesterId": 1,
+    "sum": "6",
+  },
+  anonymous {
+    "firstName": "Kariane",
+    "id": 10,
+    "lastName": "Gleichner",
+    "majorId": 1,
+    "semesterId": 2,
+    "sum": "15",
+  },
+  anonymous {
+    "firstName": "Herminio",
+    "id": 12,
+    "lastName": "Morissette",
+    "majorId": 2,
+    "semesterId": 2,
+    "sum": "14",
+  },
+  anonymous {
+    "firstName": "Queenie",
+    "id": 9,
+    "lastName": "Baumbach",
+    "majorId": 1,
+    "semesterId": 2,
+    "sum": "5",
+  },
+  anonymous {
+    "firstName": "Raven",
+    "id": 11,
+    "lastName": "Lebsack",
+    "majorId": 2,
+    "semesterId": 2,
+    "sum": "1",
+  },
+  anonymous {
+    "firstName": "Tianna",
+    "id": 15,
+    "lastName": "Walter",
+    "majorId": 2,
+    "semesterId": 1,
+    "sum": "10",
+  },
+  anonymous {
+    "firstName": "Tianna",
+    "id": 15,
+    "lastName": "Walter",
+    "majorId": 2,
+    "semesterId": 2,
+    "sum": "15",
+  },
+  anonymous {
+    "firstName": "Charlie",
+    "id": 16,
+    "lastName": "Bashirian",
+    "majorId": 3,
+    "semesterId": 1,
+    "sum": "2",
+  },
+  anonymous {
+    "firstName": "Winona",
+    "id": 20,
+    "lastName": "Raynor",
+    "majorId": 3,
+    "semesterId": 1,
+    "sum": "38",
+  },
+  anonymous {
+    "firstName": "Imani",
+    "id": 14,
+    "lastName": "Kuhlman",
+    "majorId": 2,
+    "semesterId": 1,
+    "sum": "6",
+  },
+]
+`;
+
 exports[`college select tests number students 1`] = `
 "SELECT
 count(*) as \\"count\\"
@@ -19,76 +341,17 @@ exports[`college select tests trivial group by test 1`] = `
 "SELECT
 \\"class\\".\\"semester_id\\" as \\"semesterId\\"
 FROM
-\\"class\\""
+\\"class\\"
+GROUP BY \\"class\\".\\"id\\", \\"class\\".\\"course_id\\""
 `;
 
 exports[`college select tests trivial group by test 2`] = `
 Array [
   anonymous {
-    "semesterId": 1,
-  },
-  anonymous {
-    "semesterId": 2,
-  },
-  anonymous {
     "semesterId": 2,
   },
   anonymous {
     "semesterId": 1,
-  },
-  anonymous {
-    "semesterId": 2,
-  },
-  anonymous {
-    "semesterId": 1,
-  },
-  anonymous {
-    "semesterId": 2,
-  },
-  anonymous {
-    "semesterId": 2,
-  },
-  anonymous {
-    "semesterId": 1,
-  },
-  anonymous {
-    "semesterId": 1,
-  },
-  anonymous {
-    "semesterId": 2,
-  },
-  anonymous {
-    "semesterId": 2,
-  },
-  anonymous {
-    "semesterId": 1,
-  },
-  anonymous {
-    "semesterId": 2,
-  },
-  anonymous {
-    "semesterId": 2,
-  },
-  anonymous {
-    "semesterId": 1,
-  },
-  anonymous {
-    "semesterId": 1,
-  },
-  anonymous {
-    "semesterId": 2,
-  },
-  anonymous {
-    "semesterId": 2,
-  },
-  anonymous {
-    "semesterId": 1,
-  },
-  anonymous {
-    "semesterId": 1,
-  },
-  anonymous {
-    "semesterId": 2,
   },
   anonymous {
     "semesterId": 1,
@@ -118,6 +381,18 @@ Array [
     "semesterId": 1,
   },
   anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
     "semesterId": 2,
   },
   anonymous {
@@ -131,6 +406,54 @@ Array [
   },
   anonymous {
     "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 2,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 1,
+  },
+  anonymous {
+    "semesterId": 1,
   },
 ]
 `;
