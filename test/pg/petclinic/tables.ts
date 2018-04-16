@@ -1,5 +1,5 @@
-import { table, column } from "../../../src/everything"
 import * as t from "io-ts"
+import { column, table } from "../../../src/everything"
 
 export const Vet = table({
   name: "vet",

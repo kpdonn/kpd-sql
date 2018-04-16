@@ -1,9 +1,9 @@
-import { Pool } from "pg"
-import { init, param } from "../../../src/everything"
-import { PgPlugin } from "../../../src/postgres"
-import { Class } from "./tables"
 import * as fs from "fs"
 import * as path from "path"
+import { Pool } from "pg"
+import { init } from "../../../src/everything"
+import { PgPlugin } from "../../../src/postgres"
+import { Class } from "./tables"
 
 const connectionString = "postgresql://localhost:5432/collegesqltest"
 

@@ -1,10 +1,9 @@
+import * as fs from "fs"
+import * as path from "path"
 import { Pool } from "pg"
 import { init, param } from "../../../src/everything"
 import { PgPlugin } from "../../../src/postgres"
-
-import * as fs from "fs"
-import * as path from "path"
-import { Visit, Pet, Vet, Owner, Type, VetSpecialty, Specialty } from "./tables"
+import { Owner, Pet, Specialty, Type, Vet, VetSpecialty, Visit } from "./tables"
 
 const connectionString = "postgresql://localhost:5432/sqltest"
 

@@ -1,5 +1,5 @@
-import { SqlBuilder, count, all } from "../src/everything"
-import { Class, Student, Course } from "./tables"
+import { all, count, SqlBuilder } from "../src/everything"
+import { Class, Course, Student } from "./tables"
 
 declare const db: SqlBuilder<{}, {}, never, never, {}, never>
 
@@ -22,12 +22,12 @@ async function tests() {
   }
 
   {
-    const test: ({
+    const test: Array<{
       id: number
       firstName: string
       lastName: string
       majorId: number | null
-    })[] = await db
+    }> = await db
       .select()
       .from(
         Student.leftJoin(

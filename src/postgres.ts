@@ -1,5 +1,5 @@
-import { SqlPart, LookupParamNum, SqlPlugin } from "./everything"
 import { Pool } from "pg"
+import { LookupParamNum, SqlPart, SqlPlugin } from "./everything"
 
 export class PgPlugin implements SqlPlugin {
   static init(pool: Pool): PgPlugin {
@@ -116,9 +116,7 @@ export class PgPlugin implements SqlPlugin {
   }
 }
 
-interface PrintFunc {
-  (
-    this: { pr: PrintFunc; lpn: LookupParamNum; paramVals: any[]; paramArgs: any },
-    it: SqlPart
-  ): string
-}
+type PrintFunc = (
+  this: { pr: PrintFunc; lpn: LookupParamNum; paramVals: any[]; paramArgs: any },
+  it: SqlPart
+) => string

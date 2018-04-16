@@ -7,7 +7,7 @@ Array [
     "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 11,
+    "line": 12,
     "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, Type<any, any, any>, string, boolean, any> | Aggregate<string, Type<any, any, any>, string, any> | CountAggregate<string, string> | AllCols<any, string>> & { \\"0\\": never; } & { \\"0\\": any; }'.
   Type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to type '{ \\"0\\": never; }'.
     Types of property '\\"0\\"' are incompatible.
@@ -18,7 +18,7 @@ Array [
     "character": 18,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 24,
+    "line": 25,
     "message": "Argument of type '[TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>, TableColumn<\\"myWith\\", NumberType, \\"courseId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, Type<any, any, any>, string, boolean, any> | Aggregate<string, Type<any, any, any>, string, any> | CountAggregate<string, string> | AllCols<any, string>> & { \\"0\\": BaseColumn<\\"myWith\\", Type<any, any, any>, string, boolean, any>; \\"1\\": never; } & { \\"0\\": any; }'.
   Type '[TableColumn<\\"myWith\\", NumberType, \\"id\\", false, number>, TableColumn<\\"myWith\\", NumberType, \\"courseId\\", false, number>]' is not assignable to type '{ \\"0\\": BaseColumn<\\"myWith\\", Type<any, any, any>, string, boolean, any>; \\"1\\": never; }'.
     Types of property '\\"1\\"' are incompatible.
@@ -29,7 +29,7 @@ Array [
     "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 30,
+    "line": 31,
     "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, TableColumn<\\"semester\\", NumberType, \\"year\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, Type<any, any, any>, string, boolean, any> | Aggregate<string, Type<any, any, any>, string, any> | CountAggregate<string, string> | AllCols<any, string>> & { \\"0\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; \\"1\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; } & { \\"0\\": any; }'.
   Type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, TableColumn<\\"semester\\", NumberType, \\"year\\", false, number>]' is not assignable to type '{ \\"0\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; \\"1\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; }'.
     Types of property '\\"1\\"' are incompatible.
@@ -42,7 +42,7 @@ Array [
     "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 35,
+    "line": 36,
     "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, Type<any, any, any>, string, boolean, any> | Aggregate<string, Type<any, any, any>, string, any> | CountAggregate<string, string> | AllCols<any, string>> & { \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; } & { \\"0\\": any; }'.
   Type '[TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>, TableColumn<\\"class\\", NumberType, \\"semesterId\\", false, number>]' is not assignable to type '{ \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; }'.
     Types of property '\\"0\\"' are incompatible.
@@ -54,7 +54,7 @@ Array [
     "character": 31,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 41,
+    "line": 42,
     "message": "Argument of type '\\"wrong type\\"' is not assignable to parameter of type 'number | CountAggregate<string, string> | PlaceholderParam<string> | TableColumn<string, Type<any, any, any>, string, boolean, number> | Aggregate<string, Type<any, any, any>, string, number> | null'.",
   },
   Object {
@@ -62,7 +62,7 @@ Array [
     "character": 17,
     "code": 2554,
     "file": "expect-errors.ts",
-    "line": 43,
+    "line": 44,
     "message": "Expected 1 arguments, but got 0.",
   },
   Object {
@@ -70,7 +70,7 @@ Array [
     "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 55,
+    "line": 56,
     "message": "Argument of type '{ myTest: string; }' is not assignable to parameter of type 'Record<\\"myTest\\", number>'.
   Types of property 'myTest' are incompatible.
     Type 'string' is not assignable to type 'number'.",
@@ -80,7 +80,7 @@ Array [
     "character": 3,
     "code": 1184,
     "file": "expect-errors.ts",
-    "line": 57,
+    "line": 58,
     "message": "Modifiers cannot appear here.",
   },
   Object {
@@ -88,7 +88,7 @@ Array [
     "character": 37,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 63,
+    "line": 64,
     "message": "Argument of type 'string' is not assignable to parameter of type 'never'.",
   },
   Object {
@@ -96,7 +96,7 @@ Array [
     "character": 30,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 70,
+    "line": 71,
     "message": "Argument of type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to parameter of type 'string | CountAggregate<string, string> | PlaceholderParam<string> | TableColumn<string, Type<any, any, any>, string, boolean, string> | Aggregate<string, Type<any, any, any>, string, string>'.
   Type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>' is not assignable to type 'Aggregate<string, Type<any, any, any>, string, string>'.
     Property 'funcName' is missing in type 'TableColumn<\\"course\\", NumberType, \\"subjectId\\", false, number>'.",
@@ -106,7 +106,7 @@ Array [
     "character": 16,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 80,
+    "line": 81,
     "message": "Argument of type '{ wrongKey: number; }' is not assignable to parameter of type 'Record<\\"myTest\\", number>'.
   Object literal may only specify known properties, and 'wrongKey' does not exist in type 'Record<\\"myTest\\", number>'.",
   },
@@ -115,7 +115,7 @@ Array [
     "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 87,
+    "line": 88,
     "message": "Argument of type '{ myTest: null; }' is not assignable to parameter of type 'Record<\\"myTest\\", number>'.
   Types of property 'myTest' are incompatible.
     Type 'null' is not assignable to type 'number'.",
@@ -125,7 +125,7 @@ Array [
     "character": 16,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 98,
+    "line": 99,
     "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"id\\", true, number>, AllCols<{ id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }, \\"student\\">]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, Type<any, any, any>, string, boolean, any> | Aggregate<string, Type<any, any, any>, string, any> | CountAggregate<string, string> | AllCols<any, string>> & { \\"0\\": NoDuplicates<\\"id\\">; \\"1\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly firstName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly lastName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly majorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }; }; } & { \\"0\\": any; }'.
   Type '[TableColumn<\\"class\\", NumberType, \\"id\\", true, number>, AllCols<{ id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }, \\"student\\">]' is not assignable to type '{ \\"0\\": NoDuplicates<\\"id\\">; \\"1\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly firstName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly lastName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly majorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }; }; }'.
     Types of property '\\"0\\"' are incompatible.
@@ -137,7 +137,7 @@ Array [
     "character": 16,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 111,
+    "line": 112,
     "message": "Argument of type '[AllCols<{ id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }, \\"class\\">, AllCols<{ id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }, \\"student\\">]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, Type<any, any, any>, string, boolean, any> | Aggregate<string, Type<any, any, any>, string, any> | CountAggregate<string, string> | AllCols<any, string>> & { \\"0\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly courseId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly semesterId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly professorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }; }; \\"1\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly firstName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly lastName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly majorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }; }; } & { \\"0\\": any; }'.
   Type '[AllCols<{ id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }, \\"class\\">, AllCols<{ id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }, \\"student\\">]' is not assignable to type '{ \\"0\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly courseId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly semesterId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly professorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }; }; \\"1\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly firstName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly lastName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; readonly majorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", Type<any, any, any>, string, boolean, any>; }; }; }'.
     Types of property '\\"0\\"' are incompatible.
@@ -152,7 +152,7 @@ Array [
     "character": 16,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 120,
+    "line": 121,
     "message": "Argument of type '[AllCols<{ id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }, \\"class\\">]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, Type<any, any, any>, string, boolean, any> | Aggregate<string, Type<any, any, any>, string, any> | CountAggregate<string, string> | AllCols<any, string>> & { \\"0\\": { columns: { readonly id: never; readonly courseId: BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; readonly semesterId: never; readonly professorId: never; }; }; } & { \\"0\\": any; }'.
   Type '[AllCols<{ id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }, \\"class\\">]' is not assignable to type '{ \\"0\\": { columns: { readonly id: never; readonly courseId: BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; readonly semesterId: never; readonly professorId: never; }; }; }'.
     Types of property '\\"0\\"' are incompatible.
@@ -167,7 +167,7 @@ Array [
     "character": 16,
     "code": 2345,
     "file": "expect-errors.ts",
-    "line": 127,
+    "line": 128,
     "message": "Argument of type '[TableColumn<\\"class\\", NumberType, \\"id\\", true, number>, CountAggregate<never, \\"count\\">]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, Type<any, any, any>, string, boolean, any> | Aggregate<string, Type<any, any, any>, string, any> | CountAggregate<string, string> | AllCols<any, string>> & { \\"0\\": never; \\"1\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; } & { \\"0\\": any; }'.
   Type '[TableColumn<\\"class\\", NumberType, \\"id\\", true, number>, CountAggregate<never, \\"count\\">]' is not assignable to type '{ \\"0\\": never; \\"1\\": BaseColumn<\\"class\\", Type<any, any, any>, string, boolean, any>; }'.
     Types of property '\\"0\\"' are incompatible.

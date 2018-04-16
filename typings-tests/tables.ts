@@ -1,5 +1,5 @@
-import { table, column, Aggregate } from "../src/everything"
 import * as t from "io-ts"
+import { column, table } from "../src/everything"
 
 export const Subject = table({
   name: "subject",

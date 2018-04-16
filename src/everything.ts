@@ -6,7 +6,7 @@ export type SqlParam<N extends string, T> = string extends N ? {} : Record<N, T>
 
 export type ColType<T extends Column> = t.TypeOf<T["type"]>
 
-export type InputCol<T extends t.Any = t.Any, U extends boolean = boolean> = {
+export interface InputCol<T extends t.Any = t.Any, U extends boolean = boolean> {
   type: T
   dbName?: string
   unique: U
@@ -93,6 +93,7 @@ export abstract class FromTable<
     _NewTblNames extends string = Literal<_RT> | Literal<_OT>,
     _NTN2 extends _NewTblNames = _NewTblNames
   >(
+    // tslint:disable-next-line:no-shadowed-variable
     table: FromType<_RT, _OT> & NoDups<_NewTblNames, TblNames>,
     cond: Condition<TblNames2 | _NTN2>
   ): FromType<RT | Literal<_RT>, OT | Literal<_OT>> {
@@ -105,6 +106,7 @@ export abstract class FromTable<
     _NewTblNames extends string = Literal<_RT> | Literal<_OT>,
     _NTN2 extends _NewTblNames = _NewTblNames
   >(
+    // tslint:disable-next-line:no-shadowed-variable
     table: FromType<_RT, _OT> & NoDups<_NewTblNames, TblNames>,
     cond: Condition<TblNames2 | _NTN2>
   ): FromType<RT | Literal<_RT>, OT | Literal<_OT>> {
@@ -149,7 +151,7 @@ export class PrivateTable<
     super()
     this._tableColumns = {}
 
-    for (const colName in _columns) {
+    Object.keys(_columns).forEach((colName: keyof C) => {
       this._tableColumns[colName] = new TableColumn(
         _columns[colName].dbName || colName,
         _columns[colName].type,
@@ -157,7 +159,7 @@ export class PrivateTable<
         _columns[colName].unique,
         _tableAs
       )
-    }
+    })
     Object.assign(this, this._tableColumns)
   }
 
@@ -223,7 +225,7 @@ export abstract class BaseColumn<
   }
 
   in<C extends ValsAre<C, Column<string, TY>>, P, SPN extends string>(
-    rightArg: SelectStatement<C, P> | t.TypeOf<TY>[] | PlaceholderParam<SPN>
+    rightArg: SelectStatement<C, P> | Array<t.TypeOf<TY>> | PlaceholderParam<SPN>
   ): Condition<TN, P & SqlParam<SPN, NonNullable<t.TypeOf<TY>>>> {
     return InCondition.create(this as any, rightArg, this._isNot) as any
   }
@@ -422,6 +424,7 @@ export class IsNullCondition<CT extends string = string, P = {}> extends BaseCon
     return BaseCondition.wrapNot(new IsNullCondition(c), isNot)
   }
 
+  // tslint:disable-next-line:no-shadowed-variable
   private constructor(readonly column: Column) {
     super()
   }
@@ -437,6 +440,7 @@ export class IsNotNullCondition<CT extends string = string, P = {}> extends Base
     return BaseCondition.wrapNot(new IsNotNullCondition(c), isNot)
   }
 
+  // tslint:disable-next-line:no-shadowed-variable
   private constructor(readonly column: Column) {
     super()
   }
@@ -460,11 +464,7 @@ export class EqCondition<CT extends string = string, P = {}> extends BaseConditi
   private constructor(readonly left: Column, rightArg: Column | {} | PlaceholderParam) {
     super()
 
-    if (isSqlPart(rightArg)) {
-      this.right = rightArg
-    } else {
-      this.right = new Hardcoded(rightArg)
-    }
+    this.right = isSqlPart(rightArg) ? rightArg : new Hardcoded(rightArg)
   }
 }
 
@@ -489,11 +489,7 @@ export class InCondition<CT extends string = string, P = {}> extends BaseConditi
   ) {
     super()
 
-    if (isSqlPart(rightArg)) {
-      this.right = rightArg
-    } else {
-      this.right = new Hardcoded(rightArg)
-    }
+    this.right = isSqlPart(rightArg) ? rightArg : new Hardcoded(rightArg)
   }
 }
 
@@ -509,7 +505,9 @@ export type SafeInd<T, K extends keyof Base, Base = T> = Extract<T, Base> extend
   ? never
   : Extract<T, Base>[K]
 
-export type NoDuplicates<T extends string> = { "NO DUPLICATE KEYS ALLOWED": T }
+export interface NoDuplicates<T extends string> {
+  "NO DUPLICATE KEYS ALLOWED": T
+}
 export type ColumnsObj<T> = {
   [K in TupleKeys<T>]: Extract<T[K], BaseColumn | AllCols<any, string>>
 }
@@ -547,7 +545,7 @@ export type SelectColumns<
   [K in SafeInd<Cols, "_columnAs">]: Cols extends { ["_columnAs"]: K } ? Cols : never
 }
 
-export type NoDupTable<T extends Table, TableNames extends string> = {
+export interface NoDupTable<T extends Table, TableNames extends string> {
   ["_table"]: T["_tableAs"] extends TableNames ? never : string
 }
 
@@ -567,7 +565,7 @@ export interface DeepReadonlyArray<T> extends ReadonlyArray<DeepReadonly<T>> {}
 
 export type DeepReadonlyObject<T> = { readonly [P in keyof T]: DeepReadonly<T[P]> }
 
-export type BuilderState = {
+export interface BuilderState {
   readonly selFrom?: FromType
   readonly selColumns: ReadonlyArray<ColumnDeclaration>
   readonly selWhere?: Condition
@@ -807,6 +805,7 @@ export class SqlBuilder<
     )
   }
 
+  // tslint:disable-next-line:no-shadowed-variable
   private lookupParamNum = (param: Parameterized): number => {
     if (!this.paramMap.has(param)) {
       this.paramMap.set(param, this.paramNumber++)
@@ -816,9 +815,7 @@ export class SqlBuilder<
   }
 }
 
-export interface LookupParamNum {
-  (param: Parameterized): number
-}
+export type LookupParamNum = (param: Parameterized) => number
 
 export interface SqlPlugin {
   printSql(part: SqlPart, lpn: LookupParamNum): string
@@ -835,7 +832,7 @@ export class WithClause<A extends string = string> implements SqlKind {
   constructor(readonly alias: A, readonly withQuery: SelectStatement) {}
 }
 
-export interface SubQuery<
+export type SubQuery<
   T,
   _Cols extends Record<string, Column>,
   _P,
@@ -843,9 +840,7 @@ export interface SubQuery<
   _OT extends string,
   _WT extends ValsAre<_WT, Table>,
   _GBC extends Column
-> {
-  (arg: T): SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
-}
+> = (arg: T) => SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
 
 export type IsAggregated<GBC extends BaseColumn, T> = [GBC] extends [never]
   ? [Extract<T[keyof T], Aggregate | CountAggregate>] extends [never] ? false : true
@@ -873,7 +868,7 @@ export function count(): CountAggregate<never, "count"> {
   return {} as any
 }
 
-export type AllCols<C extends ValsAre<C, InputCol>, TN extends string> = {
+export interface AllCols<C extends ValsAre<C, InputCol>, TN extends string> {
   _tableName: TN
   columns: TableColumns<TN, C, false>
 }

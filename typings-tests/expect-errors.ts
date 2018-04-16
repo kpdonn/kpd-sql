@@ -1,5 +1,6 @@
-import { SqlBuilder, param, Aggregate, count } from "../src/everything"
-import { Class, Semester, Student, Professor, Course } from "./tables"
+import { Aggregate, count, param, SqlBuilder } from "../src/everything"
+import { Class, Course, Professor, Semester, Student } from "./tables"
+/* tslint:disable:no-shadowed-variable */
 
 declare const db: SqlBuilder<{}, {}, never, never, {}, never>
 
