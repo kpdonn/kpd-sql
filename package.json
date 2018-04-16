@@ -24,13 +24,12 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:prod": "yarn run lint && yarn run test -- --coverage --no-cache",
-    "precommit": "lint-staged"
+    "precommit": "yarn tslint --project . && lint-staged && tsc"
   },
   "lint-staged": {
     "{src,test,typings-tests}/**/*.{ts,tsx}": [
       "git diff-files --quiet --exit-code",
       "prettier --write",
-      "tslint",
       "git add"
     ],
     "**/*.{json,css,js}": [
