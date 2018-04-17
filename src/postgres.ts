@@ -1,5 +1,5 @@
 import { Pool } from "pg"
-import { LookupParamNum, SqlPart, SqlPlugin } from "./everything"
+import { isSqlPart, LookupParamNum, SqlPart, SqlPlugin } from "./everything"
 
 export class PgPlugin implements SqlPlugin {
   static init(pool: Pool): PgPlugin {
@@ -96,7 +96,9 @@ export class PgPlugin implements SqlPlugin {
       case "withClause":
         return `"${it.alias}" AS (${this.pr(it.withQuery)})`
       case "aggregate":
-        return `${it.funcName}(${this.pr(it._aggColumn)})`
+        return isSqlPart(it._aggColumn)
+          ? `${it.funcName}(${this.pr(it._aggColumn)})`
+          : `${it.funcName}(${it._aggColumn.map(x => this.pr(x)).join(", ")})`
       case "countAggregate":
         return it._aggColumn ? `count(${this.pr(it._aggColumn)})` : `count(*)`
       case "selectStatement":

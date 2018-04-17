@@ -67,7 +67,7 @@ export interface SqlKind {
   readonly sqlKind: Literal<SqlPart["sqlKind"]>
 }
 
-function isSqlPart(obj: any): obj is SqlPart {
+export function isSqlPart(obj: any): obj is SqlPart {
   return typeof obj.sqlKind === "string"
 }
 
@@ -253,7 +253,7 @@ export class Aggregate<
     type: TY,
     _columnAs: CAS,
     readonly funcName: string,
-    readonly _aggColumn: Column<TN>,
+    readonly _aggColumn: Column<TN> | Array<Column<TN>>,
     _isNot: boolean = false
   ) {
     super(type, _columnAs, false, undefined, _isNot)
@@ -599,20 +599,6 @@ export interface SelectStatement<
   readonly sqlKind: "selectStatement"
 }
 
-export type FuncWithNamesAndRest<T, FuncNames extends string> = {
-  [K in keyof T]: T[K] extends Function ? (K extends FuncNames ? K : never) : K
-}[keyof T]
-export type BeforeSelect<T> = {
-  [K in FuncWithNamesAndRest<T, "from" | "with" | "select">]: T[K]
-}
-export type BeforeFrom<T> = { [K in FuncWithNamesAndRest<T, "from">]: T[K] }
-export type AfterFrom<T> = { [K in FuncWithNamesAndRest<T, "groupBy" | "columns">]: T[K] }
-export type AfterGroupBy<T> = { [K in FuncWithNamesAndRest<T, "columns">]: T[K] }
-export type AfterColumns<T> = {
-  [K in FuncWithNamesAndRest<T, "columns" | "where" | "toSql" | "execute">]: T[K]
-}
-export type AfterWhere<T> = { [K in FuncWithNamesAndRest<T, "toSql" | "execute">]: T[K] }
-
 export class SqlBuilder<
   Cols extends Record<string, Column>,
   P,
@@ -700,18 +686,23 @@ export class SqlBuilder<
     _GBC extends Column
   >(
     cb: (
-      subq: BeforeFrom<SqlBuilder<Cols, P, RT, OT, WT, GBC>>
-    ) => AfterWhere<SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>>
-  ): AfterWhere<SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>>
-  select(): BeforeFrom<SqlBuilder<Cols, P, RT, OT, WT, GBC>>
+      subq: SqlBuilder<Cols, P, RT, OT, WT, GBC>
+    ) => SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
+  ): SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
+  select(): SqlBuilder<Cols, P, RT, OT, WT, GBC>
   select(cb?: (subq: any) => any): any {
     return cb ? cb(this) : this
   }
 
   from<_RT extends string, _OT extends string>(
     fromType: FromType<_RT, _OT>
-  ): AfterFrom<
-    SqlBuilder<Cols, P, Literal<RT> | Literal<_RT>, Literal<OT> | Literal<_OT>, WT, GBC>
+  ): SqlBuilder<
+    Cols,
+    P,
+    Literal<RT> | Literal<_RT>,
+    Literal<OT> | Literal<_OT>,
+    WT,
+    GBC
   > {
     return this.next({
       ...this.state,
@@ -748,7 +739,7 @@ export class SqlBuilder<
             : never
       } & { "0": any },
     T extends ColumnsObj<C> = ColumnsObj<C>
-  >(cols: C): AfterColumns<SqlBuilder<Cols & SelectColumns<T>, P, RT, OT, WT, GBC>> {
+  >(cols: C): SqlBuilder<Cols & SelectColumns<T>, P, RT, OT, WT, GBC> {
     const colDecs = cols.reduce(
       (acc, col) => {
         if ("columns" in col) {
@@ -772,10 +763,10 @@ export class SqlBuilder<
 
   where<CTbles extends TblNames, SP>(
     arg: Condition<CTbles, SP>
-  ): AfterWhere<SqlBuilder<Cols, P & SP, RT, OT, WT, GBC>>
+  ): SqlBuilder<Cols, P & SP, RT, OT, WT, GBC>
   where<CTbles extends TblNames, SP>(
     arg: ((subSelect: SqlBuilder<{}, {}, RT, OT, WT, GBC>) => Condition<CTbles, SP>)
-  ): AfterWhere<SqlBuilder<Cols, P & SP, RT, OT, WT, GBC>>
+  ): SqlBuilder<Cols, P & SP, RT, OT, WT, GBC>
   where(arg: Condition | ((arg2: any) => Condition)): any {
     const cond = isSqlPart(arg) ? arg : arg(this.next(SqlBuilder.initialState))
 
@@ -788,15 +779,13 @@ export class SqlBuilder<
   with<A extends string, WCols extends Record<string, Column>, WParams>(
     alias: A,
     withSelect: SelectStatement<WCols, WParams>
-  ): BeforeSelect<
-    SqlBuilder<
-      Cols,
-      P & WParams,
-      RT,
-      OT,
-      WT & Record<A, Table<WCols, A, never, true>>,
-      GBC
-    >
+  ): SqlBuilder<
+    Cols,
+    P & WParams,
+    RT,
+    OT,
+    WT & Record<A, Table<WCols, A, never, true>>,
+    GBC
   > {
     const withClause = new WithClause(alias, withSelect)
 
@@ -817,7 +806,7 @@ export class SqlBuilder<
 
   groupBy<_GBC extends Column>(
     groupByCols: _GBC[]
-  ): AfterGroupBy<SqlBuilder<Cols, P, RT, OT, WT, GBC | _GBC>> {
+  ): SqlBuilder<Cols, P, RT, OT, WT, GBC | _GBC> {
     return this.next({
       ...this.state,
       selGroupBy: new GroupBy(groupByCols),
@@ -851,9 +840,7 @@ export interface SqlPlugin {
   execute(part: SqlPart, lpn: LookupParamNum, args?: object): Promise<any>
 }
 
-export function init(
-  plugin: SqlPlugin
-): BeforeSelect<SqlBuilder<{}, {}, never, never, {}, never>> {
+export function init(plugin: SqlPlugin): SqlBuilder<{}, {}, never, never, {}, never> {
   return SqlBuilder._init(plugin)
 }
 
@@ -900,7 +887,7 @@ export function count(): CountAggregate<never, "count"> {
 }
 
 export interface AllCols<C extends ValsAre<C, InputCol>, TN extends string> {
-  _tableName: TN
+  _tableAs: TN
   columns: TableColumns<TN, C, false>
 }
 
@@ -909,7 +896,7 @@ export function all<C extends ValsAre<C, InputCol>, TN extends string>(
   table: Table<C, TN>
 ): AllCols<C, TN> {
   return {
-    _tableName: table._tableAs,
+    _tableAs: table._tableAs,
     columns: table._tableColumns as any,
   }
 }
