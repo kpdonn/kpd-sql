@@ -788,15 +788,13 @@ export class SqlBuilder<
   with<A extends string, WCols extends Record<string, Column>, WParams>(
     alias: A,
     withSelect: SelectStatement<WCols, WParams>
-  ): BeforeSelect<
-    SqlBuilder<
-      Cols,
-      P & WParams,
-      RT,
-      OT,
-      WT & Record<A, Table<WCols, A, never, true>>,
-      GBC
-    >
+  ): SqlBuilder<
+    Cols,
+    P & WParams,
+    RT,
+    OT,
+    WT & Record<A, Table<WCols, A, never, true>>,
+    GBC
   > {
     const withClause = new WithClause(alias, withSelect)
 
