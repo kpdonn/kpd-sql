@@ -149,4 +149,53 @@ async function test() {
       ])
       .execute()
   }
+  {
+    const test = db
+      .select()
+      .from(Class)
+      .groupBy([Class.id])
+      .columns([jsonAgg("test", [Student.firstName])])
+  }
+
+  {
+    const test = db
+      .select()
+      .from(Class)
+      .groupBy([Class.id])
+      .columns([Class.courseId.as("test"), jsonAgg("test", [Class.professorId])])
+  }
+
+  {
+    const test = db
+      .select()
+      .from(Class)
+      .groupBy([Class.id])
+      .columns([
+        Class.courseId,
+        jsonAgg("test", [Class.professorId, Class.courseId.as("professorId")]),
+      ])
+  }
+
+  {
+    const test = db
+      .select()
+      .from(Class.join(StudentClass, StudentClass.classId.eq(Class.id)))
+      .groupBy([Class.id])
+      .columns([Class.courseId, jsonAgg("test", [Class["*"], StudentClass["*"]])])
+  }
+
+  {
+    const test = db
+      .select()
+      .from(Class.join(StudentClass, StudentClass.classId.eq(Class.id)))
+      .groupBy([Class.id])
+      .columns([Class.courseId, jsonAgg("test", [Class["*"], StudentClass.id])])
+  }
+
+  {
+    const test = db
+      .select()
+      .from(Class.join(StudentClass, StudentClass.classId.eq(Class.id)))
+      .columns([Class.courseId, jsonAgg("test", [Class["*"]])])
+  }
 }
