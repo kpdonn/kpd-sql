@@ -627,6 +627,10 @@ export class SqlBuilder<
     _c: Cols
     _p: P
     _gbc: GBC
+    _RT: RT
+    _OT: OT
+    _WT: WT
+    _TblNames: TblNames
   }
   private static readonly initialState: BuilderState = {
     selColumns: [],
@@ -693,9 +697,12 @@ export class SqlBuilder<
     _RT extends string,
     _OT extends string,
     _WT extends ValsAre<_WT, Table>,
-    _GBC extends Column,
-    _SB extends SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
-  >(cb: (subq: BeforeFrom<SqlBuilder<Cols, P, RT, OT, WT, GBC>>) => _SB): _SB
+    _GBC extends Column
+  >(
+    cb: (
+      subq: BeforeFrom<SqlBuilder<Cols, P, RT, OT, WT, GBC>>
+    ) => AfterWhere<SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>>
+  ): AfterWhere<SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>>
   select(): BeforeFrom<SqlBuilder<Cols, P, RT, OT, WT, GBC>>
   select(cb?: (subq: any) => any): any {
     return cb ? cb(this) : this

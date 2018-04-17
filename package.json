@@ -24,7 +24,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:prod": "yarn run lint && yarn run test -- --coverage --no-cache",
-    "precommit": "yarn tslint --project . && lint-staged && tsc"
+    "precommit":
+      "yarn tslint --project . && lint-staged && tsc --noEmit && tsc --noEmit -p test"
   },
   "lint-staged": {
     "{src,test,typings-tests}/**/*.{ts,tsx}": [
