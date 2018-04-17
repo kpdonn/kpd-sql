@@ -13,12 +13,15 @@ export function check(fileName: string): any[] {
       const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(
         diagnostic.start!
       )
-      const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")
+      const { innerMostMessage, messageChainCodes } = getInnerMostMessageAndCodes(
+        diagnostic
+      )
       return {
         file: path.basename(diagnostic.file.fileName),
         line: line + 1,
         character: character + 1,
-        message,
+        innerMostMessage,
+        messageChainCodes,
         code: diagnostic.code,
         category: diagnostic.category,
       }
@@ -34,6 +37,21 @@ export function check(fileName: string): any[] {
   return diagnosticsOutput
 }
 
+function getInnerMostMessageAndCodes(
+  diagnostic: ts.Diagnostic
+): { innerMostMessage: string; messageChainCodes: number[] } {
+  const messageChainCodes: number[] = []
+  let currentMessage = diagnostic.messageText
+  if (typeof currentMessage === "string") {
+    return { innerMostMessage: currentMessage, messageChainCodes }
+  }
+  while (currentMessage.next) {
+    messageChainCodes.push(currentMessage.code)
+    currentMessage = currentMessage.next
+  }
+  return { innerMostMessage: currentMessage.messageText, messageChainCodes }
+}
+
 function readUtf8(fileName: string) {
   const contents = fs.readFileSync(fileName, "utf8")
   return contents
@@ -41,13 +59,7 @@ function readUtf8(fileName: string) {
 
 const parseConfigHost: ts.ParseConfigHost = {
   useCaseSensitiveFileNames: true,
-  readDirectory(
-    rootDir: string,
-    extensions: ReadonlyArray<string>,
-    excludes: ReadonlyArray<string> | undefined,
-    includes: ReadonlyArray<string>,
-    depth?: number
-  ): string[] {
+  readDirectory(rootDir: string): string[] {
     return fs.readdirSync(rootDir)
   },
 
@@ -69,14 +81,3 @@ const { options: compilerOptions } = ts.parseJsonSourceFileConfigFileContent(
   parseConfigHost,
   typingsTestDir
 )
-
-function shouldPrintNodeType(node: ts.Node, fileName: string): boolean {
-  return (
-    (node.kind === ts.SyntaxKind.Identifier ||
-      (node.kind >= ts.SyntaxKind.ArrayLiteralExpression &&
-        node.kind <= ts.SyntaxKind.NonNullExpression) ||
-      (node.kind >= ts.SyntaxKind.VariableDeclaration &&
-        node.kind <= ts.SyntaxKind.EnumDeclaration)) &&
-    fileName === node.getSourceFile().fileName
-  )
-}

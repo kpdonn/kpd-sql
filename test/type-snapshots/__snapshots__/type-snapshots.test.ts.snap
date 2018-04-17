@@ -7,185 +7,215 @@ Array [
     "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Type 'TableColumn<\\"class\\", \\"semesterId\\", false, number>' is not assignable to type 'never'.",
     "line": 12,
-    "message": "Argument of type '[TableColumn<\\"class\\", \\"semesterId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, string, boolean, unknown> | Aggregate<string, string, unknown> | CountAggregate<string, string> | JsonAggregate<string, string, {}> | AllCols<any, string>> & { \\"0\\": never; } & { \\"0\\": any; }'.
-  Type '[TableColumn<\\"class\\", \\"semesterId\\", false, number>]' is not assignable to type '{ \\"0\\": never; }'.
-    Types of property '\\"0\\"' are incompatible.
-      Type 'TableColumn<\\"class\\", \\"semesterId\\", false, number>' is not assignable to type 'never'.",
+    "messageChainCodes": Array [
+      2345,
+      2322,
+      2326,
+    ],
   },
   Object {
     "category": 1,
     "character": 18,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Type 'TableColumn<\\"myWith\\", \\"courseId\\", false, number>' is not assignable to type 'never'.",
     "line": 25,
-    "message": "Argument of type '[TableColumn<\\"myWith\\", \\"id\\", false, number>, TableColumn<\\"myWith\\", \\"courseId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, string, boolean, unknown> | Aggregate<string, string, unknown> | CountAggregate<string, string> | JsonAggregate<string, string, {}> | AllCols<any, string>> & { \\"0\\": BaseColumn<\\"myWith\\", string, boolean, unknown>; \\"1\\": never; } & { \\"0\\": any; }'.
-  Type '[TableColumn<\\"myWith\\", \\"id\\", false, number>, TableColumn<\\"myWith\\", \\"courseId\\", false, number>]' is not assignable to type '{ \\"0\\": BaseColumn<\\"myWith\\", string, boolean, unknown>; \\"1\\": never; }'.
-    Types of property '\\"1\\"' are incompatible.
-      Type 'TableColumn<\\"myWith\\", \\"courseId\\", false, number>' is not assignable to type 'never'.",
+    "messageChainCodes": Array [
+      2345,
+      2322,
+      2326,
+    ],
   },
   Object {
     "category": 1,
     "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Type '\\"semester\\"' is not assignable to type '\\"class\\" | undefined'.",
     "line": 31,
-    "message": "Argument of type '[TableColumn<\\"class\\", \\"semesterId\\", false, number>, TableColumn<\\"semester\\", \\"year\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, string, boolean, unknown> | Aggregate<string, string, unknown> | CountAggregate<string, string> | JsonAggregate<string, string, {}> | AllCols<any, string>> & { \\"0\\": BaseColumn<\\"class\\", string, boolean, unknown>; \\"1\\": BaseColumn<\\"class\\", string, boolean, unknown>; } & { \\"0\\": any; }'.
-  Type '[TableColumn<\\"class\\", \\"semesterId\\", false, number>, TableColumn<\\"semester\\", \\"year\\", false, number>]' is not assignable to type '{ \\"0\\": BaseColumn<\\"class\\", string, boolean, unknown>; \\"1\\": BaseColumn<\\"class\\", string, boolean, unknown>; }'.
-    Types of property '\\"1\\"' are incompatible.
-      Type 'TableColumn<\\"semester\\", \\"year\\", false, number>' is not assignable to type 'BaseColumn<\\"class\\", string, boolean, unknown>'.
-        Types of property '_tableAs' are incompatible.
-          Type '\\"semester\\"' is not assignable to type '\\"class\\" | undefined'.",
+    "messageChainCodes": Array [
+      2345,
+      2322,
+      2326,
+      2322,
+      2326,
+    ],
   },
   Object {
     "category": 1,
     "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'TableColumn<\\"class\\", \\"semesterId\\", false, number>'.",
     "line": 36,
-    "message": "Argument of type '[TableColumn<\\"class\\", \\"semesterId\\", false, number>, TableColumn<\\"class\\", \\"semesterId\\", false, number>]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, string, boolean, unknown> | Aggregate<string, string, unknown> | CountAggregate<string, string> | JsonAggregate<string, string, {}> | AllCols<any, string>> & { \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; } & { \\"0\\": any; }'.
-  Type '[TableColumn<\\"class\\", \\"semesterId\\", false, number>, TableColumn<\\"class\\", \\"semesterId\\", false, number>]' is not assignable to type '{ \\"0\\": NoDuplicates<\\"semesterId\\">; \\"1\\": NoDuplicates<\\"semesterId\\">; }'.
-    Types of property '\\"0\\"' are incompatible.
-      Type 'TableColumn<\\"class\\", \\"semesterId\\", false, number>' is not assignable to type 'NoDuplicates<\\"semesterId\\">'.
-        Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'TableColumn<\\"class\\", \\"semesterId\\", false, number>'.",
+    "messageChainCodes": Array [
+      2345,
+      2322,
+      2326,
+      2322,
+    ],
   },
   Object {
     "category": 1,
     "character": 31,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Argument of type '\\"wrong type\\"' is not assignable to parameter of type 'number | CountAggregate<string, string> | JsonAggregate<string, string, {}> | PlaceholderParam<string> | TableColumn<string, string, boolean, number> | Aggregate<string, string, number> | null'.",
     "line": 42,
-    "message": "Argument of type '\\"wrong type\\"' is not assignable to parameter of type 'number | CountAggregate<string, string> | JsonAggregate<string, string, {}> | PlaceholderParam<string> | TableColumn<string, string, boolean, number> | Aggregate<string, string, number> | null'.",
+    "messageChainCodes": Array [],
   },
   Object {
     "category": 1,
     "character": 17,
     "code": 2554,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Expected 1 arguments, but got 0.",
     "line": 44,
-    "message": "Expected 1 arguments, but got 0.",
+    "messageChainCodes": Array [],
   },
   Object {
     "category": 1,
     "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Type 'string' is not assignable to type 'number'.",
     "line": 56,
-    "message": "Argument of type '{ myTest: string; }' is not assignable to parameter of type 'Record<\\"myTest\\", number>'.
-  Types of property 'myTest' are incompatible.
-    Type 'string' is not assignable to type 'number'.",
+    "messageChainCodes": Array [
+      2345,
+      2326,
+    ],
   },
   Object {
     "category": 1,
     "character": 3,
     "code": 1184,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Modifiers cannot appear here.",
     "line": 58,
-    "message": "Modifiers cannot appear here.",
+    "messageChainCodes": Array [],
   },
   Object {
     "category": 1,
     "character": 37,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Argument of type 'string' is not assignable to parameter of type 'never'.",
     "line": 64,
-    "message": "Argument of type 'string' is not assignable to parameter of type 'never'.",
+    "messageChainCodes": Array [],
   },
   Object {
     "category": 1,
     "character": 30,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Property 'funcName' is missing in type 'TableColumn<\\"course\\", \\"subjectId\\", false, number>'.",
     "line": 71,
-    "message": "Argument of type 'TableColumn<\\"course\\", \\"subjectId\\", false, number>' is not assignable to parameter of type 'string | CountAggregate<string, string> | JsonAggregate<string, string, {}> | PlaceholderParam<string> | TableColumn<string, string, boolean, string> | Aggregate<string, string, string>'.
-  Type 'TableColumn<\\"course\\", \\"subjectId\\", false, number>' is not assignable to type 'Aggregate<string, string, string>'.
-    Property 'funcName' is missing in type 'TableColumn<\\"course\\", \\"subjectId\\", false, number>'.",
+    "messageChainCodes": Array [
+      2345,
+      2322,
+    ],
   },
   Object {
     "category": 1,
     "character": 16,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Object literal may only specify known properties, and 'wrongKey' does not exist in type 'Record<\\"myTest\\", number>'.",
     "line": 81,
-    "message": "Argument of type '{ wrongKey: number; }' is not assignable to parameter of type 'Record<\\"myTest\\", number>'.
-  Object literal may only specify known properties, and 'wrongKey' does not exist in type 'Record<\\"myTest\\", number>'.",
+    "messageChainCodes": Array [
+      2345,
+    ],
   },
   Object {
     "category": 1,
     "character": 14,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Type 'null' is not assignable to type 'number'.",
     "line": 88,
-    "message": "Argument of type '{ myTest: null; }' is not assignable to parameter of type 'Record<\\"myTest\\", number>'.
-  Types of property 'myTest' are incompatible.
-    Type 'null' is not assignable to type 'number'.",
+    "messageChainCodes": Array [
+      2345,
+      2326,
+    ],
   },
   Object {
     "category": 1,
     "character": 16,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'TableColumn<\\"class\\", \\"id\\", true, number>'.",
     "line": 99,
-    "message": "Argument of type '[TableColumn<\\"class\\", \\"id\\", true, number>, AllCols<TableColumns<\\"student\\", { id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }>, \\"student\\">]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, string, boolean, unknown> | Aggregate<string, string, unknown> | CountAggregate<string, string> | JsonAggregate<string, string, {}> | AllCols<any, string>> & { \\"0\\": NoDuplicates<\\"id\\">; \\"1\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly firstName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly lastName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly majorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; }; }; } & { \\"0\\": any; }'.
-  Type '[TableColumn<\\"class\\", \\"id\\", true, number>, AllCols<TableColumns<\\"student\\", { id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }>, \\"student\\">]' is not assignable to type '{ \\"0\\": NoDuplicates<\\"id\\">; \\"1\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly firstName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly lastName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly majorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; }; }; }'.
-    Types of property '\\"0\\"' are incompatible.
-      Type 'TableColumn<\\"class\\", \\"id\\", true, number>' is not assignable to type 'NoDuplicates<\\"id\\">'.
-        Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'TableColumn<\\"class\\", \\"id\\", true, number>'.",
+    "messageChainCodes": Array [
+      2345,
+      2322,
+      2326,
+      2322,
+    ],
   },
   Object {
     "category": 1,
     "character": 16,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'TableColumn<\\"class\\", \\"id\\", false, number>'.",
     "line": 112,
-    "message": "Argument of type '[AllCols<TableColumns<\\"class\\", { id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }>, \\"class\\">, AllCols<TableColumns<\\"student\\", { id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }>, \\"student\\">]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, string, boolean, unknown> | Aggregate<string, string, unknown> | CountAggregate<string, string> | JsonAggregate<string, string, {}> | AllCols<any, string>> & { \\"0\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly courseId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly semesterId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly professorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; }; }; \\"1\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly firstName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly lastName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly majorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; }; }; } & { \\"0\\": any; }'.
-  Type '[AllCols<TableColumns<\\"class\\", { id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }>, \\"class\\">, AllCols<TableColumns<\\"student\\", { id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }>, \\"student\\">]' is not assignable to type '{ \\"0\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly courseId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly semesterId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly professorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; }; }; \\"1\\": { columns: { readonly id: NoDuplicates<\\"id\\">; readonly firstName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly lastName: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly majorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; }; }; }'.
-    Types of property '\\"0\\"' are incompatible.
-      Type 'AllCols<TableColumns<\\"class\\", { id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }>, \\"class\\">' is not assignable to type '{ columns: { readonly id: NoDuplicates<\\"id\\">; readonly courseId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly semesterId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly professorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; }; }'.
-        Types of property 'columns' are incompatible.
-          Type 'TransformColumns<TableColumns<\\"class\\", { id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }>, \\"class\\">' is not assignable to type '{ readonly id: NoDuplicates<\\"id\\">; readonly courseId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly semesterId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; readonly professorId: BaseColumn<\\"student\\" | \\"course\\" | \\"class\\", string, boolean, unknown>; }'.
-            Types of property 'id' are incompatible.
-              Type 'TableColumn<\\"class\\", \\"id\\", false, number>' is not assignable to type 'NoDuplicates<\\"id\\">'.
-                Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'TableColumn<\\"class\\", \\"id\\", false, number>'.",
+    "messageChainCodes": Array [
+      2345,
+      2322,
+      2326,
+      2322,
+      2326,
+      2322,
+      2326,
+      2322,
+    ],
   },
   Object {
     "category": 1,
     "character": 16,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Type 'TableColumn<\\"class\\", \\"id\\", false, number>' is not assignable to type 'never'.",
     "line": 121,
-    "message": "Argument of type '[AllCols<TableColumns<\\"class\\", { id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }>, \\"class\\">]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, string, boolean, unknown> | Aggregate<string, string, unknown> | CountAggregate<string, string> | JsonAggregate<string, string, {}> | AllCols<any, string>> & { \\"0\\": { columns: { readonly id: never; readonly courseId: BaseColumn<\\"class\\", string, boolean, unknown>; readonly semesterId: never; readonly professorId: never; }; }; } & { \\"0\\": any; }'.
-  Type '[AllCols<TableColumns<\\"class\\", { id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }>, \\"class\\">]' is not assignable to type '{ \\"0\\": { columns: { readonly id: never; readonly courseId: BaseColumn<\\"class\\", string, boolean, unknown>; readonly semesterId: never; readonly professorId: never; }; }; }'.
-    Types of property '\\"0\\"' are incompatible.
-      Type 'AllCols<TableColumns<\\"class\\", { id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }>, \\"class\\">' is not assignable to type '{ columns: { readonly id: never; readonly courseId: BaseColumn<\\"class\\", string, boolean, unknown>; readonly semesterId: never; readonly professorId: never; }; }'.
-        Types of property 'columns' are incompatible.
-          Type 'TransformColumns<TableColumns<\\"class\\", { id: InputCol<NumberType, true>; courseId: InputCol<NumberType, false>; semesterId: InputCol<NumberType, false>; professorId: InputCol<NumberType, false>; }>, \\"class\\">' is not assignable to type '{ readonly id: never; readonly courseId: BaseColumn<\\"class\\", string, boolean, unknown>; readonly semesterId: never; readonly professorId: never; }'.
-            Types of property 'id' are incompatible.
-              Type 'TableColumn<\\"class\\", \\"id\\", false, number>' is not assignable to type 'never'.",
+    "messageChainCodes": Array [
+      2345,
+      2322,
+      2326,
+      2322,
+      2326,
+      2322,
+      2326,
+    ],
   },
   Object {
     "category": 1,
     "character": 16,
     "code": 2345,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Type 'TableColumn<\\"class\\", \\"id\\", true, number>' is not assignable to type 'never'.",
     "line": 128,
-    "message": "Argument of type '[TableColumn<\\"class\\", \\"id\\", true, number>, CountAggregate<never, \\"count\\">]' is not assignable to parameter of type 'ReadonlyArray<TableColumn<string, string, boolean, unknown> | Aggregate<string, string, unknown> | CountAggregate<string, string> | JsonAggregate<string, string, {}> | AllCols<any, string>> & { \\"0\\": never; \\"1\\": BaseColumn<\\"class\\", string, boolean, unknown>; } & { \\"0\\": any; }'.
-  Type '[TableColumn<\\"class\\", \\"id\\", true, number>, CountAggregate<never, \\"count\\">]' is not assignable to type '{ \\"0\\": never; \\"1\\": BaseColumn<\\"class\\", string, boolean, unknown>; }'.
-    Types of property '\\"0\\"' are incompatible.
-      Type 'TableColumn<\\"class\\", \\"id\\", true, number>' is not assignable to type 'never'.",
+    "messageChainCodes": Array [
+      2345,
+      2322,
+      2326,
+    ],
   },
   Object {
     "category": 1,
     "character": 11,
     "code": 2322,
     "file": "expect-errors.ts",
+    "innerMostMessage": "Type 'string' is not assignable to type 'number'.",
     "line": 132,
-    "message": "Type '(NoTableColumns<SelectColumns<ColumnsObj<[AllCols<TableColumns<\\"student\\", { id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }>, \\"student\\">, TableColumn<\\"class\\", \\"semesterId\\", false, number>, Aggregate<\\"course\\", \\"sum\\", number>, JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>]>, TableColumn<\\"class\\", \\"semesterId\\", false, number> | TableColumn<\\"student\\", \\"firstName\\", false, string> | TableColumn<\\"student\\", \\"lastName\\", false, string> | TableColumn<\\"student\\", \\"majorId\\", false, number | null> | TableColumn<\\"student\\", \\"id\\", false, number> | Aggregate<\\"course\\", \\"sum\\", number> | JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>>, never> & OutputColumns<SelectColumns<ColumnsObj<[AllCols<TableColumns<\\"student\\", { id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }>, \\"student\\">, TableColumn<\\"class\\", \\"semesterId\\", false, number>, Aggregate<\\"course\\", \\"sum\\", number>, JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>]>, TableColumn<\\"class\\", \\"semesterId\\", false, number> | TableColumn<\\"student\\", \\"firstName\\", false, string> | TableColumn<\\"student\\", \\"lastName\\", false, string> | TableColumn<\\"student\\", \\"majorId\\", false, number | null> | TableColumn<\\"student\\", \\"id\\", false, number> | Aggregate<\\"course\\", \\"sum\\", number> | JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>>, \\"student\\" | \\"course\\" | \\"class\\" | \\"student_class\\", never, TableColumn<\\"class\\", \\"semesterId\\", false, number> | TableColumn<\\"student\\", \\"firstName\\", false, string> | TableColumn<\\"student\\", \\"lastName\\", false, string> | TableColumn<\\"student\\", \\"majorId\\", false, number | null> | TableColumn<\\"student\\", \\"id\\", false, number> | Aggregate<\\"course\\", \\"sum\\", number> | JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>> & OutputColumns<SelectColumns<ColumnsObj<[AllCols<TableColumns<\\"student\\", { id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }>, \\"student\\">, TableColumn<\\"class\\", \\"semesterId\\", false, number>, Aggregate<\\"course\\", \\"sum\\", number>, JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>]>, TableColumn<\\"class\\", \\"semesterId\\", false, number> | TableColumn<\\"student\\", \\"firstName\\", false, string> | TableColumn<\\"student\\", \\"lastName\\", false, string> | TableColumn<\\"student\\", \\"majorId\\", false, number | null> | TableColumn<\\"student\\", \\"id\\", false, number> | Aggregate<\\"course\\", \\"sum\\", number> | JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>>, never, null, never>)[]' is not assignable to type '{ courses: { name: number; }; }[]'.
-  Type 'NoTableColumns<SelectColumns<ColumnsObj<[AllCols<TableColumns<\\"student\\", { id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }>, \\"student\\">, TableColumn<\\"class\\", \\"semesterId\\", false, number>, Aggregate<\\"course\\", \\"sum\\", number>, JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>]>, TableColumn<\\"class\\", \\"semesterId\\", false, number> | TableColumn<\\"student\\", \\"firstName\\", false, string> | TableColumn<\\"student\\", \\"lastName\\", false, string> | TableColumn<\\"student\\", \\"majorId\\", false, number | null> | TableColumn<\\"student\\", \\"id\\", false, number> | Aggregate<\\"course\\", \\"sum\\", number> | JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>>, never> & OutputColumns<SelectColumns<ColumnsObj<[AllCols<TableColumns<\\"student\\", { id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }>, \\"student\\">, TableColumn<\\"class\\", \\"semesterId\\", false, number>, Aggregate<\\"course\\", \\"sum\\", number>, JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>]>, TableColumn<\\"class\\", \\"semesterId\\", false, number> | TableColumn<\\"student\\", \\"firstName\\", false, string> | TableColumn<\\"student\\", \\"lastName\\", false, string> | TableColumn<\\"student\\", \\"majorId\\", false, number | null> | TableColumn<\\"student\\", \\"id\\", false, number> | Aggregate<\\"course\\", \\"sum\\", number> | JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>>, \\"student\\" | \\"course\\" | \\"class\\" | \\"student_class\\", never, TableColumn<\\"class\\", \\"semesterId\\", false, number> | TableColumn<\\"student\\", \\"firstName\\", false, string> | TableColumn<\\"student\\", \\"lastName\\", false, string> | TableColumn<\\"student\\", \\"majorId\\", false, number | null> | TableColumn<\\"student\\", \\"id\\", false, number> | Aggregate<\\"course\\", \\"sum\\", number> | JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>> & OutputColumns<SelectColumns<ColumnsObj<[AllCols<TableColumns<\\"student\\", { id: InputCol<NumberType, true>; firstName: InputCol<StringType, false>; lastName: InputCol<StringType, false>; majorId: InputCol<UnionType<(NullType | NumberType)[], number | null, number | null, mixed>, false>; }>, \\"student\\">, TableColumn<\\"class\\", \\"semesterId\\", false, number>, Aggregate<\\"course\\", \\"sum\\", number>, JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>]>, TableColumn<\\"class\\", \\"semesterId\\", false, number> | TableColumn<\\"student\\", \\"firstName\\", false, string> | TableColumn<\\"student\\", \\"lastName\\", false, string> | TableColumn<\\"student\\", \\"majorId\\", false, number | null> | TableColumn<\\"student\\", \\"id\\", false, number> | Aggregate<\\"course\\", \\"sum\\", number> | JsonAggregate<\\"course\\", \\"courses\\", JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>>>, never, null, never>' is not assignable to type '{ courses: { name: number; }; }'.
-    Types of property 'courses' are incompatible.
-      Type 'JsonAggOutput<ColumnsObj<[AllCols<TableColumns<\\"course\\", { id: InputCol<NumberType, true>; name: InputCol<StringType, false>; subjectId: InputCol<NumberType, false>; creditHours: InputCol<NumberType, false>; }>, \\"course\\">]>, TableColumn<\\"course\\", \\"name\\", false, string> | TableColumn<\\"course\\", \\"subjectId\\", false, number> | TableColumn<\\"course\\", \\"creditHours\\", false, number> | TableColumn<\\"course\\", \\"id\\", false, number>>' is not assignable to type '{ name: number; }'.
-        Types of property 'name' are incompatible.
-          Type 'string' is not assignable to type 'number'.",
+    "messageChainCodes": Array [
+      2322,
+      2322,
+      2326,
+      2322,
+      2326,
+    ],
   },
 ]
 `;
