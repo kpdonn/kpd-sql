@@ -1,6 +1,7 @@
-import ts from "typescript"
-import * as path from "path"
 import * as fs from "fs"
+import * as path from "path"
+// tslint:disable-next-line:no-implicit-dependencies
+import ts from "typescript"
 
 export function check(fileName: string): any[] {
   const program = ts.createProgram([fileName], compilerOptions)
@@ -9,10 +10,10 @@ export function check(fileName: string): any[] {
 
   const diagnosticsOutput = allDiagnostics.map(diagnostic => {
     if (diagnostic.file) {
-      let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(
+      const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(
         diagnostic.start!
       )
-      let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")
+      const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")
       return {
         file: path.basename(diagnostic.file.fileName),
         line: line + 1,

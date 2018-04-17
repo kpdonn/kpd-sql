@@ -1,6 +1,6 @@
-import { typingsTestDir, check } from "./typeChecker"
-import * as path from "path"
 import * as fs from "fs"
+import * as path from "path"
+import { check, typingsTestDir } from "./typeChecker"
 
 describe("Verify output of typings test files matches expected", async () => {
   const files = fs

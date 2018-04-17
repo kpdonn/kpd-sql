@@ -525,7 +525,9 @@ export type ColumnsObj<T> = {
 export type ColumnsWithTableName<
   T extends ValsAre<T, BaseColumn>,
   TblName extends string
-> = { [K in keyof T]: T[K]["_tableAs"] extends Literal<TblName> ? T[K] : never }[keyof T]
+> = {
+  [K in keyof T]: NonNullable<T[K]["_tableAs"]> extends Literal<TblName> ? T[K] : never
+}[keyof T]
 
 export type OutputColumns<
   T extends ValsAre<T, BaseColumn>,
@@ -967,7 +969,7 @@ export function jsonAgg<
   Tbls extends { [K in keyof T]: Literal<T[K]["_tableAs"]> }[keyof T] = {
     [K in keyof T]: Literal<T[K]["_tableAs"]>
   }[keyof T]
->(name: CAS, cols: C): JsonAggregate<Tbls, CAS> {
+>(name: CAS, cols: C): JsonAggregate<Tbls, CAS, JsonAggOutput<T>> {
   const colDecs = cols.reduce(
     (acc, col) => {
       if ("columns" in col) {
@@ -988,8 +990,10 @@ export function jsonAgg<
 }
 
 export type JsonAggOutput<
-  T extends ValsAre<T, BaseColumn | AllCols<any, string>>,
+  T extends ValsAre<T, BaseColumn | { columns: Record<string, BaseColumn> }>,
   Cols extends BaseColumn = ArrayToUnion<T>
 > = {
-  [K in SafeInd<Cols, "_columnAs">]: Cols extends { ["_columnAs"]: K } ? Cols : never
+  [K in SafeInd<Cols, "_columnAs">]: Cols extends { _columnAs: K }
+    ? Cols["_actualType"]
+    : never
 }

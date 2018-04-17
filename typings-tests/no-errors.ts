@@ -1,5 +1,5 @@
-import { all, count, SqlBuilder } from "../src/everything"
-import { Class, Course, Student } from "./tables"
+import { count, jsonAgg, SqlBuilder, sum } from "../src/everything"
+import { Class, Course, Student, StudentClass } from "./tables"
 
 declare const db: SqlBuilder<{}, {}, never, never, {}, never>
 
@@ -69,6 +69,37 @@ async function tests() {
       .select()
       .from(Student)
       .columns([count()])
+      .execute()
+  }
+
+  {
+    const results: Array<{
+      id: number
+      firstName: string
+      lastName: string
+      majorId: number | null
+      semesterId: number
+      sum: number
+      courses: {
+        id: number
+        name: string
+        subjectId: number
+        creditHours: number
+      }
+    }> = await db
+      .select()
+      .from(
+        Student.join(StudentClass, Student.id.eq(StudentClass.studentId))
+          .join(Class, Class.id.eq(StudentClass.classId))
+          .join(Course, Course.id.eq(Class.courseId))
+      )
+      .groupBy([Student.id, Class.semesterId])
+      .columns([
+        Student["*"],
+        Class.semesterId,
+        sum(Course.creditHours),
+        jsonAgg("courses", [Course["*"]]),
+      ])
       .execute()
   }
 }
