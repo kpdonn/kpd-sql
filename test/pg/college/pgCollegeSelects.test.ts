@@ -1,7 +1,7 @@
 import * as fs from "fs"
 import * as path from "path"
 import { Pool } from "pg"
-import { count, init, sum } from "../../../src/everything"
+import { count, init, jsonAgg, sum } from "../../../src/everything"
 import { PgPlugin } from "../../../src/postgres"
 import { Class, Course, Student, StudentClass } from "./tables"
 
@@ -47,6 +47,27 @@ describe("college select tests", () => {
       )
       .groupBy([Student.id, Class.semesterId])
       .columns([Student["*"], Class.semesterId, sum(Course.creditHours)])
+
+    expect(query.toSql()).toMatchSnapshot()
+    const results = await query.execute()
+    expect(results).toMatchSnapshot()
+  })
+
+  it("Students credit hours by semester plus courses", async () => {
+    const query = db
+      .select()
+      .from(
+        Student.join(StudentClass, Student.id.eq(StudentClass.studentId))
+          .join(Class, Class.id.eq(StudentClass.classId))
+          .join(Course, Course.id.eq(Class.courseId))
+      )
+      .groupBy([Student.id, Class.semesterId])
+      .columns([
+        Student["*"],
+        Class.semesterId,
+        sum(Course.creditHours),
+        jsonAgg("courses", [Course["*"]]),
+      ])
 
     expect(query.toSql()).toMatchSnapshot()
     const results = await query.execute()

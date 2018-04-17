@@ -46,7 +46,11 @@ export type Column<
   CAS extends string = string,
   U extends boolean = boolean,
   ATY extends unknown = unknown
-> = TableColumn<TN, CAS, U, ATY> | Aggregate<TN, CAS, ATY> | CountAggregate<TN, CAS>
+> =
+  | TableColumn<TN, CAS, U, ATY>
+  | Aggregate<TN, CAS, ATY>
+  | CountAggregate<TN, CAS>
+  | JsonAggregate<TN, CAS>
 
 export type Parameterized = PlaceholderParam | Hardcoded
 
@@ -265,6 +269,29 @@ export class CountAggregate<TN extends string = never, CAS extends string = "cou
 
   get not(): CountAggregate<TN, CAS> {
     return new CountAggregate(this._columnAs, this._aggColumn, !this._isNot)
+  }
+}
+
+export class JsonAggregate<
+  TN extends string = string,
+  CAS extends string = string,
+  ATY = {}
+> extends BaseColumn<TN, CAS, false, ATY> implements SqlKind {
+  readonly sqlKind = "jsonAggregate"
+  readonly funcName = "json_agg"
+
+  readonly unique = false
+
+  constructor(
+    _columnAs: CAS,
+    readonly _aggColumns: ColumnDeclaration[],
+    _isNot: boolean = false
+  ) {
+    super(t.number, _columnAs, false, undefined, _isNot)
+  }
+
+  get not(): JsonAggregate<TN, CAS, ATY> {
+    return new JsonAggregate(this._columnAs, this._aggColumns, !this._isNot)
   }
 }
 
@@ -845,7 +872,9 @@ export type SubQuery<
 > = (arg: T) => SqlBuilder<_Cols, _P, _RT, _OT, _WT, _GBC>
 
 export type IsAggregated<GBC extends BaseColumn, T> = [GBC] extends [never]
-  ? [Extract<T[keyof T], Aggregate | CountAggregate>] extends [never] ? false : true
+  ? [Extract<T[keyof T], Aggregate | CountAggregate | JsonAggregate>] extends [never]
+    ? false
+    : true
   : true
 
 export type CheckGroupBy<GBC extends BaseColumn, C extends BaseColumn, T> = IsAggregated<
@@ -853,13 +882,11 @@ export type CheckGroupBy<GBC extends BaseColumn, C extends BaseColumn, T> = IsAg
   T
 > extends false
   ? {}
-  : C extends Aggregate<string, string>
+  : C extends Aggregate | CountAggregate | JsonAggregate
     ? {}
-    : C extends CountAggregate<string, string>
+    : C extends GBC
       ? {}
-      : C extends GBC
-        ? {}
-        : GBC extends BaseColumn<NonNullable<C["_tableAs"]>, string, true> ? {} : never
+      : GBC extends BaseColumn<NonNullable<C["_tableAs"]>, string, true> ? {} : never
 
 type AnyHelper<T> = T extends any ? false : true
 
@@ -879,7 +906,11 @@ export type TransformHelper<Col, TN extends string> = Col extends TableColumn<
   ? TableColumn<TN, CAS, false, ATY>
   : Col extends Aggregate<string, infer CAS2, infer ATY2>
     ? Aggregate<TN, CAS2, ATY2>
-    : Col extends CountAggregate<string, infer CAS3> ? CountAggregate<TN, CAS3> : never
+    : Col extends CountAggregate<string, infer CAS3>
+      ? CountAggregate<TN, CAS3>
+      : Col extends JsonAggregate<string, infer CAS4, infer ATY4>
+        ? JsonAggregate<TN, CAS4, ATY4>
+        : never
 
 export type TransformColumns<C extends ValsAre<C, Column>, TN extends string> = {
   [K in keyof C]: TransformHelper<C[K], TN>
@@ -910,4 +941,55 @@ export function sum<TN extends string = string, CAS extends string = string>(
   col: Column<TN, CAS, boolean, number>
 ): Aggregate<TN, "sum", number> {
   return new Aggregate(t.number, "sum", "sum", col)
+}
+
+export function jsonAgg<
+  C extends ReadonlyArray<Column | AllCols<any, string>> &
+    {
+      [K in keyof T]: T[K] extends BaseColumn
+        ? (T[K]["_columnAs"] extends (ColumnNames<T[Exclude<keyof T, K>]>)
+            ? NoDuplicates<SafeInd<T[K], "_columnAs">>
+            : BaseColumn)
+        : T[K] extends AllCols<{}, string>
+          ? {
+              columns: {
+                [K2 in keyof T[K]["columns"]]: K2 extends (
+                  | (ColumnNames<T[Exclude<keyof T, K>]>)
+                  | Exclude<keyof T[K]["columns"], K2>)
+                  ? NoDuplicates<K2>
+                  : BaseColumn
+              }
+            }
+          : never
+    } & { "0": any },
+  T extends ColumnsObj<C> = ColumnsObj<C>,
+  CAS extends string = string,
+  Tbls extends { [K in keyof T]: Literal<T[K]["_tableAs"]> }[keyof T] = {
+    [K in keyof T]: Literal<T[K]["_tableAs"]>
+  }[keyof T]
+>(name: CAS, cols: C): JsonAggregate<Tbls, CAS> {
+  const colDecs = cols.reduce(
+    (acc, col) => {
+      if ("columns" in col) {
+        return [
+          ...acc,
+          ...Object.keys(col.columns).map(
+            colName => new ColumnDeclaration(col.columns[colName])
+          ),
+        ]
+      } else {
+        return [...acc, new ColumnDeclaration(col)]
+      }
+    },
+    [] as ColumnDeclaration[]
+  )
+
+  return new JsonAggregate(name, colDecs, cols as any)
+}
+
+export type JsonAggOutput<
+  T extends ValsAre<T, BaseColumn | AllCols<any, string>>,
+  Cols extends BaseColumn = ArrayToUnion<T>
+> = {
+  [K in SafeInd<Cols, "_columnAs">]: Cols extends { ["_columnAs"]: K } ? Cols : never
 }

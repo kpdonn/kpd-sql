@@ -101,6 +101,10 @@ export class PgPlugin implements SqlPlugin {
           : `${it.funcName}(${it._aggColumn.map(x => this.pr(x)).join(", ")})`
       case "countAggregate":
         return it._aggColumn ? `count(${this.pr(it._aggColumn)})` : `count(*)`
+      case "jsonAggregate":
+        return `${it.funcName}(json_build_object(${it._aggColumns
+          .map(x => `'${x.col._columnAs}', ${this.pr(x.col)}`)
+          .join(", ")}))`
       case "selectStatement":
         const withSql =
           it.selWith.length > 0
