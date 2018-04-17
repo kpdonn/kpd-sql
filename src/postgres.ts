@@ -80,7 +80,7 @@ export class PgPlugin implements SqlPlugin {
       case "or":
         return `(${this.pr(it.left)}) OR (${this.pr(it.right)})`
       case "column":
-        return `"${it._tableAs}"."${it._column}"`
+        return `"${it._tableAs}"."${it.dbName}"`
       case "columnDeclaration":
         return `${this.pr(it.col)} as "${it.col._columnAs}"`
       case "eq":

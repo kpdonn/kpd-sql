@@ -4,7 +4,7 @@ export type Literal<T extends string> = string extends T ? never : T
 
 export type SqlParam<N extends string, T> = string extends N ? {} : Record<N, T>
 
-export type ColType<T extends Column> = t.TypeOf<T["type"]>
+export type unknown = {} | null | undefined
 
 export interface InputCol<T extends t.Any = t.Any, U extends boolean = boolean> {
   type: T
@@ -12,17 +12,8 @@ export interface InputCol<T extends t.Any = t.Any, U extends boolean = boolean> 
   unique: U
 }
 
-export type TableColumns<
-  TN extends string,
-  C extends Record<string, InputCol>,
-  StripUnique extends boolean
-> = {
-  readonly [K in keyof C]: TableColumn<
-    TN,
-    C[K]["type"],
-    K,
-    StripUnique extends true ? false : C[K]["unique"]
-  >
+export type TableColumns<TN extends string, C extends ValsAre<C, InputCol>> = {
+  readonly [K in keyof C]: TableColumn<TN, K, C[K]["unique"], t.TypeOf<C[K]["type"]>>
 }
 
 export type Condition<CT extends string = string, P = {}> =
@@ -52,14 +43,10 @@ export type SqlPart =
 
 export type Column<
   TN extends string = string,
-  TY extends t.Any = t.Any,
   CAS extends string = string,
   U extends boolean = boolean,
-  ATY extends t.TypeOf<TY> = t.TypeOf<TY>
-> =
-  | TableColumn<TN, TY, CAS, U, ATY>
-  | Aggregate<TN, TY, CAS, ATY>
-  | CountAggregate<TN, CAS>
+  ATY extends unknown = unknown
+> = TableColumn<TN, CAS, U, ATY> | Aggregate<TN, CAS, ATY> | CountAggregate<TN, CAS>
 
 export type Parameterized = PlaceholderParam | Hardcoded
 
@@ -143,24 +130,12 @@ export class LeftJoin<RT extends string = never, OT extends string = never>
 export class PrivateTable<
   AN extends string,
   OT extends string,
-  C extends ValsAre<C, InputCol>
+  C extends ValsAre<C, Column>
 > extends FromTable<AN, OT> implements SqlKind {
   readonly sqlKind = "table"
-  readonly _tableColumns: Record<string, TableColumn<AN, t.Any, string, boolean>>
-  constructor(readonly _table: string, _columns: C, readonly _tableAs: AN) {
+  constructor(readonly _table: string, readonly _tableColumns: C, readonly _tableAs: AN) {
     super()
-    this._tableColumns = {}
-
-    Object.keys(_columns).forEach((colName: keyof C) => {
-      this._tableColumns[colName] = new TableColumn(
-        _columns[colName].dbName || colName,
-        _columns[colName].type,
-        colName,
-        _columns[colName].unique,
-        _tableAs
-      )
-    })
-    Object.assign(this, this._tableColumns)
+    Object.assign(this, _tableColumns)
   }
 
   get "*"(): AllCols<C, AN> {
@@ -171,14 +146,13 @@ export class PrivateTable<
 export type ValsAre<T, V> = { [K in keyof T]: V }
 
 export type Table<
-  C extends ValsAre<C, InputCol> = ValsAre<C, InputCol>,
+  C extends ValsAre<C, Column> = ValsAre<C, Column>,
   AsName extends string = string,
-  OT extends string = never,
-  StripUnique extends boolean = false
-> = PrivateTable<AsName, OT, C> & TableColumns<AsName, C, StripUnique>
+  OT extends string = never
+> = PrivateTable<AsName, OT, C> & C
 
 export interface TableConstructor {
-  new <C extends ValsAre<C, InputCol>, AsName extends string>(
+  new <C extends ValsAre<C, Column>, AsName extends string>(
     _table: string,
     _columns: C,
     _tableAs: AsName
@@ -189,44 +163,52 @@ export const Table: TableConstructor = PrivateTable as TableConstructor
 export function table<C extends ValsAre<C, InputCol>, N extends string>(arg: {
   name: N
   columns: C
-}): Table<C, N> {
-  return new Table(arg.name, arg.columns, arg.name)
+}): Table<TableColumns<N, C>, N> {
+  const _tableColumns: Record<string, Column> = {}
+
+  Object.keys(arg.columns).forEach((colName: keyof C) => {
+    _tableColumns[colName] = new TableColumn(
+      arg.columns[colName].dbName || colName,
+      arg.columns[colName].type,
+      colName,
+      arg.columns[colName].unique,
+      arg.name
+    )
+  })
+
+  return new Table(arg.name, _tableColumns, arg.name) as Table<TableColumns<N, C>, N>
 }
 
 export abstract class BaseColumn<
   TN extends string = string,
-  TY extends t.Any = t.Any,
   CAS extends string = string,
   U extends boolean = boolean,
-  ATY extends t.TypeOf<TY> = t.TypeOf<TY>
+  ATY extends unknown = unknown
 > {
-  private _actualType!: ATY
+  readonly _actualType!: ATY
 
   constructor(
-    readonly type: TY,
+    readonly type: t.Any,
     readonly _columnAs: CAS,
     readonly unique: U,
     readonly _tableAs?: TN,
     protected readonly _isNot: boolean = false
   ) {}
 
-  abstract get not(): BaseColumn<TN, TY, CAS, U, ATY>
+  abstract get not(): BaseColumn<TN, CAS, U, ATY>
 
-  eq<
-    Col2 extends Column<string, t.Any, string, boolean, NonNullable<ATY>>,
-    SPN extends string
-  >(
-    col2: Col2 | t.TypeOf<TY> | PlaceholderParam<SPN>
+  eq<Col2 extends Column<string, string, boolean, NonNullable<ATY>>, SPN extends string>(
+    col2: Col2 | ATY | PlaceholderParam<SPN>
   ): Condition<
     TN | Literal<NonNullable<Col2["_tableAs"]>>,
-    SqlParam<SPN, NonNullable<t.TypeOf<TY>>>
+    SqlParam<SPN, NonNullable<ATY>>
   > {
     return EqCondition.create(this as any, col2, this._isNot) as any
   }
 
-  in<C extends ValsAre<C, Column<string, TY>>, P, SPN extends string>(
-    rightArg: SelectStatement<C, P> | Array<t.TypeOf<TY>> | PlaceholderParam<SPN>
-  ): Condition<TN, P & SqlParam<SPN, NonNullable<t.TypeOf<TY>>>> {
+  in<C extends ValsAre<C, Column<string, string, boolean, ATY>>, P, SPN extends string>(
+    rightArg: SelectStatement<C, P> | ATY[] | PlaceholderParam<SPN>
+  ): Condition<TN, P & SqlParam<SPN, NonNullable<ATY>>> {
     return InCondition.create(this as any, rightArg, this._isNot) as any
   }
 
@@ -241,16 +223,15 @@ export abstract class BaseColumn<
 
 export class Aggregate<
   TN extends string = string,
-  TY extends t.Any = t.Any,
   CAS extends string = string,
-  ATY extends t.TypeOf<TY> = t.TypeOf<TY>
-> extends BaseColumn<TN, TY, CAS, false, ATY> implements SqlKind {
+  ATY extends unknown = unknown
+> extends BaseColumn<TN, CAS, false, ATY> implements SqlKind {
   readonly sqlKind = "aggregate"
 
   readonly unique = false
 
   constructor(
-    type: TY,
+    type: t.Any,
     _columnAs: CAS,
     readonly funcName: string,
     readonly _aggColumn: Column<TN> | Array<Column<TN>>,
@@ -259,7 +240,7 @@ export class Aggregate<
     super(type, _columnAs, false, undefined, _isNot)
   }
 
-  get not(): Aggregate<TN, TY, CAS, ATY> {
+  get not(): Aggregate<TN, CAS, ATY> {
     return new Aggregate(
       this.type,
       this._columnAs,
@@ -271,7 +252,7 @@ export class Aggregate<
 }
 
 export class CountAggregate<TN extends string = never, CAS extends string = "count">
-  extends BaseColumn<TN, t.NumberType, CAS, false, number>
+  extends BaseColumn<TN, CAS, false, number>
   implements SqlKind {
   readonly sqlKind = "countAggregate"
   readonly funcName = "count"
@@ -289,16 +270,15 @@ export class CountAggregate<TN extends string = never, CAS extends string = "cou
 
 export class TableColumn<
   TN extends string,
-  TY extends t.Any,
   CAS extends string,
   U extends boolean,
-  ATY extends t.TypeOf<TY> = t.TypeOf<TY>
-> extends BaseColumn<TN, TY, CAS, U, ATY> implements SqlKind {
+  ATY extends unknown = unknown
+> extends BaseColumn<TN, CAS, U, ATY> implements SqlKind {
   readonly sqlKind = "column"
 
   constructor(
-    readonly _column: string,
-    type: TY,
+    readonly dbName: string,
+    type: t.Any,
     _columnAs: CAS,
     unique: U,
     readonly _tableAs: TN,
@@ -307,9 +287,9 @@ export class TableColumn<
     super(type, _columnAs, unique, _tableAs, _isNot)
   }
 
-  get not(): TableColumn<TN, TY, CAS, U, ATY> {
+  get not(): TableColumn<TN, CAS, U, ATY> {
     return new TableColumn(
-      this._column,
+      this.dbName,
       this.type,
       this._columnAs,
       this.unique,
@@ -318,9 +298,9 @@ export class TableColumn<
     )
   }
 
-  as<NN extends string>(newName: NN): TableColumn<TN, TY, NN, U> {
+  as<NN extends string>(newName: NN): TableColumn<TN, NN, U, ATY> {
     return new TableColumn(
-      this._column,
+      this.dbName,
       this.type,
       newName,
       this.unique,
@@ -455,7 +435,10 @@ export class EqCondition<CT extends string = string, P = {}> extends BaseConditi
 
   static create<Col1 extends Column = Column>(
     left: Col1,
-    rightArg: Column<string, Col1["type"]> | ColType<Col1> | PlaceholderParam,
+    rightArg:
+      | Column<string, string, boolean, Col1["_actualType"]>
+      | NonNullable<Col1["_actualType"]>
+      | PlaceholderParam,
     isNot: boolean
   ): EqCondition | NotCondition {
     return BaseCondition.wrapNot(new EqCondition(left, rightArg), isNot)
@@ -524,7 +507,7 @@ export type OutputColumns<
   Cols extends BaseColumn = ColumnsWithTableName<T, TableNames>
 > = {
   [K in SafeInd<Cols, "_columnAs">]: Cols extends { ["_columnAs"]: K }
-    ? t.TypeOf<Cols["type"]> | OrType
+    ? Cols["_actualType"] | OrType
     : never
 }
 
@@ -537,7 +520,7 @@ export type NoTableColumns<
   Cols extends BaseColumn = ColumnsWithNoTableName<T>
 > = {
   [K in SafeInd<Cols, "_columnAs">]: Cols extends { ["_columnAs"]: K }
-    ? t.TypeOf<Cols["type"]>
+    ? Cols["_actualType"]
     : never
 }
 
@@ -552,7 +535,7 @@ export type ArrayToUnion<
 }[keyof T]
 
 export type SelectColumns<
-  T extends ValsAre<T, BaseColumn | AllCols<any, string>>,
+  T extends ValsAre<T, BaseColumn | { columns: Record<string, BaseColumn> }>,
   Cols extends BaseColumn = ArrayToUnion<T>
 > = {
   [K in SafeInd<Cols, "_columnAs">]: Cols extends { ["_columnAs"]: K } ? Cols : never
@@ -784,13 +767,14 @@ export class SqlBuilder<
     P & WParams,
     RT,
     OT,
-    WT & Record<A, Table<WCols, A, never, true>>,
+    WT & Record<A, Table<TransformColumns<WCols, A>, A, never>>,
     GBC
   > {
     const withClause = new WithClause(alias, withSelect)
 
     const newTableCols = withSelect.selColumns
       .map(it => it.col)
+      .map(it => new TableColumn(it._columnAs, it.type, it._columnAs, false, alias))
       .reduce((acc, c) => ({ ...acc, [c._columnAs]: c }), {})
 
     const newTable = table({ name: alias, columns: newTableCols })
@@ -869,13 +853,13 @@ export type CheckGroupBy<GBC extends BaseColumn, C extends BaseColumn, T> = IsAg
   T
 > extends false
   ? {}
-  : C extends Aggregate<string, t.Any, string>
+  : C extends Aggregate<string, string>
     ? {}
     : C extends CountAggregate<string, string>
       ? {}
       : C extends GBC
         ? {}
-        : GBC extends BaseColumn<NonNullable<C["_tableAs"]>, any, any, true> ? {} : never
+        : GBC extends BaseColumn<NonNullable<C["_tableAs"]>, string, true> ? {} : never
 
 type AnyHelper<T> = T extends any ? false : true
 
@@ -886,12 +870,27 @@ export function count(): CountAggregate<never, "count"> {
   return new CountAggregate("count")
 }
 
-export interface AllCols<C extends ValsAre<C, InputCol>, TN extends string> {
-  _tableAs: TN
-  columns: TableColumns<TN, C, false>
+export type TransformHelper<Col, TN extends string> = Col extends TableColumn<
+  string,
+  infer CAS,
+  boolean,
+  infer ATY
+>
+  ? TableColumn<TN, CAS, false, ATY>
+  : Col extends Aggregate<string, infer CAS2, infer ATY2>
+    ? Aggregate<TN, CAS2, ATY2>
+    : Col extends CountAggregate<string, infer CAS3> ? CountAggregate<TN, CAS3> : never
+
+export type TransformColumns<C extends ValsAre<C, Column>, TN extends string> = {
+  [K in keyof C]: TransformHelper<C[K], TN>
 }
 
-export function all<C extends ValsAre<C, InputCol>, TN extends string>(
+export interface AllCols<C extends ValsAre<C, Column>, TN extends string> {
+  _tableAs: TN
+  columns: TransformColumns<C, TN>
+}
+
+export function all<C extends ValsAre<C, Column>, TN extends string>(
   // tslint:disable-next-line:no-shadowed-variable
   table: Table<C, TN>
 ): AllCols<C, TN> {
@@ -908,7 +907,7 @@ export type ColumnNames<
   : T extends AllCols<any, string> ? keyof SafeInd<T, "columns"> : never
 
 export function sum<TN extends string = string, CAS extends string = string>(
-  col: Column<TN, t.NumberType, CAS>
-): Aggregate<TN, t.NumberType, "sum"> {
+  col: Column<TN, CAS, boolean, number>
+): Aggregate<TN, "sum", number> {
   return new Aggregate(t.number, "sum", "sum", col)
 }

@@ -9,6 +9,7 @@
     "interface-name": false,
     "no-object-literal-type-assertion": false,
     "object-literal-sort-keys": false,
-    "ban-types": false
+    "ban-types": false,
+    "no-shadowed-variable": false
   }
 }
