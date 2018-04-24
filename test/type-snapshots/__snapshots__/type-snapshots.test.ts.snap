@@ -98,7 +98,7 @@ Array [
   },
   Object {
     "category": 1,
-    "character": 37,
+    "character": 42,
     "code": 2345,
     "file": "expect-errors.ts",
     "innerMostMessage": "Argument of type 'string' is not assignable to parameter of type 'never'.",
@@ -263,7 +263,7 @@ Array [
   },
   Object {
     "category": 1,
-    "character": 25,
+    "character": 30,
     "code": 2345,
     "file": "expect-errors.ts",
     "innerMostMessage": "Property '\\"NO DUPLICATE KEYS ALLOWED\\"' is missing in type 'TableColumn<\\"class\\", \\"professorId\\", false, number>'.",
@@ -290,7 +290,7 @@ Array [
   },
   Object {
     "category": 1,
-    "character": 49,
+    "character": 54,
     "code": 2345,
     "file": "expect-errors.ts",
     "innerMostMessage": "Type 'TableColumn<\\"class\\", \\"id\\", false, number>' is not assignable to type 'NoDuplicates<\\"id\\">'.",
@@ -318,7 +318,7 @@ Array [
   },
   Object {
     "category": 1,
-    "character": 49,
+    "character": 54,
     "code": 2345,
     "file": "expect-errors.ts",
     "innerMostMessage": "Type 'TableColumn<\\"class\\", \\"id\\", false, number>' is not assignable to type 'NoDuplicates<\\"id\\">'.",

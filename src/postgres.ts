@@ -1,21 +1,21 @@
 import { Pool } from "pg"
-import { isSqlPart, LookupParamNum, SqlPart, SqlPlugin } from "./everything"
+import * as tsql from "./everything"
 
-export class PgPlugin implements SqlPlugin {
+export class PgPlugin implements tsql.SqlPlugin {
   static init(pool: Pool): PgPlugin {
     return new PgPlugin(pool)
   }
 
   private constructor(private readonly pool: Pool) {}
 
-  printSql(part: SqlPart, lpn: LookupParamNum): string {
+  printSql(part: tsql.SqlPart, lpn: tsql.LookupParamNum): string {
     const result = this._buildSql(part, lpn)
     return result[0]
   }
 
   async execute(
-    part: SqlPart,
-    lpn: LookupParamNum,
+    part: tsql.SqlPart,
+    lpn: tsql.LookupParamNum,
     paramArgs: object = {}
   ): Promise<any> {
     const [sql, vals] = this._buildSql(part, lpn, paramArgs)
@@ -25,8 +25,8 @@ export class PgPlugin implements SqlPlugin {
   }
 
   private _buildSql(
-    part: SqlPart,
-    lpn: LookupParamNum,
+    part: tsql.SqlPart,
+    lpn: tsql.LookupParamNum,
     paramArgs: any = {}
   ): [string, any[]] {
     const paramVals: any[] = []
@@ -96,7 +96,7 @@ export class PgPlugin implements SqlPlugin {
       case "withClause":
         return `"${it.alias}" AS (${this.pr(it.withQuery)})`
       case "aggregate":
-        return isSqlPart(it._aggColumn)
+        return tsql.isSqlPart(it._aggColumn)
           ? `${it.funcName}(${this.pr(it._aggColumn)})`
           : `${it.funcName}(${it._aggColumn.map(x => this.pr(x)).join(", ")})`
       case "countAggregate":
@@ -123,6 +123,6 @@ export class PgPlugin implements SqlPlugin {
 }
 
 type PrintFunc = (
-  this: { pr: PrintFunc; lpn: LookupParamNum; paramVals: any[]; paramArgs: any },
-  it: SqlPart
+  this: { pr: PrintFunc; lpn: tsql.LookupParamNum; paramVals: any[]; paramArgs: any },
+  it: tsql.SqlPart
 ) => string

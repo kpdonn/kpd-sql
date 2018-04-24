@@ -1,6 +1,8 @@
 import * as t from "io-ts"
-import { column, table } from "../../../src/everything"
+import * as tsql from "../../../src/everything"
 
+const table = tsql.table
+const column = tsql.column
 export const Vet = table({
   name: "vet",
   columns: {

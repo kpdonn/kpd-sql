@@ -1,7 +1,7 @@
 import * as fs from "fs"
 import * as path from "path"
 import { Pool } from "pg"
-import { init, param } from "../../../src/everything"
+import * as tsql from "../../../src/everything"
 import { PgPlugin } from "../../../src/postgres"
 import { Owner, Pet, Specialty, Type, Vet, VetSpecialty, Visit } from "./tables"
 
@@ -11,7 +11,7 @@ const pool = new Pool({
   connectionString,
 })
 
-const db = init(PgPlugin.init(pool))
+const db = tsql.init(PgPlugin.init(pool))
 
 describe("Select query tests", () => {
   it("select pets seen dr Ortega", async () => {
@@ -19,7 +19,7 @@ describe("Select query tests", () => {
       .select()
       .from(Pet.join(Visit, Pet.id.eq(Visit.petId)).join(Vet, Vet.id.eq(Visit.vetId)))
       .columns([Pet.id, Pet.name, Pet.birthDate, Pet.ownerId, Pet.typeId])
-      .where(Vet.lastName.eq(param("vetLastName")))
+      .where(Vet.lastName.eq(tsql.param("vetLastName")))
 
     expect(query.toSql()).toMatchSnapshot()
     const results = await query.execute({ vetLastName: "Ortega" })
@@ -37,7 +37,7 @@ describe("Select query tests", () => {
           sq
             .from(Owner)
             .columns([Owner.id])
-            .where(Owner.city.eq(param("ownerCity")))
+            .where(Owner.city.eq(tsql.param("ownerCity")))
         )
       })
 
@@ -167,7 +167,7 @@ describe("Select query tests", () => {
             )
           )
           .columns([Vet.id, Vet.firstName, Vet.lastName, Specialty.name])
-          .where(Specialty.name.eq(param("specialty")))
+          .where(Specialty.name.eq(tsql.param("specialty")))
       )
       .select(sq =>
         sq

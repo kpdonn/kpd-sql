@@ -1,8 +1,8 @@
-import { count, jsonAgg, param, SqlBuilder, sum } from "../src/everything"
+import * as tsql from "../src/everything"
 import { Class, Course, Semester, Student, StudentClass } from "./tables"
 /* tslint:disable:no-shadowed-variable */
 
-declare const db: SqlBuilder<{}, {}, never, never, {}, never>
+declare const db: tsql.SqlBuilder<{}, {}, never, never, {}, never>
 
 async function test() {
   const test1 = db
@@ -45,14 +45,14 @@ async function test() {
     .select()
     .from(Student)
     .columns([Student.firstName, Student.lastName])
-    .where(Student.majorId.eq(param("myTest")))
+    .where(Student.majorId.eq(tsql.param("myTest")))
     .execute()
 
   const test7 = db
     .select()
     .from(Student)
     .columns([Student.firstName, Student.lastName])
-    .where(Student.majorId.eq(param("myTest")))
+    .where(Student.majorId.eq(tsql.param("myTest")))
     .execute({ myTest: "wrong type" })
 
   declare const nonLiteralString: string
@@ -61,7 +61,7 @@ async function test() {
     .select()
     .from(Student)
     .columns([Student.firstName, Student.lastName])
-    .where(Student.majorId.eq(param(nonLiteralString)))
+    .where(Student.majorId.eq(tsql.param(nonLiteralString)))
 
   const test9 = db
     .select()
@@ -77,14 +77,14 @@ async function test() {
     .select()
     .from(Student)
     .columns([Student.firstName, Student.lastName])
-    .where(Student.majorId.eq(param("myTest")))
+    .where(Student.majorId.eq(tsql.param("myTest")))
     .execute({ wrongKey: 53 })
 
   const test11 = db
     .select()
     .from(Student)
     .columns([Student.firstName, Student.lastName])
-    .where(Student.majorId.eq(param("myTest")))
+    .where(Student.majorId.eq(tsql.param("myTest")))
     .execute({ myTest: null })
 
   {
@@ -125,7 +125,7 @@ async function test() {
     const test = db
       .select()
       .from(Class)
-      .columns([Class.id, count()])
+      .columns([Class.id, tsql.count()])
   }
 
   {
@@ -144,8 +144,8 @@ async function test() {
       .columns([
         Student["*"],
         Class.semesterId,
-        sum(Course.creditHours),
-        jsonAgg("courses", [Course["*"]]),
+        tsql.sum(Course.creditHours),
+        tsql.jsonAgg("courses", [Course["*"]]),
       ])
       .execute()
   }
@@ -154,7 +154,7 @@ async function test() {
       .select()
       .from(Class)
       .groupBy([Class.id])
-      .columns([jsonAgg("test", [Student.firstName])])
+      .columns([tsql.jsonAgg("test", [Student.firstName])])
   }
 
   {
@@ -162,7 +162,7 @@ async function test() {
       .select()
       .from(Class)
       .groupBy([Class.id])
-      .columns([Class.courseId.as("test"), jsonAgg("test", [Class.professorId])])
+      .columns([Class.courseId.as("test"), tsql.jsonAgg("test", [Class.professorId])])
   }
 
   {
@@ -172,7 +172,7 @@ async function test() {
       .groupBy([Class.id])
       .columns([
         Class.courseId,
-        jsonAgg("test", [Class.professorId, Class.courseId.as("professorId")]),
+        tsql.jsonAgg("test", [Class.professorId, Class.courseId.as("professorId")]),
       ])
   }
 
@@ -181,7 +181,7 @@ async function test() {
       .select()
       .from(Class.join(StudentClass, StudentClass.classId.eq(Class.id)))
       .groupBy([Class.id])
-      .columns([Class.courseId, jsonAgg("test", [Class["*"], StudentClass["*"]])])
+      .columns([Class.courseId, tsql.jsonAgg("test", [Class["*"], StudentClass["*"]])])
   }
 
   {
@@ -189,13 +189,13 @@ async function test() {
       .select()
       .from(Class.join(StudentClass, StudentClass.classId.eq(Class.id)))
       .groupBy([Class.id])
-      .columns([Class.courseId, jsonAgg("test", [Class["*"], StudentClass.id])])
+      .columns([Class.courseId, tsql.jsonAgg("test", [Class["*"], StudentClass.id])])
   }
 
   {
     const test = db
       .select()
       .from(Class.join(StudentClass, StudentClass.classId.eq(Class.id)))
-      .columns([Class.courseId, jsonAgg("test", [Class["*"]])])
+      .columns([Class.courseId, tsql.jsonAgg("test", [Class["*"]])])
   }
 }

@@ -1,7 +1,7 @@
 import * as fs from "fs"
 import * as path from "path"
 import { Pool } from "pg"
-import { count, init, jsonAgg, sum } from "../../../src/everything"
+import * as tsql from "../../../src/everything"
 import { PgPlugin } from "../../../src/postgres"
 import { Class, Course, Student, StudentClass } from "./tables"
 
@@ -11,7 +11,7 @@ const pool = new Pool({
   connectionString,
 })
 
-const db = init(PgPlugin.init(pool))
+const db = tsql.init(PgPlugin.init(pool))
 
 describe("college select tests", () => {
   it("trivial group by test", async () => {
@@ -30,7 +30,7 @@ describe("college select tests", () => {
     const query = db
       .select()
       .from(Student)
-      .columns([count()])
+      .columns([tsql.count()])
 
     expect(query.toSql()).toMatchSnapshot()
     const results = await query.execute()
@@ -46,7 +46,7 @@ describe("college select tests", () => {
           .join(Course, Course.id.eq(Class.courseId))
       )
       .groupBy([Student.id, Class.semesterId])
-      .columns([Student["*"], Class.semesterId, sum(Course.creditHours)])
+      .columns([Student["*"], Class.semesterId, tsql.sum(Course.creditHours)])
 
     expect(query.toSql()).toMatchSnapshot()
     const results = await query.execute()
@@ -65,8 +65,8 @@ describe("college select tests", () => {
       .columns([
         Student["*"],
         Class.semesterId,
-        sum(Course.creditHours),
-        jsonAgg("courses", [Course["*"]]),
+        tsql.sum(Course.creditHours),
+        tsql.jsonAgg("courses", [Course["*"]]),
       ])
 
     expect(query.toSql()).toMatchSnapshot()
