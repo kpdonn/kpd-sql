@@ -198,4 +198,45 @@ async function test() {
       .from(Class.join(StudentClass, StudentClass.classId.eq(Class.id)))
       .columns([Class.courseId, tsql.jsonAgg("test", [Class["*"]])])
   }
+
+  {
+    db.select().columns([Class.courseId, tsql.jsonAgg("test", [Class["*"]])])
+  }
+
+  {
+    db.select().where(Student.majorId.eq(tsql.param("myTest")))
+  }
+
+  {
+    db
+      .select()
+      .from(Class)
+      .from(Student)
+  }
+
+  {
+    db
+      .select()
+      .from(Class)
+      .with()
+  }
+
+  {
+    db.select().with()
+  }
+
+  {
+    db
+      .from(Class)
+      .columns([Class["*"]])
+      .groupBy([Class.id])
+  }
+
+  {
+    db
+      .from(Class)
+      .columns([Class["*"]])
+      .where(Class.id.isNotNull)
+      .groupBy([Class.id])
+  }
 }
