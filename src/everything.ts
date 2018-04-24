@@ -1,6 +1,9 @@
 import * as t from "io-ts"
 
-export type Literal<T extends string> = string extends T ? never : T
+export type Literal<
+  T extends PropertyKey | undefined | null,
+  NN extends NonNullable<T> = NonNullable<T>
+> = string extends NN ? never : number extends NN ? never : symbol extends NN ? never : NN
 
 export type SqlParam<N extends string, T> = string extends N ? {} : Record<N, T>
 
@@ -12,8 +15,13 @@ export interface InputCol<T extends t.Any = t.Any, U extends boolean = boolean> 
   unique: U
 }
 
-export type TableColumns<TN extends string, C extends ValsAre<C, InputCol>> = {
-  readonly [K in keyof C]: TableColumn<TN, K, C[K]["unique"], t.TypeOf<C[K]["type"]>>
+export type TableColumns<TN extends string, C extends Record<string, InputCol>> = {
+  readonly [K in Extract<keyof C, string>]: TableColumn<
+    TN,
+    K,
+    C[K]["unique"],
+    t.TypeOf<C[K]["type"]>
+  >
 }
 
 export type Condition<CT extends string = string, P = {}> =
@@ -150,7 +158,7 @@ export class PrivateTable<
 export type ValsAre<T, V> = { [K in keyof T]: V }
 
 export type Table<
-  C extends ValsAre<C, Column> = ValsAre<C, Column>,
+  C extends Record<string, Column> = Record<string, Column>,
   AsName extends string = string,
   OT extends string = never
 > = PrivateTable<AsName, OT, C> & C
@@ -170,7 +178,7 @@ export function table<C extends ValsAre<C, InputCol>, N extends string>(arg: {
 }): Table<TableColumns<N, C>, N> {
   const _tableColumns: Record<string, Column> = {}
 
-  Object.keys(arg.columns).forEach((colName: keyof C) => {
+  Object.keys(arg.columns).forEach((colName: string & keyof C) => {
     _tableColumns[colName] = new TableColumn(
       arg.columns[colName].dbName || colName,
       arg.columns[colName].type,
@@ -515,7 +523,7 @@ export type SafeInd<T, K extends keyof Base, Base = T> = Extract<T, Base> extend
   ? never
   : Extract<T, Base>[K]
 
-export interface NoDuplicates<T extends string> {
+export interface NoDuplicates<T extends PropertyKey> {
   "NO DUPLICATE KEYS ALLOWED": T
 }
 export type ColumnsObj<T> = {
@@ -523,7 +531,7 @@ export type ColumnsObj<T> = {
 }
 
 export type ColumnsWithTableName<
-  T extends ValsAre<T, BaseColumn>,
+  T extends Record<string, BaseColumn>,
   TblName extends string
 > = {
   [K in keyof T]: NonNullable<T[K]["_tableAs"]> extends Literal<TblName> ? T[K] : never
@@ -540,7 +548,7 @@ export type OutputColumns<
     : never
 }
 
-export type ColumnsWithNoTableName<T extends ValsAre<T, BaseColumn>> = {
+export type ColumnsWithNoTableName<T extends Record<string, BaseColumn>> = {
   [K in keyof T]: [NonNullable<T[K]["_tableAs"]>] extends [never] ? T[K] : never
 }[keyof T]
 
@@ -753,7 +761,7 @@ export class SqlBuilder<
                       | (ColumnNames<T[Exclude<keyof T, K>]>)
                       | keyof Cols
                       | Exclude<keyof T[K]["columns"], K2>)
-                      ? NoDuplicates<K2>
+                      ? NoDuplicates<Extract<K2, PropertyKey>>
                       : BaseColumn<TblNames>)
                 }
               }
@@ -927,16 +935,16 @@ export type TransformHelper<Col, TN extends string> = Col extends TableColumn<
         ? JsonAggregate<TN, CAS4, ATY4>
         : never
 
-export type TransformColumns<C extends ValsAre<C, Column>, TN extends string> = {
+export type TransformColumns<C extends Record<string, Column>, TN extends string> = {
   [K in keyof C]: TransformHelper<C[K], TN>
 }
 
-export interface AllCols<C extends ValsAre<C, Column>, TN extends string> {
+export interface AllCols<C extends Record<string, Column>, TN extends string> {
   _tableAs: TN
   columns: TransformColumns<C, TN>
 }
 
-export function all<C extends ValsAre<C, Column>, TN extends string>(
+export function all<C extends Record<string, Column>, TN extends string>(
   // tslint:disable-next-line:no-shadowed-variable
   table: Table<C, TN>
 ): AllCols<C, TN> {
@@ -971,7 +979,7 @@ export function jsonAgg<
                 [K2 in keyof T[K]["columns"]]: K2 extends (
                   | (ColumnNames<T[Exclude<keyof T, K>]>)
                   | Exclude<keyof T[K]["columns"], K2>)
-                  ? NoDuplicates<K2>
+                  ? NoDuplicates<Extract<K2, PropertyKey>>
                   : BaseColumn
               }
             }
@@ -979,9 +987,9 @@ export function jsonAgg<
     } & { "0": any },
   T extends ColumnsObj<C> = ColumnsObj<C>,
   CAS extends string = string,
-  Tbls extends { [K in keyof T]: Literal<T[K]["_tableAs"]> }[keyof T] = {
-    [K in keyof T]: Literal<T[K]["_tableAs"]>
-  }[keyof T]
+  Tbls extends {
+    [K in keyof T]: Literal<SafeInd<T[K], "_tableAs", BaseColumn>>
+  }[keyof T] = { [K in keyof T]: Literal<SafeInd<T[K], "_tableAs", BaseColumn>> }[keyof T]
 >(name: CAS, cols: C): JsonAggregate<Tbls, CAS, JsonAggOutput<T>> {
   const colDecs = cols.reduce(
     (acc, col) => {

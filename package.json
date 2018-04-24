@@ -68,7 +68,7 @@
     "ts-node": "^5.0.1",
     "tslint": "^5.4.3",
     "tslint-config-prettier": "^1.1.0",
-    "typescript": "^2.9.0-dev.20180422"
+    "typescript": "^2.9.0-dev.20180424"
   },
   "dependencies": {
     "io-ts": "^1.0.5",
