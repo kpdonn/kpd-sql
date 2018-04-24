@@ -3759,9 +3759,9 @@ type-check@~0.3.2:
   dependencies:
     prelude-ls "~1.1.2"
 
-typescript@^2.9.0-dev.20180414:
-  version "2.9.0-dev.20180414"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.0-dev.20180414.tgz#10193f90523b29802ecb68ecf6199007d62add50"
+typescript@^2.9.0-dev.20180422:
+  version "2.9.0-dev.20180422"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.0-dev.20180422.tgz#0957efbad5df6351a187a436d76fa4dc56ac1c3e"
 
 uglify-js@^2.6:
   version "2.8.29"
